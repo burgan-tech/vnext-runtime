@@ -686,5 +686,3 @@ To customize the dashboard:
 1. Edit in Grafana UI
 2. Export in JSON format
 3. Update `vnext/docker/config/grafana/dashboards/workflow-metrics.json`
-
-For detailed monitoring setup and configuration, see [README-Grafana.md](README-Grafana.md).

@@ -686,5 +686,3 @@ Dashboard'u özelleştirmek için:
 1. Grafana UI'da düzenleyin
 2. JSON formatında export edin
 3. `vnext/docker/config/grafana/dashboards/workflow-metrics.json` dosyasını güncelleyin
-
-Detaylı monitoring kurulumu ve konfigürasyonu için [README-Grafana.md](README-Grafana.md) dosyasına bakın.
