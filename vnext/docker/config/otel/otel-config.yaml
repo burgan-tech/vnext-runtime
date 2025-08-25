@@ -1,0 +1,77 @@
+# Configure receivers
+# We only need otlp protocol on grpc, but you can use http, zipkin, jaeger, aws, etc.
+# https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+# Configure exporters
+exporters:
+  # OpenObserve HTTP endpoint for traces
+  otlphttp/openobserve-traces:
+    endpoint: "http://openobserve:5080/api/default"
+    headers:
+      Authorization: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyNAMTIz"
+      stream-name: "vnext"
+    tls:
+      insecure: true
+  
+  # OpenObserve HTTP endpoint for metrics
+  otlphttp/openobserve-metrics:
+    endpoint: "http://openobserve:5080/api/default"
+    headers:
+      Authorization: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyNAMTIz"
+      stream-name: "vnext"
+    tls:
+      insecure: true
+  
+  # OpenObserve HTTP endpoint for logs
+  otlphttp/openobserve-logs:
+    endpoint: "http://openobserve:5080/api/default"
+    headers:
+      Authorization: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyNAMTIz"
+      stream-name: "vnext"
+    tls:
+      insecure: true
+  
+  #  zipkin:
+  #    endpoint: localhost:9411
+  #    tls:
+  #      insecure: true
+
+  # log to the console
+  debug:
+    verbosity: detailed
+      
+# Export to a file
+#  file:
+#    path: /etc/output/logs.json
+
+# Configure processors (batch, sampling, filtering, hashing sensitive data, etc.)
+# https://opentelemetry.io/docs/collector/configuration/#processors
+processors:
+  batch:
+
+# Configure pipelines. Pipeline defines a path the data follows in the Collector
+# starting from reception, then further processing or modification and finally
+# exiting the Collector via exporters.
+# https://opentelemetry.io/docs/collector/configuration/#service
+# https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/design.md#pipelines
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlphttp/openobserve-traces]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlphttp/openobserve-metrics]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlphttp/openobserve-logs]
