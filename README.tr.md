@@ -289,6 +289,180 @@ VNext Runtime sisteminin tüm yeteneklerini gösteren kapsamlı bir e-ticaret wo
 
 Bu örnek, VNext Runtime kullanarak karmaşık iş akışlarının nasıl implement edileceğini anlamak için pratik bir başlangıç noktası sağlar.
 
+## Instance Filtreleme
+
+VNext Runtime, workflow instance'larını JSON attribute'larına göre sorgulama için güçlü filtreleme yetenekleri sağlar. Bu özellik, basit API çağrıları ile çeşitli operatörler kullanarak instance'ları arama ve filtreleme yapmanıza olanak tanır.
+
+### Temel Kullanım
+
+HTTP isteklerinizde query parametreleri kullanarak instance'ları filtreleyin:
+
+```bash
+# clientId "122" ye eşit olan instance'ları bul
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122"
+
+# testValue 2'den büyük olan instance'ları bul
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2"
+
+# status "completed" olmayan instance'ları bul
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed"
+```
+
+### Filtre Syntax'ı
+
+Filtreleme şu formatı kullanır: `filter=attributes={field}={operator}:{value}`
+
+#### Kullanılabilir Operatörler
+
+| Operatör | Açıklama | Örnek |
+|----------|----------|-------|
+| `eq` | Eşittir | `filter=attributes=clientId=eq:122` |
+| `ne` | Eşit değildir | `filter=attributes=status=ne:inactive` |
+| `gt` | Büyüktür | `filter=attributes=amount=gt:100` |
+| `ge` | Büyük eşittir | `filter=attributes=score=ge:80` |
+| `lt` | Küçüktür | `filter=attributes=count=lt:10` |
+| `le` | Küçük eşittir | `filter=attributes=age=le:65` |
+| `between` | İki değer arasında | `filter=attributes=amount=between:50,200` |
+| `like` | Alt string içerir | `filter=attributes=name=like:ahmet` |
+| `startswith` | İle başlar | `filter=attributes=email=startswith:test` |
+| `endswith` | İle biter | `filter=attributes=email=endswith:.com` |
+| `in` | Liste içinde | `filter=attributes=status=in:active,pending` |
+| `nin` | Liste içinde değil | `filter=attributes=type=nin:test,debug` |
+
+### Pratik Örnekler
+
+#### Tek Filtre Örnekleri
+
+```bash
+# Tüm aktif siparişleri bul
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:active"
+
+# Yüksek değerli işlemleri bul
+curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=attributes=amount=gt:1000"
+
+# Son siparişleri bul (timestamp field olduğu varsayılarak)
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=createdDate=ge:2024-01-01"
+
+# Müşteri email domain'ine göre ara
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=attributes=email=endswith:@company.com"
+```
+
+#### Çoklu Filtre Örnekleri
+
+```bash
+# Birden fazla filtreyi birleştir (VE mantığı)
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:pending&filter=attributes=priority=eq:high"
+
+# Fiyat aralığında siparişleri bul
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=totalAmount=between:100,500"
+
+# Belirli müşteri tiplerini bul
+curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=attributes=customerType=in:premium,vip"
+```
+
+### Örnek Instance Verisi
+
+Workflow instance'ları ile çalışırken şuna benzer JSON verileriniz olabilir:
+
+```json
+{
+  "clientId": "122",
+  "testValue": 4,
+  "status": "active",
+  "email": "musteri@example.com",
+  "amount": 150.50,
+  "priority": "high",
+  "tags": ["vip", "premium"]
+}
+```
+
+### cURL ile Filtre Testi
+
+```bash
+# Temel eşitlik filtresini test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122"
+
+# Sayısal karşılaştırmayı test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100"
+
+# String operasyonlarını test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com"
+
+# Çoklu filtreleri test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high"
+```
+
+### Filtreler ile Sayfalama
+
+```bash
+# Sayfalama ile filtreleme
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:active&page=1&pageSize=10"
+
+# Büyük veri setlerini sayfalama ile filtreleme
+curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=attributes=eventType=eq:purchase&page=1&pageSize=50"
+```
+
+### Response Formatı
+
+Filtrelenmiş sonuçlar standart formatta döner:
+
+```json
+{
+  "data": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "flow": "order-processing",
+      "flowVersion": "1.0.0",
+      "domain": "ecommerce",
+      "key": "ORDER-2024-001",
+      "attributes": {
+        "clientId": "122",
+        "amount": 150.50,
+        "status": "active"
+      },
+      "etag": "abc123def456"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "pageSize": 10,
+    "totalCount": 25,
+    "totalPages": 3
+  }
+}
+```
+
+### Yaygın Kullanım Senaryoları
+
+1. **Müşteri Hizmetleri**: Belirli bir müşterinin tüm siparişlerini bulma
+2. **Finansal Raporlama**: İşlemleri tutar aralıklarına göre filtreleme
+3. **Sipariş Yönetimi**: Bekleyen veya başarısız siparişleri bulma
+4. **Kullanıcı Analitiği**: Kullanıcıları kayıt tarihi veya aktiviteye göre filtreleme
+5. **Hata Takibi**: Hata durumundaki instance'ları bulma
+
+### Test için cURL Örnekleri
+
+Filtreleme yeteneklerini test etmek için bu cURL komutlarını kullanabilirsiniz:
+
+```bash
+# Temel eşitlik filtresini test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122"
+
+# Sayısal karşılaştırmayı test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2"
+
+# String operasyonlarını test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act"
+
+# Çoklu filtreleri test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low"
+
+# Aralık filtrelemesini test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500"
+```
+
+Bu filtreleme sistemi, production iş yüklerine optimize edilmiş yüksek performanslı sorgulama yetenekleri sağlar ve iş verilerine dayalı spesifik workflow instance'larını bulmayı kolaylaştırır.
+
 ## Makefile Komutları
 
 Proje kök dizininde bulunan Makefile, development sürecini kolaylaştıran birçok komut içerir. Tüm komutları görmek için:
