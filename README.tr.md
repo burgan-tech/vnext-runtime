@@ -299,35 +299,35 @@ HTTP isteklerinizde query parametreleri kullanarak instance'ları filtreleyin:
 
 ```bash
 # clientId "122" ye eşit olan instance'ları bul
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=clientId=eq:122
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122
 
 # testValue 2'den büyük olan instance'ları bul
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=testValue=gt:2
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2
 
 # status "completed" olmayan instance'ları bul
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=status=ne:completed
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed
 ```
 
 ### Filtre Syntax'ı
 
-Filtreleme şu formatı kullanır: `filter={field}={operator}:{value}`
+Filtreleme şu formatı kullanır: `filter=attributes={field}={operator}:{value}`
 
 #### Kullanılabilir Operatörler
 
 | Operatör | Açıklama | Örnek |
 |----------|----------|-------|
-| `eq` | Eşittir | `filter=clientId=eq:122` |
-| `ne` | Eşit değildir | `filter=status=ne:inactive` |
-| `gt` | Büyüktür | `filter=amount=gt:100` |
-| `ge` | Büyük eşittir | `filter=score=ge:80` |
-| `lt` | Küçüktür | `filter=count=lt:10` |
-| `le` | Küçük eşittir | `filter=age=le:65` |
-| `between` | İki değer arasında | `filter=amount=between:50,200` |
-| `like` | Alt string içerir | `filter=name=like:ahmet` |
-| `startswith` | İle başlar | `filter=email=startswith:test` |
-| `endswith` | İle biter | `filter=email=endswith:.com` |
-| `in` | Liste içinde | `filter=status=in:active,pending` |
-| `nin` | Liste içinde değil | `filter=type=nin:test,debug` |
+| `eq` | Eşittir | `filter=attributes=clientId=eq:122` |
+| `ne` | Eşit değildir | `filter=attributes=status=ne:inactive` |
+| `gt` | Büyüktür | `filter=attributes=amount=gt:100` |
+| `ge` | Büyük eşittir | `filter=attributes=score=ge:80` |
+| `lt` | Küçüktür | `filter=attributes=count=lt:10` |
+| `le` | Küçük eşittir | `filter=attributes=age=le:65` |
+| `between` | İki değer arasında | `filter=attributes=amount=between:50,200` |
+| `like` | Alt string içerir | `filter=attributes=name=like:ahmet` |
+| `startswith` | İle başlar | `filter=attributes=email=startswith:test` |
+| `endswith` | İle biter | `filter=attributes=email=endswith:.com` |
+| `in` | Liste içinde | `filter=attributes=status=in:active,pending` |
+| `nin` | Liste içinde değil | `filter=attributes=type=nin:test,debug` |
 
 ### Pratik Örnekler
 
@@ -335,29 +335,29 @@ Filtreleme şu formatı kullanır: `filter={field}={operator}:{value}`
 
 ```bash
 # Tüm aktif siparişleri bul
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:active"
 
 # Yüksek değerli işlemleri bul
-curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=amount=gt:1000"
+curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=attributes=amount=gt:1000"
 
 # Son siparişleri bul (timestamp field olduğu varsayılarak)
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=createdDate=ge:2024-01-01"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=createdDate=ge:2024-01-01"
 
 # Müşteri email domain'ine göre ara
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=email=endswith:@company.com"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=attributes=email=endswith:@company.com"
 ```
 
 #### Çoklu Filtre Örnekleri
 
 ```bash
 # Birden fazla filtreyi birleştir (VE mantığı)
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:pending&filter=priority=eq:high"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:pending&filter=attributes=priority=eq:high"
 
 # Fiyat aralığında siparişleri bul
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=totalAmount=between:100,500"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=totalAmount=between:100,500"
 
 # Belirli müşteri tiplerini bul
-curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=customerType=in:premium,vip"
+curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=attributes=customerType=in:premium,vip"
 ```
 
 ### Örnek Instance Verisi
@@ -380,19 +380,19 @@ Workflow instance'ları ile çalışırken şuna benzer JSON verileriniz olabili
 
 ```bash
 # Temel eşitlik filtresini test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122" \
   -H "Content-Type: application/json"
 
 # Sayısal karşılaştırmayı test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=gt:100" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100" \
   -H "Content-Type: application/json"
 
 # String operasyonlarını test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=email=endswith:.com" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com" \
   -H "Content-Type: application/json"
 
 # Çoklu filtreleri test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=eq:high" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high" \
   -H "Content-Type: application/json"
 ```
 
@@ -400,10 +400,10 @@ curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filt
 
 ```bash
 # Sayfalama ile filtreleme
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active&page=1&pageSize=10"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:active&page=1&pageSize=10"
 
 # Büyük veri setlerini sayfalama ile filtreleme
-curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=eventType=eq:purchase&page=1&pageSize=50"
+curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=attributes=eventType=eq:purchase&page=1&pageSize=50"
 ```
 
 ### Response Formatı
@@ -450,23 +450,23 @@ Filtreleme yeteneklerini test etmek için bir `.http` dosyası oluşturabilirsin
 
 ```http
 ### Temel eşitlik filtresini test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122
 Content-Type: application/json
 
 ### Sayısal karşılaştırmayı test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=testValue=gt:2
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2
 Content-Type: application/json
 
 ### String operasyonlarını test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=startswith:act
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act
 Content-Type: application/json
 
 ### Çoklu filtreleri test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=ne:low
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low
 Content-Type: application/json
 
 ### Aralık filtrelemesini test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=between:100,500
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500
 Content-Type: application/json
 ```
 

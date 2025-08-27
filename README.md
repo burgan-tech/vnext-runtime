@@ -299,35 +299,35 @@ Filter instances using query parameters in your HTTP requests:
 
 ```bash
 # Find instances where clientId equals "122"
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=clientId=eq:122
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122
 
 # Find instances where testValue is greater than 2
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=testValue=gt:2
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2
 
 # Find instances where status is not "completed"
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=status=ne:completed
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed
 ```
 
 ### Filter Syntax
 
-The filtering uses the format: `filter={field}={operator}:{value}`
+The filtering uses the format: `filter=attributes={field}={operator}:{value}`
 
 #### Available Operators
 
 | Operator | Description | Example |
 |----------|-------------|---------|
-| `eq` | Equal to | `filter=clientId=eq:122` |
-| `ne` | Not equal to | `filter=status=ne:inactive` |
-| `gt` | Greater than | `filter=amount=gt:100` |
-| `ge` | Greater than or equal | `filter=score=ge:80` |
-| `lt` | Less than | `filter=count=lt:10` |
-| `le` | Less than or equal | `filter=age=le:65` |
-| `between` | Between two values | `filter=amount=between:50,200` |
-| `like` | Contains substring | `filter=name=like:john` |
-| `startswith` | Starts with | `filter=email=startswith:test` |
-| `endswith` | Ends with | `filter=email=endswith:.com` |
-| `in` | Value in list | `filter=status=in:active,pending` |
-| `nin` | Value not in list | `filter=type=nin:test,debug` |
+| `eq` | Equal to | `filter=attributes=clientId=eq:122` |
+| `ne` | Not equal to | `filter=attributes=status=ne:inactive` |
+| `gt` | Greater than | `filter=attributes=amount=gt:100` |
+| `ge` | Greater than or equal | `filter=attributes=score=ge:80` |
+| `lt` | Less than | `filter=attributes=count=lt:10` |
+| `le` | Less than or equal | `filter=attributes=age=le:65` |
+| `between` | Between two values | `filter=attributes=amount=between:50,200` |
+| `like` | Contains substring | `filter=attributes=name=like:john` |
+| `startswith` | Starts with | `filter=attributes=email=startswith:test` |
+| `endswith` | Ends with | `filter=attributes=email=endswith:.com` |
+| `in` | Value in list | `filter=attributes=status=in:active,pending` |
+| `nin` | Value not in list | `filter=attributes=type=nin:test,debug` |
 
 ### Practical Examples
 
@@ -335,29 +335,29 @@ The filtering uses the format: `filter={field}={operator}:{value}`
 
 ```bash
 # Find all active orders
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:active"
 
 # Find high-value transactions
-curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=amount=gt:1000"
+curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=attributes=amount=gt:1000"
 
 # Find recent orders (assuming timestamp field)
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=createdDate=ge:2024-01-01"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=createdDate=ge:2024-01-01"
 
 # Search by customer email domain
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=email=endswith:@company.com"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=attributes=email=endswith:@company.com"
 ```
 
 #### Multiple Filter Examples
 
 ```bash
 # Combine multiple filters (AND logic)
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:pending&filter=priority=eq:high"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:pending&filter=attributes=priority=eq:high"
 
 # Find orders within price range
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=totalAmount=between:100,500"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=totalAmount=between:100,500"
 
 # Find specific customer types
-curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=customerType=in:premium,vip"
+curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=attributes=customerType=in:premium,vip"
 ```
 
 ### Sample Instance Data
@@ -380,19 +380,19 @@ When working with workflow instances, you might have JSON data like:
 
 ```bash
 # Test basic equality filter
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122" \
   -H "Content-Type: application/json"
 
 # Test numeric comparison
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=gt:100" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100" \
   -H "Content-Type: application/json"
 
 # Test string operations
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=email=endswith:.com" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com" \
   -H "Content-Type: application/json"
 
 # Test multiple filters
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=eq:high" \
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high" \
   -H "Content-Type: application/json"
 ```
 
@@ -400,10 +400,10 @@ curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filt
 
 ```bash
 # Filter with pagination
-curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active&page=1&pageSize=10"
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=attributes=status=eq:active&page=1&pageSize=10"
 
 # Large dataset filtering with pagination
-curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=eventType=eq:purchase&page=1&pageSize=50"
+curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=attributes=eventType=eq:purchase&page=1&pageSize=50"
 ```
 
 ### Response Format
@@ -450,23 +450,23 @@ You can create an `.http` file for testing filtering capabilities:
 
 ```http
 ### Test basic equality filter
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122
 Content-Type: application/json
 
 ### Test numeric comparison  
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=testValue=gt:2
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2
 Content-Type: application/json
 
 ### Test string operations
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=startswith:act
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act
 Content-Type: application/json
 
 ### Test multiple filters
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=ne:low
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low
 Content-Type: application/json
 
 ### Test range filtering
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=between:100,500
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500
 Content-Type: application/json
 ```
 
