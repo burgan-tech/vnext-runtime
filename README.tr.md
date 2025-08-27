@@ -299,13 +299,13 @@ HTTP isteklerinizde query parametreleri kullanarak instance'ları filtreleyin:
 
 ```bash
 # clientId "122" ye eşit olan instance'ları bul
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122"
 
 # testValue 2'den büyük olan instance'ları bul
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2"
 
 # status "completed" olmayan instance'ları bul
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed"
 ```
 
 ### Filtre Syntax'ı
@@ -380,20 +380,16 @@ Workflow instance'ları ile çalışırken şuna benzer JSON verileriniz olabili
 
 ```bash
 # Temel eşitlik filtresini test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122"
 
 # Sayısal karşılaştırmayı test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100"
 
 # String operasyonlarını test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com"
 
 # Çoklu filtreleri test et
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high"
 ```
 
 ### Filtreler ile Sayfalama
@@ -444,30 +440,25 @@ Filtrelenmiş sonuçlar standart formatta döner:
 4. **Kullanıcı Analitiği**: Kullanıcıları kayıt tarihi veya aktiviteye göre filtreleme
 5. **Hata Takibi**: Hata durumundaki instance'ları bulma
 
-### Test için HTTP Örnekleri
+### Test için cURL Örnekleri
 
-Filtreleme yeteneklerini test etmek için bir `.http` dosyası oluşturabilirsiniz:
+Filtreleme yeteneklerini test etmek için bu cURL komutlarını kullanabilirsiniz:
 
-```http
-### Temel eşitlik filtresini test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122
-Content-Type: application/json
+```bash
+# Temel eşitlik filtresini test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122"
 
-### Sayısal karşılaştırmayı test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2
-Content-Type: application/json
+# Sayısal karşılaştırmayı test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2"
 
-### String operasyonlarını test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act
-Content-Type: application/json
+# String operasyonlarını test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act"
 
-### Çoklu filtreleri test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low
-Content-Type: application/json
+# Çoklu filtreleri test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low"
 
-### Aralık filtrelemesini test et
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500
-Content-Type: application/json
+# Aralık filtrelemesini test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500"
 ```
 
 Bu filtreleme sistemi, production iş yüklerine optimize edilmiş yüksek performanslı sorgulama yetenekleri sağlar ve iş verilerine dayalı spesifik workflow instance'larını bulmayı kolaylaştırır.

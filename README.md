@@ -299,13 +299,13 @@ Filter instances using query parameters in your HTTP requests:
 
 ```bash
 # Find instances where clientId equals "122"
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=clientId=eq:122"
 
 # Find instances where testValue is greater than 2
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=testValue=gt:2"
 
 # Find instances where status is not "completed"
-GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed
+curl -X GET "http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=attributes=status=ne:completed"
 ```
 
 ### Filter Syntax
@@ -380,20 +380,16 @@ When working with workflow instances, you might have JSON data like:
 
 ```bash
 # Test basic equality filter
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122"
 
 # Test numeric comparison
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=gt:100"
 
 # Test string operations
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=email=endswith:.com"
 
 # Test multiple filters
-curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high" \
-  -H "Content-Type: application/json"
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=eq:high"
 ```
 
 ### Pagination with Filters
@@ -444,30 +440,25 @@ Filtered results return in the standard format:
 4. **User Analytics**: Filter users by registration date or activity
 5. **Error Monitoring**: Find instances with error status
 
-### HTTP Examples for Testing
+### cURL Examples for Testing
 
-You can create an `.http` file for testing filtering capabilities:
+You can use these cURL commands for testing filtering capabilities:
 
-```http
-### Test basic equality filter
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122
-Content-Type: application/json
+```bash
+# Test basic equality filter
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=clientId=eq:122"
 
-### Test numeric comparison  
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2
-Content-Type: application/json
+# Test numeric comparison  
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=testValue=gt:2"
 
-### Test string operations
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act
-Content-Type: application/json
+# Test string operations
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=startswith:act"
 
-### Test multiple filters
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low
-Content-Type: application/json
+# Test multiple filters
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=status=eq:active&filter=attributes=priority=ne:low"
 
-### Test range filtering
-GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500
-Content-Type: application/json
+# Test range filtering
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=attributes=amount=between:100,500"
 ```
 
 This filtering system provides high-performance querying capabilities optimized for production workloads, making it easy to find specific workflow instances based on their business data.
