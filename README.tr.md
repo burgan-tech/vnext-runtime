@@ -289,6 +289,189 @@ VNext Runtime sisteminin tüm yeteneklerini gösteren kapsamlı bir e-ticaret wo
 
 Bu örnek, VNext Runtime kullanarak karmaşık iş akışlarının nasıl implement edileceğini anlamak için pratik bir başlangıç noktası sağlar.
 
+## Instance Filtreleme
+
+VNext Runtime, workflow instance'larını JSON attribute'larına göre sorgulama için güçlü filtreleme yetenekleri sağlar. Bu özellik, basit API çağrıları ile çeşitli operatörler kullanarak instance'ları arama ve filtreleme yapmanıza olanak tanır.
+
+### Temel Kullanım
+
+HTTP isteklerinizde query parametreleri kullanarak instance'ları filtreleyin:
+
+```bash
+# clientId "122" ye eşit olan instance'ları bul
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=clientId=eq:122
+
+# testValue 2'den büyük olan instance'ları bul
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=testValue=gt:2
+
+# status "completed" olmayan instance'ları bul
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=status=ne:completed
+```
+
+### Filtre Syntax'ı
+
+Filtreleme şu formatı kullanır: `filter={field}={operator}:{value}`
+
+#### Kullanılabilir Operatörler
+
+| Operatör | Açıklama | Örnek |
+|----------|----------|-------|
+| `eq` | Eşittir | `filter=clientId=eq:122` |
+| `ne` | Eşit değildir | `filter=status=ne:inactive` |
+| `gt` | Büyüktür | `filter=amount=gt:100` |
+| `ge` | Büyük eşittir | `filter=score=ge:80` |
+| `lt` | Küçüktür | `filter=count=lt:10` |
+| `le` | Küçük eşittir | `filter=age=le:65` |
+| `between` | İki değer arasında | `filter=amount=between:50,200` |
+| `like` | Alt string içerir | `filter=name=like:ahmet` |
+| `startswith` | İle başlar | `filter=email=startswith:test` |
+| `endswith` | İle biter | `filter=email=endswith:.com` |
+| `in` | Liste içinde | `filter=status=in:active,pending` |
+| `nin` | Liste içinde değil | `filter=type=nin:test,debug` |
+
+### Pratik Örnekler
+
+#### Tek Filtre Örnekleri
+
+```bash
+# Tüm aktif siparişleri bul
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active"
+
+# Yüksek değerli işlemleri bul
+curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=amount=gt:1000"
+
+# Son siparişleri bul (timestamp field olduğu varsayılarak)
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=createdDate=ge:2024-01-01"
+
+# Müşteri email domain'ine göre ara
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=email=endswith:@company.com"
+```
+
+#### Çoklu Filtre Örnekleri
+
+```bash
+# Birden fazla filtreyi birleştir (VE mantığı)
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:pending&filter=priority=eq:high"
+
+# Fiyat aralığında siparişleri bul
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=totalAmount=between:100,500"
+
+# Belirli müşteri tiplerini bul
+curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=customerType=in:premium,vip"
+```
+
+### Örnek Instance Verisi
+
+Workflow instance'ları ile çalışırken şuna benzer JSON verileriniz olabilir:
+
+```json
+{
+  "clientId": "122",
+  "testValue": 4,
+  "status": "active",
+  "email": "musteri@example.com",
+  "amount": 150.50,
+  "priority": "high",
+  "tags": ["vip", "premium"]
+}
+```
+
+### cURL ile Filtre Testi
+
+```bash
+# Temel eşitlik filtresini test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122" \
+  -H "Content-Type: application/json"
+
+# Sayısal karşılaştırmayı test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=gt:100" \
+  -H "Content-Type: application/json"
+
+# String operasyonlarını test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=email=endswith:.com" \
+  -H "Content-Type: application/json"
+
+# Çoklu filtreleri test et
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=eq:high" \
+  -H "Content-Type: application/json"
+```
+
+### Filtreler ile Sayfalama
+
+```bash
+# Sayfalama ile filtreleme
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active&page=1&pageSize=10"
+
+# Büyük veri setlerini sayfalama ile filtreleme
+curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=eventType=eq:purchase&page=1&pageSize=50"
+```
+
+### Response Formatı
+
+Filtrelenmiş sonuçlar standart formatta döner:
+
+```json
+{
+  "data": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "flow": "order-processing",
+      "flowVersion": "1.0.0",
+      "domain": "ecommerce",
+      "key": "ORDER-2024-001",
+      "attributes": {
+        "clientId": "122",
+        "amount": 150.50,
+        "status": "active"
+      },
+      "etag": "abc123def456"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "pageSize": 10,
+    "totalCount": 25,
+    "totalPages": 3
+  }
+}
+```
+
+### Yaygın Kullanım Senaryoları
+
+1. **Müşteri Hizmetleri**: Belirli bir müşterinin tüm siparişlerini bulma
+2. **Finansal Raporlama**: İşlemleri tutar aralıklarına göre filtreleme
+3. **Sipariş Yönetimi**: Bekleyen veya başarısız siparişleri bulma
+4. **Kullanıcı Analitiği**: Kullanıcıları kayıt tarihi veya aktiviteye göre filtreleme
+5. **Hata Takibi**: Hata durumundaki instance'ları bulma
+
+### Test için HTTP Örnekleri
+
+Filtreleme yeteneklerini test etmek için bir `.http` dosyası oluşturabilirsiniz:
+
+```http
+### Temel eşitlik filtresini test et
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122
+Content-Type: application/json
+
+### Sayısal karşılaştırmayı test et
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=testValue=gt:2
+Content-Type: application/json
+
+### String operasyonlarını test et
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=startswith:act
+Content-Type: application/json
+
+### Çoklu filtreleri test et
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=ne:low
+Content-Type: application/json
+
+### Aralık filtrelemesini test et
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=between:100,500
+Content-Type: application/json
+```
+
+Bu filtreleme sistemi, production iş yüklerine optimize edilmiş yüksek performanslı sorgulama yetenekleri sağlar ve iş verilerine dayalı spesifik workflow instance'larını bulmayı kolaylaştırır.
+
 ## Makefile Komutları
 
 Proje kök dizininde bulunan Makefile, development sürecini kolaylaştıran birçok komut içerir. Tüm komutları görmek için:

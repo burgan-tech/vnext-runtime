@@ -289,6 +289,189 @@ We provide a complete e-commerce workflow example that demonstrates the full cap
 
 This example provides a practical starting point for understanding how to implement complex business workflows using VNext Runtime.
 
+## Instance Filtering
+
+VNext Runtime provides powerful filtering capabilities for querying workflow instances based on their JSON attributes. This feature allows you to search and filter instances using various operators through simple API calls.
+
+### Basic Usage
+
+Filter instances using query parameters in your HTTP requests:
+
+```bash
+# Find instances where clientId equals "122"
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=clientId=eq:122
+
+# Find instances where testValue is greater than 2
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=testValue=gt:2
+
+# Find instances where status is not "completed"
+GET http://localhost:4201/api/v1.0/{domain}/workflows/{workflow}/instances?filter=status=ne:completed
+```
+
+### Filter Syntax
+
+The filtering uses the format: `filter={field}={operator}:{value}`
+
+#### Available Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `eq` | Equal to | `filter=clientId=eq:122` |
+| `ne` | Not equal to | `filter=status=ne:inactive` |
+| `gt` | Greater than | `filter=amount=gt:100` |
+| `ge` | Greater than or equal | `filter=score=ge:80` |
+| `lt` | Less than | `filter=count=lt:10` |
+| `le` | Less than or equal | `filter=age=le:65` |
+| `between` | Between two values | `filter=amount=between:50,200` |
+| `like` | Contains substring | `filter=name=like:john` |
+| `startswith` | Starts with | `filter=email=startswith:test` |
+| `endswith` | Ends with | `filter=email=endswith:.com` |
+| `in` | Value in list | `filter=status=in:active,pending` |
+| `nin` | Value not in list | `filter=type=nin:test,debug` |
+
+### Practical Examples
+
+#### Single Filter Examples
+
+```bash
+# Find all active orders
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active"
+
+# Find high-value transactions
+curl "http://localhost:4201/api/v1.0/finance/workflows/payment/instances?filter=amount=gt:1000"
+
+# Find recent orders (assuming timestamp field)
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=createdDate=ge:2024-01-01"
+
+# Search by customer email domain
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/customer/instances?filter=email=endswith:@company.com"
+```
+
+#### Multiple Filter Examples
+
+```bash
+# Combine multiple filters (AND logic)
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:pending&filter=priority=eq:high"
+
+# Find orders within price range
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=totalAmount=between:100,500"
+
+# Find specific customer types
+curl "http://localhost:4201/api/v1.0/crm/workflows/customer/instances?filter=customerType=in:premium,vip"
+```
+
+### Sample Instance Data
+
+When working with workflow instances, you might have JSON data like:
+
+```json
+{
+  "clientId": "122",
+  "testValue": 4,
+  "status": "active",
+  "email": "customer@example.com",
+  "amount": 150.50,
+  "priority": "high",
+  "tags": ["vip", "premium"]
+}
+```
+
+### Filter Testing with cURL
+
+```bash
+# Test basic equality filter
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122" \
+  -H "Content-Type: application/json"
+
+# Test numeric comparison
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=gt:100" \
+  -H "Content-Type: application/json"
+
+# Test string operations
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=email=endswith:.com" \
+  -H "Content-Type: application/json"
+
+# Test multiple filters
+curl -X GET "http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=eq:high" \
+  -H "Content-Type: application/json"
+```
+
+### Pagination with Filters
+
+```bash
+# Filter with pagination
+curl "http://localhost:4201/api/v1.0/ecommerce/workflows/order-processing/instances?filter=status=eq:active&page=1&pageSize=10"
+
+# Large dataset filtering with pagination
+curl "http://localhost:4201/api/v1.0/analytics/workflows/events/instances?filter=eventType=eq:purchase&page=1&pageSize=50"
+```
+
+### Response Format
+
+Filtered results return in the standard format:
+
+```json
+{
+  "data": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "flow": "order-processing",
+      "flowVersion": "1.0.0",
+      "domain": "ecommerce",
+      "key": "ORDER-2024-001",
+      "attributes": {
+        "clientId": "122",
+        "amount": 150.50,
+        "status": "active"
+      },
+      "etag": "abc123def456"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "pageSize": 10,
+    "totalCount": 25,
+    "totalPages": 3
+  }
+}
+```
+
+### Common Use Cases
+
+1. **Customer Service**: Find all orders for a specific customer
+2. **Financial Reporting**: Filter transactions by amount ranges
+3. **Order Management**: Find pending or failed orders
+4. **User Analytics**: Filter users by registration date or activity
+5. **Error Monitoring**: Find instances with error status
+
+### HTTP Examples for Testing
+
+You can create an `.http` file for testing filtering capabilities:
+
+```http
+### Test basic equality filter
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=clientId=eq:122
+Content-Type: application/json
+
+### Test numeric comparison  
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=testValue=gt:2
+Content-Type: application/json
+
+### Test string operations
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=startswith:act
+Content-Type: application/json
+
+### Test multiple filters
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=status=eq:active&filter=priority=ne:low
+Content-Type: application/json
+
+### Test range filtering
+GET http://localhost:4201/api/v1.0/test/workflows/sample/instances?filter=amount=between:100,500
+Content-Type: application/json
+```
+
+This filtering system provides high-performance querying capabilities optimized for production workloads, making it easy to find specific workflow instances based on their business data.
+
 ## Makefile Commands
 
 The Makefile located in the project root directory contains many commands that facilitate the development process. To see all commands:
