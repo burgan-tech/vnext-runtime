@@ -1,0 +1,26 @@
+{
+  "key": "process-payment",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "payments",
+    "processing",
+    "transaction",
+    "financial"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "http://mockoon:3001/api/payments/process",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 30,
+      "validateSsl": true
+    }
+  }
+}

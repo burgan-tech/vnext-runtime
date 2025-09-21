@@ -1,0 +1,296 @@
+{
+  "key": "push-notification-mfa-subflow",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "oauth2",
+    "mfa",
+    "push-notification",
+    "subflow",
+    "two-factor"
+  ],
+  "attributes": {
+    "type": "S",
+    "timeout": {
+      "key": "push-timeout",
+      "target": "push-expired",
+      "versionStrategy": "Minor",
+      "timer": {
+        "reset": "OnEntry",
+        "duration": "PT5M"
+      }
+    },
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Push Notification MFA Subflow"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Push Bildirimi MFA Alt Akışı"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-push-mfa",
+      "target": "send-push-notification",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start Push MFA"
+        },
+        {
+          "language": "tr-TR",
+          "label": "Push MFA Başlat"
+        }
+      ],
+      "schema": null,
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "send-push-notification",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Send Push Notification"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Push Bildirimi Gönder"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "send-push-notification",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/SendPushNotificationMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFNlbmRQdXNoTm90aWZpY2F0aW9uTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgIHZhciBwdXNoRGF0YSA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgdXNlcklkID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5hdXRoZW50aWNhdGlvbj8udXNlcklkLAogICAgICAgICAgICBkZXZpY2VJZCA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YT8uZGV2aWNlUmVnaXN0cmF0aW9uPy5kZXZpY2VJZCwKICAgICAgICAgICAgdGl0bGUgPSAiQXV0aGVudGljYXRpb24gUmVxdWVzdCIsCiAgICAgICAgICAgIG1lc3NhZ2UgPSAiQXBwcm92ZSB0aGlzIGxvZ2luIGF0dGVtcHQgZnJvbSB5b3VyIGRldmljZSIsCiAgICAgICAgICAgIGFjdGlvblR5cGUgPSAibWZhX2F1dGhlbnRpY2F0aW9uIiwKICAgICAgICAgICAgZXhwaXJlc0luID0gMTIwLCAvLyAyIG1pbnV0ZXMKICAgICAgICAgICAgbWV0YWRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcmVxdWVzdElkID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8ucmVxdWVzdElkLAogICAgICAgICAgICAgICAgY2xpZW50SWQgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmNsaWVudFZhbGlkYXRpb24/LmNsaWVudElkLAogICAgICAgICAgICAgICAgaXBBZGRyZXNzID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8uaXBBZGRyZXNzLAogICAgICAgICAgICAgICAgdXNlckFnZW50ID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8udXNlckFnZW50CiAgICAgICAgICAgIH0KICAgICAgICB9OwogICAgICAgIGh0dHBUYXNrLlNldEJvZHkocHVzaERhdGEpOwogICAgICAgIHZhciBoZWFkZXJzID0gbmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgIHsKICAgICAgICAgICAgWyJDb250ZW50LVR5cGUiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgWyJYLVJlcXVlc3QtSWQiXSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnJlcXVlc3RJZCwKICAgICAgICAgICAgWyJYLVVzZXItSWQiXSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YT8uYXV0aGVudGljYXRpb24/LnVzZXJJZCwKICAgICAgICAgICAgWyJYLURldmljZS1JZCJdID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5kZXZpY2VSZWdpc3RyYXRpb24/LmRldmljZUlkCiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRIZWFkZXJzKGhlYWRlcnMpOwogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgcmVzcG9uc2UgPSBuZXcgU2NyaXB0UmVzcG9uc2UoKTsKICAgICAgICB2YXIgc3RhdHVzQ29kZSA9IGNvbnRleHQuQm9keS5zdGF0dXNDb2RlID8/IDUwMDsKCiAgICAgICAgaWYgKHN0YXR1c0NvZGUgPT0gMjAwKQogICAgICAgIHsKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBwdXNoTm90aWZpY2F0aW9uID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc2VudCA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uSWQgPSBjb250ZXh0LkJvZHkuZGF0YT8ubm90aWZpY2F0aW9uSWQsCiAgICAgICAgICAgICAgICAgICAgZXhwaXJlc0F0ID0gY29udGV4dC5Cb2R5LmRhdGE/LmV4cGlyZXNBdCwKICAgICAgICAgICAgICAgICAgICBkZWxpdmVyeVN0YXR1cyA9IGNvbnRleHQuQm9keS5kYXRhPy5zdGF0dXMgPz8gInBlbmRpbmciCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgICAgIGVsc2UKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcHVzaE5vdGlmaWNhdGlvbiA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHNlbnQgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJGYWlsZWQgdG8gc2VuZCBwdXNoIG5vdGlmaWNhdGlvbiIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInB1c2hfc2VuZF9mYWlsZWQiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQoKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9Cn0="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "push-sent",
+            "target": "wait-for-approval",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Push Notification Sent"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Push Bildirimi Gönderildi"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PushSentRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQdXNoU2VudFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gY29udGV4dC5JbnN0YW5jZS5EYXRhLnB1c2hOb3RpZmljYXRpb24uc2VudCA9PSB0cnVlOwogICAgfQp9"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "push-send-failed",
+            "target": "push-failed",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Push Send Failed"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Push Gönderme Başarısız"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PushSendFailedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQdXNoU2VuZEZhaWxlZFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gY29udGV4dC5JbnN0YW5jZS5EYXRhLnB1c2hOb3RpZmljYXRpb24uc2VudCA9PSBmYWxzZTsKICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "wait-for-approval",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Wait for User Approval"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Kullanıcı Onayını Bekle"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "push-approved",
+            "target": "push-success",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Push Notification Approved"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Push Bildirimi Onaylandı"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": [
+              {
+                "order": 1,
+                "task": {
+                  "key": "check-push-response",
+                  "domain": "core",
+                  "version": "1.0.0",
+                  "flow": "sys-tasks"
+                },
+                "mapping": {
+                  "location": "./src/CheckPushResponseMapping.csx",
+                  "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIENoZWNrUHVzaFJlc3BvbnNlTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgIHZhciBjaGVja0RhdGEgPSBuZXcKICAgICAgICB7CiAgICAgICAgICAgIG5vdGlmaWNhdGlvbklkID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5wdXNoTm90aWZpY2F0aW9uPy5ub3RpZmljYXRpb25JZCwKICAgICAgICAgICAgdXNlcklkID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5hdXRoZW50aWNhdGlvbj8udXNlcklkLAogICAgICAgICAgICBkZXZpY2VJZCA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YT8uZGV2aWNlUmVnaXN0cmF0aW9uPy5kZXZpY2VJZAogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0Qm9keShjaGVja0RhdGEpOwogICAgICAgIHZhciBoZWFkZXJzID0gbmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgIHsKICAgICAgICAgICAgWyJDb250ZW50LVR5cGUiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgWyJYLVJlcXVlc3QtSWQiXSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnJlcXVlc3RJZCwKICAgICAgICAgICAgWyJYLVVzZXItSWQiXSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YT8uYXV0aGVudGljYXRpb24/LnVzZXJJZAogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgIH0KCiAgICBwdWJsaWMgYXN5bmMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHkuc3RhdHVzQ29kZSA/PyA1MDA7CgogICAgICAgIGlmIChzdGF0dXNDb2RlID09IDIwMCkKICAgICAgICB7CiAgICAgICAgICAgIHZhciByZXNwb25zZVN0YXR1cyA9IGNvbnRleHQuQm9keS5kYXRhPy5zdGF0dXM7CiAgICAgICAgICAgIGlmIChyZXNwb25zZVN0YXR1cyA9PSAiYXBwcm92ZWQiKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgbWZhID0gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICAgICAgcHVzaEFwcHJvdmVkID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gInB1c2giLAogICAgICAgICAgICAgICAgICAgICAgICBhcHByb3ZlZEF0ID0gY29udGV4dC5Cb2R5LmRhdGE/LnJlc3BvbmRlZEF0CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQogICAgICAgICAgICBlbHNlIGlmIChyZXNwb25zZVN0YXR1cyA9PSAiZGVuaWVkIikKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIG1mYSA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJBdXRoZW50aWNhdGlvbiByZXF1ZXN0IGRlbmllZCBieSB1c2VyIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gImFjY2Vzc19kZW5pZWQiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQogICAgICAgICAgICBlbHNlCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIC8vIFN0aWxsIHBlbmRpbmcsIGNvbnRpbnVlIHdhaXRpbmcKICAgICAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBtZmEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwgLy8gU3RpbGwgcGVuZGluZwogICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMgPSAicGVuZGluZyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgICAgIGVsc2UKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgbWZhID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInNlcnZlcl9lcnJvciIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQ=="
+                }
+              }
+            ]
+          },
+          {
+            "key": "push-denied",
+            "target": "push-failed",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Push Notification Denied"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Push Bildirimi Reddedildi"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": [
+              {
+                "order": 1,
+                "task": {
+                  "key": "check-push-denied-response",
+                  "domain": "core",
+                  "version": "1.0.0",
+                  "flow": "sys-tasks"
+                },
+                "mapping": {
+                  "location": "./src/CheckPushDeniedResponseMapping.csx",
+                  "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIENoZWNrUHVzaERlbmllZFJlc3BvbnNlTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgIH0KCiAgICBwdWJsaWMgYXN5bmMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CiAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIG1mYSA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgICAgICBwdXNoQXBwcm92ZWQgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gInB1c2giLAogICAgICAgICAgICAgICAgICAgICAgICBhcHByb3ZlZEF0ID0gRGF0ZVRpbWUuVXRjTm93CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfTsKCiAgICAgICAgcmV0dXJuIHJlc3BvbnNlOwogICAgfQp9"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "push-success",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Push MFA Success"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Push MFA Başarılı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "push-failed",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Push MFA Failed"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Push MFA Başarısız"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "push-expired",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Push Notification Expired"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Push Bildirimi Süresi Doldu"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}

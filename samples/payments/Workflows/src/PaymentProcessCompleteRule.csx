@@ -1,0 +1,46 @@
+using System.Threading.Tasks;
+using BBT.Workflow.Scripting;
+
+public class PaymentProcessCompleteRule : IConditionMapping
+{
+    public async Task<bool> Handler(ScriptContext context)
+    {
+        try
+        {
+            // Check if payment was successful
+            var paymentResult = context.Instance?.Data?.paymentResult;
+            if (paymentResult == null || paymentResult.success != true)
+                return false;
+
+            // Check if more payments are remaining
+            var paymentSchedule = context.Instance?.Data?.paymentSchedule;
+            if (paymentSchedule == null)
+                return false;
+
+            // Check if maximum payment count is reached
+            var maxPayments = paymentSchedule.maxPayments;
+            var completedPayments = paymentSchedule.completedPayments ?? 0;
+
+            // If maxPayments is null, continue indefinitely (until endDate)
+            if (maxPayments != null && completedPayments >= maxPayments)
+                return false;
+
+            // Check if end date is reached
+            if (context.Instance?.Data?.endDate != null)
+            {
+                if (DateTime.TryParse(context.Instance.Data.endDate.ToString(), out DateTime endDate))
+                {
+                    if (DateTime.UtcNow >= endDate)
+                        return false;
+                }
+            }
+
+            // If all checks pass, continue to next payment cycle
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+}

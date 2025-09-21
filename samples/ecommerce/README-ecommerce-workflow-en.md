@@ -22,7 +22,7 @@ This workflow simulates a complete e-commerce experience and includes the follow
 
 ### State Diagram
 
-![Shopping State Diagram](../../../doc/img/shopping-state-diagram.png)
+![Shopping State Diagram](../../doc/img/shopping-state-diagram.png)
 
 ### Workflow States & Flow
 

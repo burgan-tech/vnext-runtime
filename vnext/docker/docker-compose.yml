@@ -2,7 +2,8 @@ services:
 
   vnext-app:
     container_name: vnext-app
-    image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
+    #image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
+    image: "vnext-orchestration:latest"
     env_file:
       - .env.orchestration
     healthcheck:
@@ -30,6 +31,7 @@ services:
         VNEXT_CORE_RUNTIME_VERSION: "${VNEXT_CORE_RUNTIME_VERSION:-latest}"
     environment:
       VNEXT_APP_URL: "http://vnext-app:5000"
+      APP_DOMAIN: "${APP_DOMAIN:-core}"
     volumes:
       # Custom components volume - users can mount their components here
       - "${CUSTOM_COMPONENTS_PATH:-./custom-components}:/app/custom-components"
@@ -42,7 +44,8 @@ services:
       
   vnext-execution-app:
     container_name: vnext-execution-app
-    image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
+    #image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
+    image: "vnext-execution:latest"
     env_file:
       - .env.execution
     healthcheck:
@@ -310,6 +313,24 @@ services:
       - prometheus
     restart: unless-stopped
 
+  # Mockoon API Mock Server
+  mockoon:
+    image: mockoon/cli:latest
+    container_name: migration-mockoon
+    command: ["--data", "/data/migration-api.json", "--port", "3001", "--hostname", "0.0.0.0"]
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./config/mockoon:/data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - vnext-development
+      
 networks:
   vnext-development:
     external: true

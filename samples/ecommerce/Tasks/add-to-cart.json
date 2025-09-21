@@ -1,0 +1,27 @@
+{
+  "key": "add-to-cart",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "ecommerce",
+    "cart",
+    "shopping",
+    "dummyjson"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "https://dummyjson.com/{CARD_ADD_OR_UPDATE_PATH}",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+      },
+      "timeoutSeconds": 30,
+      "validateSsl": false
+    }
+  }
+}

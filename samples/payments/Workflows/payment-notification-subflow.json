@@ -1,0 +1,205 @@
+{
+  "key": "payment-notification-subflow",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "payments",
+    "notification",
+    "sms",
+    "push",
+    "subflow"
+  ],
+  "attributes": {
+    "type": "P",
+    "timeout": null,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Payment Notification Subflow"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Ödeme Bildirim Alt Akışı"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-notification",
+      "target": "get-user-info",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start Notification Process"
+        },
+        {
+          "language": "tr-TR",
+          "label": "Bildirim Sürecini Başlat"
+        }
+      ],
+      "schema": null,
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "get-user-info",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Get User Information"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Kullanıcı Bilgilerini Al"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "get-user-info",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/GetUserInfoMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIEdldFVzZXJJbmZvTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICAgICAgdGhyb3cgbmV3IEludmFsaWRPcGVyYXRpb25FeGNlcHRpb24oIlRhc2sgbXVzdCBiZSBhbiBIdHRwVGFzayIpOwoKICAgICAgICAgICAgdmFyIHVzZXJJZCA9IGNvbnRleHQuQm9keT8udXNlcklkOwoKICAgICAgICAgICAgLy8gVXBkYXRlIFVSTCB3aXRoIHVzZXJJZAogICAgICAgICAgICBodHRwVGFzay5TZXRVcmwoaHR0cFRhc2suVXJsLlJlcGxhY2UoInt1c2VySWR9IiwgdXNlcklkPy5Ub1N0cmluZygpID8/ICIiKSk7CgogICAgICAgICAgICAvLyBTZXQgSGVhZGVycwogICAgICAgICAgICB2YXIgaGVhZGVycyA9IG5ldyBEaWN0aW9uYXJ5PHN0cmluZywgc3RyaW5nPz4KICAgICAgICAgICAgewogICAgICAgICAgICAgICAgWyJDb250ZW50LVR5cGUiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgICAgIFsiQWNjZXB0Il0gPSAiYXBwbGljYXRpb24vanNvbiIsCiAgICAgICAgICAgICAgICBbIlgtUmVxdWVzdC1JZCJdID0gR3VpZC5OZXdHdWlkKCkuVG9TdHJpbmcoKQogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgS2V5ID0gInVzZXItaW5mby1lcnJvciIsCiAgICAgICAgICAgICAgICBEYXRhID0gbmV3IHsgZXJyb3IgPSBleC5NZXNzYWdlIH0KICAgICAgICAgICAgfSk7CiAgICAgICAgfQogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5Py5zdGF0dXNDb2RlID8/IDUwMDsKICAgICAgICAgICAgdmFyIHJlc3BvbnNlRGF0YSA9IGNvbnRleHQuQm9keT8uZGF0YTsKCiAgICAgICAgICAgIGlmIChzdGF0dXNDb2RlID49IDIwMCAmJiBzdGF0dXNDb2RlIDwgMzAwKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICByZXR1cm4gbmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgS2V5ID0gInVzZXItaW5mby1zdWNjZXNzIiwKICAgICAgICAgICAgICAgICAgICBEYXRhID0gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICB1c2VyID0gcmVzcG9uc2VEYXRhLAogICAgICAgICAgICAgICAgICAgICAgICBwaG9uZU51bWJlciA9IHJlc3BvbnNlRGF0YT8ucGhvbmVOdW1iZXIsCiAgICAgICAgICAgICAgICAgICAgICAgIGhhc1JlZ2lzdGVyZWREZXZpY2VzID0gKChvYmplY3RbXSlyZXNwb25zZURhdGE/LnJlZ2lzdGVyZWREZXZpY2VzKS5MZW5ndGggPiAwLAogICAgICAgICAgICAgICAgICAgICAgICBsYW5ndWFnZSA9IHJlc3BvbnNlRGF0YT8ubGFuZ3VhZ2UgPz8gInRyLVRSIgogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgInVzZXJzIiwgImxvb2t1cCIsICJzdWNjZXNzIiB9CiAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJ1c2VyLWluZm8tZmFpbHVyZSIsCiAgICAgICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3IgPSAiRmFpbGVkIHRvIGdldCB1c2VyIGluZm9ybWF0aW9uIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInVzZXJfaW5mb19mYWlsZWQiLAogICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXNDb2RlID0gc3RhdHVzQ29kZSwKICAgICAgICAgICAgICAgICAgICAgICAgaGFzUmVnaXN0ZXJlZERldmljZXMgPSBmYWxzZQogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgInVzZXJzIiwgImxvb2t1cCIsICJmYWlsdXJlIiB9CiAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24gZXgpCiAgICAgICAgewogICAgICAgICAgICByZXR1cm4gbmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIEtleSA9ICJ1c2VyLWluZm8tZXhjZXB0aW9uIiwKICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJJbnRlcm5hbCBwcm9jZXNzaW5nIGVycm9yIiwKICAgICAgICAgICAgICAgICAgICBlcnJvckNvZGUgPSAicHJvY2Vzc2luZ19lcnJvciIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JEZXNjcmlwdGlvbiA9IGV4Lk1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgaGFzUmVnaXN0ZXJlZERldmljZXMgPSBmYWxzZQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJ1c2VycyIsICJsb29rdXAiLCAiZXJyb3IiIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICB9Cn0K"
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "user-info-retrieved",
+            "target": "send-notifications",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - User Info Retrieved"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Kullanıcı Bilgisi Alındı"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/UserInfoRetrievedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBVc2VySW5mb1JldHJpZXZlZFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBBbHdheXMgY29udGludWUgdG8gc2VuZCBub3RpZmljYXRpb25zLCBldmVuIGlmIHVzZXIgaW5mbyBmYWlsZWQKICAgICAgICByZXR1cm4gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8udXNlciAhPSBudWxsOwogICAgfQp9Cg=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "send-notifications",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Send Notifications (SMS + Push)"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Bildirimler Gönder (SMS + Push)"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "send-payment-notification-sms",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/SendPaymentNotificationSmsMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKLy8vIDxzdW1tYXJ5PgovLy8gU2VuZCBQYXltZW50IE5vdGlmaWNhdGlvbiBTTVMgTWFwcGluZyAtIFByZXBhcmVzIFNNUyBub3RpZmljYXRpb24gZGF0YQovLy8gPC9zdW1tYXJ5PgpwdWJsaWMgY2xhc3MgU2VuZFBheW1lbnROb3RpZmljYXRpb25TbXNNYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgdmFyIGh0dHBUYXNrID0gdGFzayBhcyBIdHRwVGFzazsKICAgICAgICAgICAgaWYgKGh0dHBUYXNrID09IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHRocm93IG5ldyBJbnZhbGlkT3BlcmF0aW9uRXhjZXB0aW9uKCJUYXNrIG11c3QgYmUgYW4gSHR0cFRhc2sgZm9yIFNNUyBub3RpZmljYXRpb24iKTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gR2V0IHBheW1lbnQgcmVzdWx0IGZyb20gY29udGV4dAogICAgICAgICAgICB2YXIgcGF5bWVudFJlc3VsdCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRSZXN1bHQ7CiAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50U2NoZWR1bGU7CiAgICAgICAgICAgIHZhciB1c2VySWQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy51c2VySWQ7CgogICAgICAgICAgICAvLyBEZXRlcm1pbmUgbWVzc2FnZSBiYXNlZCBvbiBwYXltZW50IHN0YXR1cwogICAgICAgICAgICB2YXIgbWVzc2FnZSA9ICIiOwogICAgICAgICAgICB2YXIgbGFuZ3VhZ2UgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5sYW5ndWFnZSA/PyAidHItVFIiOwoKICAgICAgICAgICAgaWYgKHBheW1lbnRSZXN1bHQ/LnN1Y2Nlc3MgPT0gdHJ1ZSkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgaWYgKGxhbmd1YWdlID09ICJlbi1VUyIpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgbWVzc2FnZSA9ICQiUGF5bWVudCBzdWNjZXNzZnVsISBBbW91bnQ6IHtwYXltZW50UmVzdWx0Py5hbW91bnR9IHtwYXltZW50UmVzdWx0Py5jdXJyZW5jeX0uIFJlZmVyZW5jZToge3BheW1lbnRSZXN1bHQ/LnRyYW5zYWN0aW9uSWR9IjsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGVsc2UKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBtZXNzYWdlID0gJCLDlmRlbWUgYmHFn2FyxLFsxLEhIE1pa3Rhcjoge3BheW1lbnRSZXN1bHQ/LmFtb3VudH0ge3BheW1lbnRSZXN1bHQ/LmN1cnJlbmN5fS4gUmVmZXJhbnM6IHtwYXltZW50UmVzdWx0Py50cmFuc2FjdGlvbklkfSI7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxzZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBpZiAobGFuZ3VhZ2UgPT0gImVuLVVTIikKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBtZXNzYWdlID0gJCJQYXltZW50IGZhaWxlZC4gUmVhc29uOiB7cGF5bWVudFJlc3VsdD8uZXJyb3JNZXNzYWdlID8/ICJVbmtub3duIGVycm9yIn0uIFBsZWFzZSBjaGVjayB5b3VyIHBheW1lbnQgZGV0YWlscy4iOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZWxzZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIG1lc3NhZ2UgPSAkIsOWZGVtZSBiYcWfYXLEsXPEsXouIE5lZGVuOiB7cGF5bWVudFJlc3VsdD8uZXJyb3JNZXNzYWdlID8/ICJCaWxpbm1leWVuIHNlYmVwIn0uIEzDvHRmZW4gw7ZkZW1lIGJpbGdpbGVyaW5pemkga29udHJvbCBlZGluLiI7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIC8vIFByZXBhcmUgU01TIGRhdGEKICAgICAgICAgICAgdmFyIHNtc0RhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdG8gPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5waG9uZU51bWJlciA/PyAiW1Bob25lIE5vdCBGb3VuZF0iLCAvLyBTaG91bGQgY29tZSBmcm9tIHVzZXIgZGF0YQogICAgICAgICAgICAgICAgbWVzc2FnZSA9IG1lc3NhZ2UsCiAgICAgICAgICAgICAgICB1c2VySWQgPSB1c2VySWQsCiAgICAgICAgICAgICAgICBzbXNUeXBlID0gInBheW1lbnQtbm90aWZpY2F0aW9uIiwKICAgICAgICAgICAgICAgIHRlbXBsYXRlSWQgPSAicGF5bWVudC1ub3RpZi10ZW1wbGF0ZSIsCiAgICAgICAgICAgICAgICBsYW5ndWFnZSA9IGxhbmd1YWdlLAogICAgICAgICAgICAgICAgc2VuZGVySWQgPSAiUGF5bWVudFN5c3RlbSIsCiAgICAgICAgICAgICAgICB0aW1lc3RhbXAgPSBEYXRlVGltZS5VdGNOb3cuVG9TdHJpbmcoImlzbzgiKQogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0Qm9keShzbXNEYXRhKTsKCiAgICAgICAgICAgIC8vIFNldCBIZWFkZXJzCiAgICAgICAgICAgIHZhciBoZWFkZXJzID0gbmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgICAgICAgICAgWyJBY2NlcHQiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgICAgIFsiWC1QYXltZW50LUluc3RhbmNlIl0gPSBjb250ZXh0Lkluc3RhbmNlPy5JZC5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgWyJYLVVzZXItSWQiXSA9IHVzZXJJZD8uVG9TdHJpbmcoKQogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgS2V5ID0gInNtcy1ub3RpZmljYXRpb24tZXJyb3IiLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldyB7IGVycm9yID0gZXguTWVzc2FnZSB9CiAgICAgICAgICAgIH0pOwogICAgICAgIH0KICAgIH0KCiAgICBwdWJsaWMgYXN5bmMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICB2YXIgc3RhdHVzQ29kZSA9IGNvbnRleHQuQm9keT8uc3RhdHVzQ29kZSA/PyA1MDA7CiAgICAgICAgICAgIHZhciByZXNwb25zZURhdGEgPSBjb250ZXh0LkJvZHk/LmRhdGE7CgogICAgICAgICAgICBpZiAoc3RhdHVzQ29kZSA+PSAyMDAgJiYgc3RhdHVzQ29kZSA8IDMwMCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJzbXMtbm90aWZpY2F0aW9uLXN1Y2Nlc3MiLAogICAgICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHNtc1NlbnQgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgICAgICBtZXNzYWdlSWQgPSByZXNwb25zZURhdGE/Lm1lc3NhZ2VJZCwKICAgICAgICAgICAgICAgICAgICAgICAgc2VudEF0ID0gRGF0ZVRpbWUuVXRjTm93LAogICAgICAgICAgICAgICAgICAgICAgICBzbXNTdGF0dXMgPSAic2VudCIKICAgICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJwYXltZW50cyIsICJzbXMiLCAibm90aWZpY2F0aW9uIiwgInN1Y2Nlc3MiIH0KICAgICAgICAgICAgICAgIH07CiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxzZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICByZXR1cm4gbmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgS2V5ID0gInNtcy1ub3RpZmljYXRpb24tZmFpbHVyZSIsCiAgICAgICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgc21zU2VudCA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJGYWlsZWQgdG8gc2VuZCBTTVMgbm90aWZpY2F0aW9uIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInNtc19zZW5kX2ZhaWxlZCIsCiAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1c0NvZGUgPSBzdGF0dXNDb2RlLAogICAgICAgICAgICAgICAgICAgICAgICBzbXNTdGF0dXMgPSAiZmFpbGVkIgogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgInBheW1lbnRzIiwgInNtcyIsICJub3RpZmljYXRpb24iLCAiZmFpbHVyZSIgfQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBLZXkgPSAic21zLW5vdGlmaWNhdGlvbi1leGNlcHRpb24iLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHNtc1NlbnQgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJJbnRlcm5hbCBwcm9jZXNzaW5nIGVycm9yIiwKICAgICAgICAgICAgICAgICAgICBlcnJvckNvZGUgPSAicHJvY2Vzc2luZ19lcnJvciIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JEZXNjcmlwdGlvbiA9IGV4Lk1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgc21zU3RhdHVzID0gImV4Y2VwdGlvbiIKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICBUYWdzID0gbmV3W10geyAicGF5bWVudHMiLCAic21zIiwgIm5vdGlmaWNhdGlvbiIsICJlcnJvciIgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgIH0KfQo="
+            }
+          },
+          {
+            "order": 2,
+            "task": {
+              "key": "send-payment-push-notification",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/SendPaymentPushNotificationMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFNlbmRQYXltZW50UHVzaE5vdGlmaWNhdGlvbk1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgICAgICBpZiAoaHR0cFRhc2sgPT0gbnVsbCkKICAgICAgICAgICAgICAgIHRocm93IG5ldyBJbnZhbGlkT3BlcmF0aW9uRXhjZXB0aW9uKCJUYXNrIG11c3QgYmUgYW4gSHR0cFRhc2siKTsKCiAgICAgICAgICAgIC8vIENoZWNrIGlmIHVzZXIgaGFzIHJlZ2lzdGVyZWQgZGV2aWNlcwogICAgICAgICAgICB2YXIgaGFzUmVnaXN0ZXJlZERldmljZXMgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5oYXNSZWdpc3RlcmVkRGV2aWNlcyA9PSB0cnVlOwogICAgICAgICAgICBpZiAoIWhhc1JlZ2lzdGVyZWREZXZpY2VzKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAvLyBTa2lwIHB1c2ggbm90aWZpY2F0aW9uIGlmIG5vIGRldmljZXMKICAgICAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgS2V5ID0gInB1c2gtc2tpcHBlZCIsCiAgICAgICAgICAgICAgICAgICAgRGF0YSA9IG5ldyB7IHB1c2hTZW50ID0gZmFsc2UsIHJlYXNvbiA9ICJObyByZWdpc3RlcmVkIGRldmljZXMiIH0KICAgICAgICAgICAgICAgIH0pOwogICAgICAgICAgICB9CgogICAgICAgICAgICAvLyBHZXQgZGF0YSBmcm9tIGNvbnRleHQKICAgICAgICAgICAgdmFyIHBheW1lbnRSZXN1bHQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50UmVzdWx0OwogICAgICAgICAgICB2YXIgdXNlciA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnVzZXI7CiAgICAgICAgICAgIHZhciByZWdpc3RlcmVkRGV2aWNlcyA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnJlZ2lzdGVyZWREZXZpY2VzOwogICAgICAgICAgICB2YXIgbGFuZ3VhZ2UgPSB1c2VyPy5sYW5ndWFnZSA/PyAidHItVFIiOwoKICAgICAgICAgICAgLy8gR2VuZXJhdGUgcHVzaCBtZXNzYWdlCiAgICAgICAgICAgIHZhciB0aXRsZSA9ICIiOwogICAgICAgICAgICB2YXIgYm9keSA9ICIiOwogICAgICAgICAgICBpZiAocGF5bWVudFJlc3VsdD8uc3VjY2VzcyA9PSB0cnVlKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBpZiAobGFuZ3VhZ2UgPT0gImVuLVVTIikKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICB0aXRsZSA9ICJQYXltZW50IFN1Y2Nlc3NmdWwiOwogICAgICAgICAgICAgICAgICAgIGJvZHkgPSAkIllvdXIgcGF5bWVudCBvZiB7cGF5bWVudFJlc3VsdD8uYW1vdW50fSB7cGF5bWVudFJlc3VsdD8uY3VycmVuY3l9IGhhcyBiZWVuIHByb2Nlc3NlZCBzdWNjZXNzZnVsbHkuIjsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGVsc2UKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICB0aXRsZSA9ICLDlmRlbWUgQmHFn2FyxLFsxLEiOwogICAgICAgICAgICAgICAgICAgIGJvZHkgPSAkIntwYXltZW50UmVzdWx0Py5hbW91bnR9IHtwYXltZW50UmVzdWx0Py5jdXJyZW5jeX0gw7ZkZW1lbml6IGJhxZ9hcsSxeWxhIGnFn2xlbWUgYWzEsW5kxLEuIjsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgICBlbHNlCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGlmIChsYW5ndWFnZSA9PSAiZW4tVVMiKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHRpdGxlID0gIlBheW1lbnQgRmFpbGVkIjsKICAgICAgICAgICAgICAgICAgICBib2R5ID0gIllvdXIgcGF5bWVudCBjb3VsZCBub3QgYmUgcHJvY2Vzc2VkLiBQbGVhc2UgdHJ5IGFnYWluLiI7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBlbHNlCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgdGl0bGUgPSAiw5ZkZW1lIEJhxZ9hcsSxc8SxeiI7CiAgICAgICAgICAgICAgICAgICAgYm9keSA9ICLDlmRlbWVuaXogZ2Vyw6dla2xlxZ90aXJpbGVtZWRpLiBMw7x0ZmVuIHRla3JhciBkZW5leWluLiI7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIHZhciBwdXNoRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICB0aXRsZSA9IHRpdGxlLAogICAgICAgICAgICAgICAgYm9keSA9IGJvZHksCiAgICAgICAgICAgICAgICB1c2VySWQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy51c2VySWQsCiAgICAgICAgICAgICAgICBkZXZpY2VzID0gcmVnaXN0ZXJlZERldmljZXMsCiAgICAgICAgICAgICAgICBwdXNoVHlwZSA9ICJwYXltZW50LW5vdGlmaWNhdGlvbiIsCiAgICAgICAgICAgICAgICBkYXRhID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgcGF5bWVudElkID0gcGF5bWVudFJlc3VsdD8udHJhbnNhY3Rpb25JZCwKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gcGF5bWVudFJlc3VsdD8uc3VjY2VzcwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0Qm9keShwdXNoRGF0YSk7CiAgICAgICAgICAgIGh0dHBUYXNrLlNldEhlYWRlcnMobmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iCiAgICAgICAgICAgIH0pOwoKICAgICAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKSk7CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24gZXgpCiAgICAgICAgewogICAgICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSB7IEtleSA9ICJwdXNoLWVycm9yIiwgRGF0YSA9IG5ldyB7IGVycm9yID0gZXguTWVzc2FnZSB9IH0pOwogICAgICAgIH0KICAgIH0KCiAgICBwdWJsaWMgYXN5bmMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHk/LnN0YXR1c0NvZGUgPz8gNTAwOwogICAgICAgIHJldHVybiBuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIEtleSA9IHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDAgPyAicHVzaC1zdWNjZXNzIiA6ICJwdXNoLWZhaWx1cmUiLAogICAgICAgICAgICBEYXRhID0gbmV3IHsgcHVzaFNlbnQgPSBzdGF0dXNDb2RlID49IDIwMCAmJiBzdGF0dXNDb2RlIDwgMzAwIH0KICAgICAgICB9OwogICAgfQp9Cg=="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "notifications-sent",
+            "target": "notification-complete",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - Notifications Sent"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Bildirimler Gönderildi"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/NotificationsSentRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBOb3RpZmljYXRpb25zU2VudFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBBbHdheXMgbW92ZSB0byBjb21wbGV0aW9uLCByZWdhcmRsZXNzIG9mIG5vdGlmaWNhdGlvbiByZXN1bHRzCiAgICAgICAgcmV0dXJuIHRydWU7CiAgICB9Cn0K"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "notification-complete",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Notification Process Complete"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Bildirim Süreci Tamamlandı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}

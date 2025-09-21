@@ -1,0 +1,467 @@
+{
+  "key": "scheduled-payments",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "payments",
+    "scheduled",
+    "recurring",
+    "financial",
+    "automation"
+  ],
+  "attributes": {
+    "type": "F",
+    "timeout": null,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Scheduled Payments Workflow"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Zamanlanmış Ödemeler İş Akışı"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-payment-setup",
+      "target": "payment-configuration",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start Payment Setup"
+        },
+        {
+          "language": "tr-TR",
+          "label": "Ödeme Kurulum Başlat"
+        }
+      ],
+      "schema": {
+        "key": "payment-start-validation",
+        "domain": "core",
+        "version": "1.0.0",
+        "flow": "sys-schemas"
+      },
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "payment-configuration",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Manual - Save Payment Configuration"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Manuel - Ödeme Konfigürasyonu Kaydet"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "save-payment-configuration",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/SavePaymentConfigurationMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKLy8vIDxzdW1tYXJ5PgovLy8gU2F2ZSBQYXltZW50IENvbmZpZ3VyYXRpb24gTWFwcGluZyAtIFBheW1lbnQgc2NoZWR1bGUgY29uZmlndXJhdGlvbiBzYXZpbmcKLy8vIDwvc3VtbWFyeT4KcHVibGljIGNsYXNzIFNhdmVQYXltZW50Q29uZmlndXJhdGlvbk1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgICAgICBpZiAoaHR0cFRhc2sgPT0gbnVsbCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdGhyb3cgbmV3IEludmFsaWRPcGVyYXRpb25FeGNlcHRpb24oIlRhc2sgbXVzdCBiZSBhbiBIdHRwVGFzayBmb3IgcGF5bWVudCBjb25maWd1cmF0aW9uIik7CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIC8vIFByZXBhcmUgcGF5bWVudCBjb25maWd1cmF0aW9uIGRhdGEKICAgICAgICAgICAgdmFyIHBheW1lbnRDb25maWcgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdXNlcklkID0gY29udGV4dC5Cb2R5Py51c2VySWQsCiAgICAgICAgICAgICAgICBhbW91bnQgPSBjb250ZXh0LkJvZHk/LmFtb3VudCwKICAgICAgICAgICAgICAgIGN1cnJlbmN5ID0gY29udGV4dC5Cb2R5Py5jdXJyZW5jeSA/PyAiVVNEIiwKICAgICAgICAgICAgICAgIGZyZXF1ZW5jeSA9IGNvbnRleHQuQm9keT8uZnJlcXVlbmN5ID8/ICJtb250aGx5IiwKICAgICAgICAgICAgICAgIHN0YXJ0RGF0ZSA9IGNvbnRleHQuQm9keT8uc3RhcnREYXRlLAogICAgICAgICAgICAgICAgZW5kRGF0ZSA9IGNvbnRleHQuQm9keT8uZW5kRGF0ZSwKICAgICAgICAgICAgICAgIHBheW1lbnRNZXRob2RJZCA9IGNvbnRleHQuQm9keT8ucGF5bWVudE1ldGhvZElkLAogICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gPSBjb250ZXh0LkJvZHk/LmRlc2NyaXB0aW9uLAogICAgICAgICAgICAgICAgcmVjaXBpZW50SWQgPSBjb250ZXh0LkJvZHk/LnJlY2lwaWVudElkLAogICAgICAgICAgICAgICAgaXNBdXRvUmV0cnkgPSBjb250ZXh0LkJvZHk/LmlzQXV0b1JldHJ5ID8/IHRydWUsCiAgICAgICAgICAgICAgICBtYXhSZXRyaWVzID0gY29udGV4dC5Cb2R5Py5tYXhSZXRyaWVzID8/IDMKICAgICAgICAgICAgfTsKCiAgICAgICAgICAgIGh0dHBUYXNrLlNldEJvZHkocGF5bWVudENvbmZpZyk7CgogICAgICAgICAgICAvLyBTZXQgSGVhZGVycwogICAgICAgICAgICB2YXIgaGVhZGVycyA9IG5ldyBEaWN0aW9uYXJ5PHN0cmluZywgc3RyaW5nPz4KICAgICAgICAgICAgewogICAgICAgICAgICAgICAgWyJDb250ZW50LVR5cGUiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgICAgIFsiWC1Xb3JrZmxvdy1JbnN0YW5jZSJdID0gY29udGV4dC5JbnN0YW5jZT8uSWQuVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgIFsiWC1Vc2VyLUlkIl0gPSBjb250ZXh0LkJvZHk/LnVzZXJJZD8uVG9TdHJpbmcoKQogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgS2V5ID0gInBheW1lbnQtY29uZmlnLWVycm9yIiwKICAgICAgICAgICAgICAgIERhdGEgPSBuZXcgeyBlcnJvciA9IGV4Lk1lc3NhZ2UgfQogICAgICAgICAgICB9KTsKICAgICAgICB9CiAgICB9CgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHk/LnN0YXR1c0NvZGUgPz8gNTAwOwogICAgICAgICAgICB2YXIgcmVzcG9uc2VEYXRhID0gY29udGV4dC5Cb2R5Py5kYXRhOwoKICAgICAgICAgICAgaWYgKHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDApCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBzY2hlZHVsZUlkID0gcmVzcG9uc2VEYXRhPy5zY2hlZHVsZUlkLAogICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJpbmFjdGl2ZSIsIC8vIGluaXRpYWwgc3RhdGUKICAgICAgICAgICAgICAgICAgICBuZXh0UGF5bWVudERhdGUgPSByZXNwb25zZURhdGE/Lm5leHRQYXltZW50RGF0ZSwKICAgICAgICAgICAgICAgICAgICBtYXhQYXltZW50cyA9IHJlc3BvbnNlRGF0YT8ubWF4UGF5bWVudHMsCiAgICAgICAgICAgICAgICAgICAgY3JlYXRlZEF0ID0gRGF0ZVRpbWUuVXRjTm93LAogICAgICAgICAgICAgICAgICAgIGNvbXBsZXRlZFBheW1lbnRzID0gMCwKICAgICAgICAgICAgICAgICAgICBsYXN0UGF5bWVudEF0ID0gRGF0ZVRpbWUuVXRjTm93LAogICAgICAgICAgICAgICAgICAgIGlzQWN0aXZlID0gZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgYWN0aXZhdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICAgICAgYXJjaGl2ZWQgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBmaW5pc2hlZEF0ID0gRGF0ZVRpbWUuVXRjTm93CiAgICAgICAgICAgICAgICB9OwoKICAgICAgICAgICAgICAgIHJldHVybiBuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBLZXkgPSAicGF5bWVudC1jb25maWctc3VjY2VzcyIsCiAgICAgICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgcGF5bWVudFNjaGVkdWxlID0gcGF5bWVudFNjaGVkdWxlLAogICAgICAgICAgICAgICAgICAgICAgICBwYXltZW50UmVzdWx0cyA9IG5ldyBMaXN0PGR5bmFtaWM+KCkKICAgICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJwYXltZW50cyIsICJzY2hlZHVsZSIsICJjb25maWd1cmF0aW9uIiwgInN1Y2Nlc3MiIH0KICAgICAgICAgICAgICAgIH07CiAgICAgICAgICAgIH0KICAgICAgICAgICAgZWxzZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICB2YXIgcGF5bWVudFNjaGVkdWxlID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIkZhaWxlZCB0byBzYXZlIHBheW1lbnQgY29uZmlndXJhdGlvbiIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gImNvbmZpZ19zYXZlX2ZhaWxlZCIsCiAgICAgICAgICAgICAgICAgICAgc3RhdHVzQ29kZSA9IHN0YXR1c0NvZGUKICAgICAgICAgICAgICAgIH07CgogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJwYXltZW50LWNvbmZpZy1mYWlsdXJlIiwKICAgICAgICAgICAgICAgICAgICBEYXRhID0gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICBwYXltZW50U2NoZWR1bGUgPSBwYXltZW50U2NoZWR1bGUsCiAgICAgICAgICAgICAgICAgICAgICAgIHBheW1lbnRSZXN1bHRzID0gbmV3IExpc3Q8ZHluYW1pYz4oKQogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgInBheW1lbnRzIiwgInNjaGVkdWxlIiwgImNvbmZpZ3VyYXRpb24iLCAiZmFpbHVyZSIgfQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBLZXkgPSAicGF5bWVudC1jb25maWctZXhjZXB0aW9uIiwKICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBwYXltZW50U2NoZWR1bGUgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3IgPSAiSW50ZXJuYWwgcHJvY2Vzc2luZyBlcnJvciIsCiAgICAgICAgICAgICAgICAgICAgICAgIGVycm9yQ29kZSA9ICJwcm9jZXNzaW5nX2Vycm9yIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JEZXNjcmlwdGlvbiA9IGV4Lk1lc3NhZ2UKICAgICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAgIHBheW1lbnRSZXN1bHRzID0gbmV3IExpc3Q8ZHluYW1pYz4oKQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJwYXltZW50cyIsICJzY2hlZHVsZSIsICJjb25maWd1cmF0aW9uIiwgImVycm9yIiB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgfQp9"
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "payment-config-saved",
+            "target": "payment-active",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - Payment Saved Successfully"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Ödeme Başarıyla Kaydedildi"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PaymentConfigSavedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50Q29uZmlnU2F2ZWRSdWxlIDogSUNvbmRpdGlvbk1hcHBpbmcKewogICAgcHVibGljIGFzeW5jIFRhc2s8Ym9vbD4gSGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICBpZiAoY29udGV4dD8uSW5zdGFuY2U/LkRhdGEgPT0gbnVsbCkKICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsKCiAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEucGF5bWVudFNjaGVkdWxlOwogICAgICAgICAgICBpZiAocGF5bWVudFNjaGVkdWxlID09IG51bGwpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICByZXR1cm4gcGF5bWVudFNjaGVkdWxlLnN1Y2Nlc3MgPT0gdHJ1ZTsKICAgICAgICB9CiAgICAgICAgY2F0Y2ggKEV4Y2VwdGlvbikKICAgICAgICB7CiAgICAgICAgICAgIHJldHVybiBmYWxzZTsKICAgICAgICB9CiAgICB9Cn0K"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "payment-config-failed",
+            "target": "payment-configuration",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Configuration Failed - Retry"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Konfigürasyon Başarısız - Tekrar Dene"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PaymentConfigFailedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50Q29uZmlnRmFpbGVkUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgaWYgKGNvbnRleHQ/Lkluc3RhbmNlPy5EYXRhID09IG51bGwpCiAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZTsKCiAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEucGF5bWVudFNjaGVkdWxlOwogICAgICAgICAgICBpZiAocGF5bWVudFNjaGVkdWxlID09IG51bGwpCiAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZTsKCiAgICAgICAgICAgIHJldHVybiBwYXltZW50U2NoZWR1bGUuc3VjY2VzcyA9PSBmYWxzZTsKICAgICAgICB9CiAgICAgICAgY2F0Y2ggKEV4Y2VwdGlvbikKICAgICAgICB7CiAgICAgICAgICAgIHJldHVybiB0cnVlOwogICAgICAgIH0KICAgIH0KfQo="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-active",
+        "stateType": 4,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Active"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Aktif"
+          }
+        ],
+        "view": null,
+        "subFlow": {
+          "type": "S",
+          "process": {
+            "key": "payment-process",
+            "domain": "core",
+            "version": "1.0.0",
+            "flow": "sys-flows"
+          },
+          "mapping": {
+            "location": "./src/PaymentProcessMapping.csx",
+            "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50UHJvY2Vzc01hcHBpbmcgOiBJU3ViRmxvd01hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgLy8gUGFzcyBwYXltZW50IHNjaGVkdWxlIGRhdGEgdG8gc3VicHJvY2VzcwogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gY29udGV4dC5JbnN0YW5jZS5EYXRhLAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQoKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgIHsKICAgICAgICAgICAgRGF0YSA9IGNvbnRleHQuQm9keSwKICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgInBheW1lbnRzIiwgInN1YmZsb3ciLCAiY29tcGxldGVkIiwgInBheW1lbnQtcmVzdWx0LWFkZGVkIiB9CiAgICAgICAgfSk7CiAgICB9Cn0="
+          }
+        },
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "activate-payment-schedule",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/ActivatePaymentScheduleMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIEFjdGl2YXRlUGF5bWVudFNjaGVkdWxlTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICB0aHJvdyBuZXcgSW52YWxpZE9wZXJhdGlvbkV4Y2VwdGlvbigiVGFzayBtdXN0IGJlIGFuIEh0dHBUYXNrIik7CgogICAgICAgIHZhciBhY3RpdmF0aW9uRGF0YSA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgc2NoZWR1bGVJZCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRTY2hlZHVsZT8uc2NoZWR1bGVJZCwKICAgICAgICAgICAgc3RhdHVzID0gImFjdGl2ZSIsCiAgICAgICAgICAgIGFjdGl2YXRlZEF0ID0gRGF0ZVRpbWUuVXRjTm93CiAgICAgICAgfTsKCiAgICAgICAgaHR0cFRhc2suU2V0Qm9keShhY3RpdmF0aW9uRGF0YSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgICAgICBbIlgtU2NoZWR1bGUtSWQiXSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRTY2hlZHVsZT8uc2NoZWR1bGVJZD8uVG9TdHJpbmcoKQogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKSk7CiAgICB9CgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciByZXNwb25zZSA9IG5ldyBTY3JpcHRSZXNwb25zZSgpOwogICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5Py5zdGF0dXNDb2RlID8/IDUwMDsKCiAgICAgICAgaWYgKHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDApCiAgICAgICAgewogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHBheW1lbnRTY2hlZHVsZSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJhY3RpdmUiLAogICAgICAgICAgICAgICAgICAgIGFjdGl2YXRlZEF0ID0gRGF0ZVRpbWUuVXRjTm93LAogICAgICAgICAgICAgICAgICAgIGlzQWN0aXZlID0gdHJ1ZQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHBheW1lbnRTY2hlZHVsZSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJpbmFjdGl2ZSIsCiAgICAgICAgICAgICAgICAgICAgaXNBY3RpdmUgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJGYWlsZWQgdG8gYWN0aXZhdGUgcGF5bWVudCBzY2hlZHVsZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQo="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "manual-deactivate-payment",
+            "target": "payment-deactive",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Manual - Deactivate Payment"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Manuel - Ödemeyi Deaktive Et"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "payment-process-complete",
+            "target": "payment-cycle-check",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - Payment Process Complete (Success & More Payments Remaining)"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Ödeme Süreci Tamamlandı (Başarılı & Daha Fazla Ödeme Var)"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PaymentProcessCompleteRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50UHJvY2Vzc0NvbXBsZXRlUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgLy8gQ2hlY2sgaWYgcGF5bWVudCB3YXMgc3VjY2Vzc2Z1bAogICAgICAgICAgICB2YXIgcGF5bWVudFJlc3VsdCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRSZXN1bHQ7CiAgICAgICAgICAgIGlmIChwYXltZW50UmVzdWx0ID09IG51bGwgfHwgcGF5bWVudFJlc3VsdC5zdWNjZXNzICE9IHRydWUpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICAvLyBDaGVjayBpZiBtb3JlIHBheW1lbnRzIGFyZSByZW1haW5pbmcKICAgICAgICAgICAgdmFyIHBheW1lbnRTY2hlZHVsZSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRTY2hlZHVsZTsKICAgICAgICAgICAgaWYgKHBheW1lbnRTY2hlZHVsZSA9PSBudWxsKQogICAgICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwoKICAgICAgICAgICAgLy8gQ2hlY2sgaWYgbWF4aW11bSBwYXltZW50IGNvdW50IGlzIHJlYWNoZWQKICAgICAgICAgICAgdmFyIG1heFBheW1lbnRzID0gcGF5bWVudFNjaGVkdWxlLm1heFBheW1lbnRzOwogICAgICAgICAgICB2YXIgY29tcGxldGVkUGF5bWVudHMgPSBwYXltZW50U2NoZWR1bGUuY29tcGxldGVkUGF5bWVudHMgPz8gMDsKCiAgICAgICAgICAgIC8vIElmIG1heFBheW1lbnRzIGlzIG51bGwsIGNvbnRpbnVlIGluZGVmaW5pdGVseSAodW50aWwgZW5kRGF0ZSkKICAgICAgICAgICAgaWYgKG1heFBheW1lbnRzICE9IG51bGwgJiYgY29tcGxldGVkUGF5bWVudHMgPj0gbWF4UGF5bWVudHMpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICAvLyBDaGVjayBpZiBlbmQgZGF0ZSBpcyByZWFjaGVkCiAgICAgICAgICAgIGlmIChjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5lbmREYXRlICE9IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGlmIChEYXRlVGltZS5UcnlQYXJzZShjb250ZXh0Lkluc3RhbmNlLkRhdGEuZW5kRGF0ZS5Ub1N0cmluZygpLCBvdXQgRGF0ZVRpbWUgZW5kRGF0ZSkpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgaWYgKERhdGVUaW1lLlV0Y05vdyA+PSBlbmREYXRlKQogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIC8vIElmIGFsbCBjaGVja3MgcGFzcywgY29udGludWUgdG8gbmV4dCBwYXltZW50IGN5Y2xlCiAgICAgICAgICAgIHJldHVybiB0cnVlOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uKQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwogICAgICAgIH0KICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "payments-all-complete",
+            "target": "payment-finished",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - All Payments Complete (Count/Date/Pattern Finished)"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Tüm Ödemeler Tamamlandı (Sayı/Tarih/Desen Bitti)"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PaymentsAllCompleteRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50c0FsbENvbXBsZXRlUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgdmFyIHBheW1lbnRTY2hlZHVsZSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YS5wYXltZW50U2NoZWR1bGU7CiAgICAgICAgICAgIGlmIChwYXltZW50U2NoZWR1bGUgPT0gbnVsbCkKICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsKCiAgICAgICAgICAgIC8vIENoZWNrIGlmIGVuZCBkYXRlIGlzIHJlYWNoZWQKICAgICAgICAgICAgaWYgKGNvbnRleHQuSW5zdGFuY2UuRGF0YS5lbmREYXRlICE9IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGlmIChEYXRlVGltZS5UcnlQYXJzZShjb250ZXh0Lkluc3RhbmNlLkRhdGEuZW5kRGF0ZS5Ub1N0cmluZygpLCBvdXQgRGF0ZVRpbWUgZW5kRGF0ZSkpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgaWYgKERhdGVUaW1lLlV0Y05vdyA+PSBlbmREYXRlKQogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gQ2hlY2sgaWYgbWF4aW11bSBwYXltZW50IGNvdW50IGlzIHJlYWNoZWQKICAgICAgICAgICAgdmFyIG1heFBheW1lbnRzID0gcGF5bWVudFNjaGVkdWxlLm1heFBheW1lbnRzOwogICAgICAgICAgICB2YXIgY29tcGxldGVkUGF5bWVudHMgPSBwYXltZW50U2NoZWR1bGUuY29tcGxldGVkUGF5bWVudHMgPz8gMDsKCiAgICAgICAgICAgIGlmIChtYXhQYXltZW50cyAhPSBudWxsICYmIGNvbXBsZXRlZFBheW1lbnRzID49IG1heFBheW1lbnRzKQogICAgICAgICAgICAgICAgcmV0dXJuIHRydWU7CgogICAgICAgICAgICByZXR1cm4gZmFsc2U7CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24pCiAgICAgICAgewogICAgICAgICAgICByZXR1cm4gZmFsc2U7CiAgICAgICAgfQogICAgfQp9"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-deactive",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Deactive"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Deaktif"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "deactivate-payment-schedule",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/DeactivatePaymentScheduleMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIERlYWN0aXZhdGVQYXltZW50U2NoZWR1bGVNYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgaWYgKGh0dHBUYXNrID09IG51bGwpCiAgICAgICAgICAgIHRocm93IG5ldyBJbnZhbGlkT3BlcmF0aW9uRXhjZXB0aW9uKCJUYXNrIG11c3QgYmUgYW4gSHR0cFRhc2siKTsKCiAgICAgICAgdmFyIGRlYWN0aXZhdGlvbkRhdGEgPSBuZXcKICAgICAgICB7CiAgICAgICAgICAgIHNjaGVkdWxlSWQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50U2NoZWR1bGU/LnNjaGVkdWxlSWQsCiAgICAgICAgICAgIHN0YXR1cyA9ICJkZWFjdGl2ZSIsCiAgICAgICAgICAgIGRlYWN0aXZhdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgIHJlYXNvbiA9IGNvbnRleHQuQm9keT8ucmVhc29uID8/ICJNYW51YWwgZGVhY3RpdmF0aW9uIgogICAgICAgIH07CgogICAgICAgIGh0dHBUYXNrLlNldEJvZHkoZGVhY3RpdmF0aW9uRGF0YSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgICAgICBbIlgtU2NoZWR1bGUtSWQiXSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRTY2hlZHVsZT8uc2NoZWR1bGVJZD8uVG9TdHJpbmcoKQogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKSk7CiAgICB9CgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciByZXNwb25zZSA9IG5ldyBTY3JpcHRSZXNwb25zZSgpOwogICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5Py5zdGF0dXNDb2RlID8/IDUwMDsKCiAgICAgICAgaWYgKHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDApCiAgICAgICAgewogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHBheW1lbnRTY2hlZHVsZSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJkZWFjdGl2ZSIsCiAgICAgICAgICAgICAgICAgICAgZGVhY3RpdmF0ZWRBdCA9IERhdGVUaW1lLlV0Y05vdywKICAgICAgICAgICAgICAgICAgICBpc0FjdGl2ZSA9IGZhbHNlCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgICAgIGVsc2UKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcGF5bWVudFNjaGVkdWxlID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgaXNBY3RpdmUgPSB0cnVlLCAvLyBTdGlsbCBhY3RpdmUgaWYgZmFpbGVkCiAgICAgICAgICAgICAgICAgICAgZXJyb3IgPSAiRmFpbGVkIHRvIGRlYWN0aXZhdGUgcGF5bWVudCBzY2hlZHVsZSIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQ=="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "manual-reactivate-payment",
+            "target": "payment-active",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Manual - Reactivate Payment"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Manuel - Ödemeyi Reaktive Et"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "manual-update-payment",
+            "target": "payment-configuration",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Manual - Update Payment"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Manuel - Ödemeyi Güncelle"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "manual-delete-payment",
+            "target": "payment-terminated",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Manual - Delete Payment"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Manuel - Ödemeyi Sil"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-cycle-check",
+        "stateType": 4,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Payment Cycle Check"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Ödeme Döngüsü Kontrolü"
+          }
+        ],
+        "view": null,
+        "subFlow": {
+          "type": "P",
+          "process": {
+            "key": "payment-notification-subflow",
+            "domain": "core",
+            "version": "1.0.0",
+            "flow": "sys-flows"
+          },
+          "mapping": {
+            "location": "./src/PaymentNotificationSubflowMapping.csx",
+            "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50Tm90aWZpY2F0aW9uU3ViZmxvd01hcHBpbmcgOiBJU3ViUHJvY2Vzc01hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgLy8gUGFzcyBwYXltZW50IGRhdGEgYW5kIHVzZXIgaW5mbyB0byBub3RpZmljYXRpb24gc3VicHJvY2VzcwogICAgICAgIGR5bmFtaWMgbm90aWZpY2F0aW9uRGF0YSA9IG5ldyBFeHBhbmRvT2JqZWN0KCk7CiAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5wYXltZW50UmVzdWx0ICAgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50UmVzdWx0OwogICAgICAgIG5vdGlmaWNhdGlvbkRhdGEucGF5bWVudFNjaGVkdWxlID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8ucGF5bWVudFNjaGVkdWxlOwogICAgICAgIG5vdGlmaWNhdGlvbkRhdGEudXNlcklkICAgICAgICAgID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8udXNlcklkOwogICAgICAgIG5vdGlmaWNhdGlvbkRhdGEubm90aWZpY2F0aW9uVHlwZT0gInBheW1lbnQtcmVzdWx0IjsKICAgICAgICBub3RpZmljYXRpb25EYXRhLnRpbWVzdGFtcCAgICAgICA9IERhdGVUaW1lLlV0Y05vdy5Ub1N0cmluZygibyIpOwoKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgIHsKICAgICAgICAgICAgRGF0YSA9IG5vdGlmaWNhdGlvbkRhdGEsCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9Cn0="
+          }
+        },
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "continue-payment-cycle",
+            "target": "payment-active",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - Continue Payment Cycle"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Ödeme Döngüsünü Devam Ettir"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/ContinuePaymentCycleRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBDb250aW51ZVBheW1lbnRDeWNsZVJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBBbHdheXMgY29udGludWUgdG8gbmV4dCBwYXltZW50IGN5Y2xlCiAgICAgICAgcmV0dXJuIHRydWU7CiAgICB9Cn0="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-finished",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Finished"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Tamamlandı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "archive-payment-record",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/ArchivePaymentRecordMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIEFyY2hpdmVQYXltZW50UmVjb3JkTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICB0aHJvdyBuZXcgSW52YWxpZE9wZXJhdGlvbkV4Y2VwdGlvbigiVGFzayBtdXN0IGJlIGFuIEh0dHBUYXNrIik7CgogICAgICAgIHZhciBhcmNoaXZlRGF0YSA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgc2NoZWR1bGVJZCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRTY2hlZHVsZT8uc2NoZWR1bGVJZCwKICAgICAgICAgICAgc3RhdHVzID0gImFyY2hpdmVkIiwKICAgICAgICAgICAgYXJjaGl2ZWRBdCA9IERhdGVUaW1lLlV0Y05vdywKICAgICAgICAgICAgY29tcGxldGlvblJlYXNvbiA9ICJBbGwgcGF5bWVudHMgY29tcGxldGVkIiwKICAgICAgICAgICAgZmluYWxQYXltZW50Q291bnQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50U2NoZWR1bGU/LmNvbXBsZXRlZFBheW1lbnRzCiAgICAgICAgfTsKCiAgICAgICAgaHR0cFRhc2suU2V0Qm9keShhcmNoaXZlRGF0YSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgICAgICBbIlgtU2NoZWR1bGUtSWQiXSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnBheW1lbnRTY2hlZHVsZT8uc2NoZWR1bGVJZD8uVG9TdHJpbmcoKQogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKSk7CiAgICB9CgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciByZXNwb25zZSA9IG5ldyBTY3JpcHRSZXNwb25zZSgpOwogICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5Py5zdGF0dXNDb2RlID8/IDUwMDsKCiAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgcGF5bWVudFNjaGVkdWxlID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHN0YXR1cyA9ICJmaW5pc2hlZCIsCiAgICAgICAgICAgICAgICBhcmNoaXZlZCA9IHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDAsCiAgICAgICAgICAgICAgICBmaW5pc2hlZEF0ID0gRGF0ZVRpbWUuVXRjTm93CiAgICAgICAgICAgIH0KICAgICAgICB9OwoKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9Cn0K"
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "payment-terminated",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Terminated"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Sonlandırıldı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}

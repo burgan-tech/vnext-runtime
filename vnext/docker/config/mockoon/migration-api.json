@@ -1,0 +1,1259 @@
+{
+  "uuid": "cc2c7a20-cf65-4f34-bdeb-6bbd3e3f9525",
+  "lastMigration": 33,
+  "name": "vNext - Sample Api Mock",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "localhost",
+  "folders": [
+    {
+      "uuid": "46fb060c-5347-41f5-809e-86e40337f2fa",
+      "name": "ouath2",
+      "children": [
+        {
+          "type": "route",
+          "uuid": "8ba61c4a-f251-47ef-a4a6-92398c4d66ef"
+        },
+        {
+          "type": "route",
+          "uuid": "41dbf3e6-de0a-460e-879b-614d59ff813f"
+        },
+        {
+          "type": "route",
+          "uuid": "2c335800-21d9-4ea7-bad3-e5e6ae8af460"
+        },
+        {
+          "type": "route",
+          "uuid": "95eecaa5-c860-4be1-87b7-22c96833e35e"
+        },
+        {
+          "type": "route",
+          "uuid": "8bf14db4-9693-4511-8a8c-c4129661c76b"
+        },
+        {
+          "type": "route",
+          "uuid": "8d1c1536-9e82-4cb1-9349-79852ef6131b"
+        },
+        {
+          "type": "route",
+          "uuid": "aac5c06b-6c01-4fda-a241-ebfdbf4c5045"
+        },
+        {
+          "type": "route",
+          "uuid": "ca026001-69e8-41c9-9dfc-2c59a4f7021d"
+        },
+        {
+          "type": "route",
+          "uuid": "956b0537-fa8f-4169-bf00-fbd7f43b4d4d"
+        },
+        {
+          "type": "route",
+          "uuid": "6f09aa19-7f4e-41f5-a60e-45ec17077c22"
+        }
+      ]
+    },
+    {
+      "uuid": "b3a79260-52ee-40db-b9f5-057764d77ceb",
+      "name": "payment",
+      "children": [
+        {
+          "type": "route",
+          "uuid": "0400d70c-1c06-417b-976f-9067fdde9e37"
+        },
+        {
+          "type": "route",
+          "uuid": "6fcdb524-386e-463a-982f-ad2cf770b258"
+        },
+        {
+          "type": "route",
+          "uuid": "373fb5aa-4591-443e-a08d-bcf6e01f36b3"
+        },
+        {
+          "type": "route",
+          "uuid": "11d5f117-fe6c-45c4-ae1b-cae4e6514801"
+        },
+        {
+          "type": "route",
+          "uuid": "510a89ef-42e4-4b00-b92b-ee182658f57e"
+        },
+        {
+          "type": "route",
+          "uuid": "0f592f33-c8a9-490b-8c3c-12f3193d9eb3"
+        },
+        {
+          "type": "route",
+          "uuid": "7a54e9b9-abfc-4574-b274-ccfb8ec53f15"
+        },
+        {
+          "type": "route",
+          "uuid": "207ece34-36e7-4926-b96b-d0564f6f24ed"
+        },
+        {
+          "type": "route",
+          "uuid": "26d4f313-c36c-408b-b532-67f51fe0d118"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "uuid": "5a05d227-3eb2-4253-8b26-20b6a95b66ae",
+      "type": "http",
+      "documentation": "Health check endpoint",
+      "method": "get",
+      "endpoint": "health",
+      "responses": [
+        {
+          "uuid": "2a89fdb6-4edc-4911-865a-eae2cf5c5b60",
+          "body": "{\n  \"status\": \"ok\",\n  \"timestamp\": \"{{now}}\",\n  \"service\": \"migration-api\",\n  \"version\": \"1.0.0\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Health OK",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "8ba61c4a-f251-47ef-a4a6-92398c4d66ef",
+      "type": "http",
+      "documentation": "OAuth2 Client validation - İstemci doğrulama",
+      "method": "post",
+      "endpoint": "api/oauth2/client/validate",
+      "responses": [
+        {
+          "uuid": "818941e1-e6e0-4c1b-acc0-73c5eab77e84",
+          "body": "{\n  \"success\": true,\n  \"clientId\": \"{{body 'client_id'}}\",\n  \"grantTypes\": [\"client_credentials\", \"password\", \"authorization_code\"],\n  \"redirectUris\": [\"http://localhost:3000/callback\"],\n  \"scopes\": [\"api\", \"read\", \"write\"],\n  \"isActive\": true\n}",
+          "latency": 100,
+          "statusCode": 200,
+          "label": "Client Geçerli",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "client_id",
+              "value": "",
+              "invert": true,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "9e2a036a-a8b4-4f45-bc3d-91693f57e322",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Geçersiz client credentials\",\n  \"errorCode\": \"invalid_client\"\n}",
+          "latency": 50,
+          "statusCode": 401,
+          "label": "Client Geçersiz",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "client_id",
+              "value": "",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "41dbf3e6-de0a-460e-879b-614d59ff813f",
+      "type": "http",
+      "documentation": "OAuth2 User credentials validation - Kullanıcı kimlik bilgileri doğrulama",
+      "method": "post",
+      "endpoint": "api/oauth2/user/authenticate",
+      "responses": [
+        {
+          "uuid": "219ffca1-bd0d-4a93-abbf-033b90943857",
+          "body": "{\n  \"success\": true,\n  \"userId\": \"{{faker 'string.uuid'}}\",\n  \"username\": \"{{body 'username'}}\",\n  \"email\": \"{{body 'username'}}@example.com\",\n  \"roles\": [\"user\"],\n  \"mfaRequired\": true\n}",
+          "latency": 150,
+          "statusCode": 200,
+          "label": "Kullanıcı Geçerli",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "username",
+              "value": "admin",
+              "invert": false,
+              "operator": "equals"
+            },
+            {
+              "target": "body",
+              "modifier": "password",
+              "value": "password123",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "AND",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "c6e20796-a6f8-4e89-937c-54fd85b4438f",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Geçersiz kullanıcı adı veya şifre\",\n  \"errorCode\": \"invalid_credentials\"\n}",
+          "latency": 100,
+          "statusCode": 401,
+          "label": "Kullanıcı Geçersiz",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "8bf14db4-9693-4511-8a8c-c4129661c76b",
+      "type": "http",
+      "documentation": "OAuth2 Authorization code validation - Authorization code doğrulama",
+      "method": "post",
+      "endpoint": "api/oauth2/user/validate-authorization-code",
+      "responses": [
+        {
+          "uuid": "27016b3c-e3ea-4f53-9979-762844e6067f",
+          "body": "{\n  \"success\": true,\n  \"code\": \"{{body 'code'}}\",\n  \"clientId\": \"{{body 'client_id'}}\",\n  \"userId\": \"{{faker 'string.uuid'}}\",\n  \"redirectUri\": \"{{body 'redirect_uri'}}\",\n  \"codeChallenge\": \"{{body 'code_challenge'}}\",\n  \"codeChallengeMethod\": \"{{body 'code_challenge_method'}}\",\n  \"isValid\": true,\n  \"expiresAt\": \"{{dateTimeAdd (now) 10 'minutes'}}\"\n}",
+          "latency": 100,
+          "statusCode": 200,
+          "label": "Authorization Code Geçerli",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "2c335800-21d9-4ea7-bad3-e5e6ae8af460",
+      "type": "http",
+      "documentation": "Device registration check - Cihaz kayıt durumu kontrolü",
+      "method": "get",
+      "endpoint": "api/oauth2/devices/check",
+      "responses": [
+        {
+          "uuid": "2df2b0fe-6114-406a-8536-cc7e8a34ffb7",
+          "body": "{\n  \"isRegistered\": true,\n  \"deviceId\": \"{{header 'X-Device-Id'}}\",\n  \"deviceName\": \"iPhone 15 Pro\",\n  \"deviceType\": \"mobile\",\n  \"supportsPush\": true,\n  \"registeredAt\": \"2024-09-10T01:48:20.501Z\",\n  \"lastSeenAt\": \"{{now}}\"\n}",
+          "latency": 80,
+          "statusCode": 200,
+          "label": "Cihaz Kayıtlı",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "X-Device-Id",
+              "value": "",
+              "invert": true,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "e3c46ef5-4156-49d0-8ff9-a554b5e501d5",
+          "body": "{\n  \"isRegistered\": false,\n  \"deviceId\": \"{{header 'X-Device-Id'}}\",\n  \"supportsPush\": false,\n  \"requiresRegistration\": true\n}",
+          "latency": 60,
+          "statusCode": 200,
+          "label": "Cihaz Kayıtlı Değil",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "X-Device-Id",
+              "value": "unregistered-.*",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "95eecaa5-c860-4be1-87b7-22c96833e35e",
+      "type": "http",
+      "documentation": "Send push notification for MFA - MFA için push bildirimi gönder",
+      "method": "post",
+      "endpoint": "api/oauth2/push/send",
+      "responses": [
+        {
+          "uuid": "0f3b22cd-5e87-4c72-9346-188fa9d9120d",
+          "body": "{\n  \"success\": true,\n  \"notificationId\": \"push_{{faker 'string.uuid'}}\",\n  \"deviceId\": \"{{body 'deviceId'}}\",\n  \"userId\": \"{{body 'userId'}}\",\n  \"message\": \"Giriş onayı gerekli\",\n  \"sentAt\": \"{{now}}\",\n  \"expiresAt\": \"{{dateTimeAdd (now) 5 'minutes'}}\",\n  \"status\": \"sent\"\n}",
+          "latency": 200,
+          "statusCode": 200,
+          "label": "Push Bildirimi Gönderildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "8d1c1536-9e82-4cb1-9349-79852ef6131b",
+      "type": "http",
+      "documentation": "Check push notification response - Push bildirimi yanıtını kontrol et",
+      "method": "post",
+      "endpoint": "api/oauth2/push/status",
+      "responses": [
+        {
+          "uuid": "0ab9012d-e65e-428b-a643-a045ab203693",
+          "body": "{\n  \"notificationId\": \"{{body 'notificationId'}}\",\n  \"status\": \"approved\",\n  \"respondedAt\": \"{{now}}\",\n  \"deviceId\": \"{{body 'deviceId'}}\",\n  \"action\": \"approve\",\n  \"success\": true\n}",
+          "latency": 100,
+          "statusCode": 200,
+          "label": "Push Onaylandı",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "notificationId",
+              "value": "push_.*",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "51e7f58b-e90b-4cfb-847b-1875d8156fb2",
+          "body": "{\n  \"notificationId\": \"{{body 'notificationId'}}\",\n  \"status\": \"denied\",\n  \"respondedAt\": \"{{now}}\",\n  \"deviceId\": \"{{body 'deviceId'}}\",\n  \"action\": \"deny\",\n  \"success\": false,\n  \"reason\": \"User denied the request\"\n}",
+          "latency": 80,
+          "statusCode": 200,
+          "label": "Push Reddedildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "action",
+              "value": "deny",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "aac5c06b-6c01-4fda-a241-ebfdbf4c5045",
+      "type": "http",
+      "documentation": "Send OTP notification - OTP bildirimi gönder (SMS/Email)",
+      "method": "post",
+      "endpoint": "api/oauth2/otp/send",
+      "responses": [
+        {
+          "uuid": "113f9d3f-32d8-491a-9c29-56db03240f0f",
+          "body": "{\n  \"success\": true,\n  \"otpId\": \"otp_{{faker 'string.uuid'}}\",\n  \"userId\": \"{{body 'userId'}}\",\n  \"method\": \"{{body 'method'}}\",\n  \"target\": \"{{body 'target'}}\",\n  \"maskedTarget\": \"***@***.com\",\n  \"sentAt\": \"{{now}}\",\n  \"expiresAt\": \"{{dateTimeAdd (now) 5 'minutes'}}\",\n  \"length\": 6\n}",
+          "latency": 250,
+          "statusCode": 200,
+          "label": "OTP Gönderildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "ca026001-69e8-41c9-9dfc-2c59a4f7021d",
+      "type": "http",
+      "documentation": "Verify OTP code - OTP kodu doğrula",
+      "method": "post",
+      "endpoint": "api/oauth2/otp/verify",
+      "responses": [
+        {
+          "uuid": "df8f0537-450f-4491-b825-e7d6dd39d0cc",
+          "body": "{\n  \"success\": true,\n  \"otpId\": \"{{body 'otpId'}}\",\n  \"code\": \"{{body 'code'}}\",\n  \"isValid\": true,\n  \"verifiedAt\": \"{{now}}\",\n  \"remainingAttempts\": 2\n}",
+          "latency": 100,
+          "statusCode": 200,
+          "label": "OTP Geçerli",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "code",
+              "value": "123456",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "16f286db-7997-4b14-a987-1c639ee2c9f5",
+          "body": "{\n  \"success\": false,\n  \"otpId\": \"{{body 'otpId'}}\",\n  \"code\": \"{{body 'code'}}\",\n  \"isValid\": false,\n  \"error\": \"Geçersiz OTP kodu\",\n  \"remainingAttempts\": 1\n}",
+          "latency": 80,
+          "statusCode": 400,
+          "label": "OTP Geçersiz",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "956b0537-fa8f-4169-bf00-fbd7f43b4d4d",
+      "type": "http",
+      "documentation": "Register device for MFA - MFA için cihaz kaydet",
+      "method": "post",
+      "endpoint": "api/oauth2/devices/register",
+      "responses": [
+        {
+          "uuid": "650d204a-51aa-4662-9e9a-06664ad7b059",
+          "body": "{\n  \"success\": true,\n  \"deviceId\": \"{{faker 'string.uuid'}}\",\n  \"userId\": \"{{body 'userId'}}\",\n  \"deviceName\": \"{{body 'deviceName'}}\",\n  \"deviceType\": \"{{body 'deviceType'}}\",\n  \"supportsPush\": true,\n  \"registeredAt\": \"{{now}}\",\n  \"token\": \"device_{{faker 'string.alphanumeric' 32}}\"\n}",
+          "latency": 150,
+          "statusCode": 201,
+          "label": "Cihaz Başarıyla Kaydedildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "6f09aa19-7f4e-41f5-a60e-45ec17077c22",
+      "type": "http",
+      "documentation": "Generate OAuth2 tokens - OAuth2 token'ları oluştur",
+      "method": "post",
+      "endpoint": "api/oauth2/tokens/generate",
+      "responses": [
+        {
+          "uuid": "c4a04178-0461-45ac-a6b0-238608a93fd4",
+          "body": "{\n  \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.{{faker 'string.alphanumeric' 50}}\",\n  \"refresh_token\": \"rt_{{faker 'string.alphanumeric' 32}}\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600,\n  \"scope\": \"{{body 'scope'}}\",\n  \"client_id\": \"{{body 'clientId'}}\",\n  \"user_id\": \"{{body 'userId'}}\",\n  \"device_id\": \"{{body 'deviceId'}}\",\n  \"issued_at\": \"{{now}}\",\n  \"expires_at\": \"{{dateTimeAdd (now) 1 'hours'}}\"\n}",
+          "latency": 120,
+          "statusCode": 200,
+          "label": "Token'lar Oluşturuldu",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "0400d70c-1c06-417b-976f-9067fdde9e37",
+      "type": "http",
+      "documentation": "Save Payment Configuration - Ödeme yapılandırmasını kaydet",
+      "method": "post",
+      "endpoint": "api/payments/schedules",
+      "responses": [
+        {
+          "uuid": "e884dba5-3969-4a04-8ecd-0d0e5fb0927d",
+          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{faker 'string.uuid'}}\",\n  \"userId\": \"{{body 'userId'}}\",\n  \"amount\": {{body 'amount'}},\n  \"currency\": \"{{body 'currency'}}\",\n  \"frequency\": \"{{body 'frequency'}}\",\n  \"startDate\": \"{{body 'startDate'}}\",\n  \"endDate\": \"{{body 'endDate'}}\",\n  \"paymentMethodId\": \"{{body 'paymentMethodId'}}\",\n  \"description\": \"{{body 'description'}}\",\n  \"recipientId\": \"{{body 'recipientId'}}\",\n  \"isAutoRetry\": {{body 'isAutoRetry'}},\n  \"maxRetries\": {{body 'maxRetries'}},\n  \"status\": \"inactive\",\n  \"nextPaymentDate\": \"{{dateTimeAdd (now) 1 'days'}}\",\n  \"createdAt\": \"{{now}}\",\n  \"maxPayments\": 12\n}",
+          "latency": 200,
+          "statusCode": 201,
+          "label": "Ödeme Yapılandırması Kaydedildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "dd9e529a-6371-493a-a703-9891bd1efb7c",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Geçersiz ödeme yapılandırması\",\n  \"errorCode\": \"invalid_payment_config\",\n  \"details\": \"Eksik veya geçersiz parametreler\"\n}",
+          "latency": 100,
+          "statusCode": 400,
+          "label": "Geçersiz Yapılandırma",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "userId",
+              "value": "",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "6fcdb524-386e-463a-982f-ad2cf770b258",
+      "type": "http",
+      "documentation": "Process Payment - Ödeme işle",
+      "method": "post",
+      "endpoint": "api/payments/process",
+      "responses": [
+        {
+          "uuid": "011b7be9-5d5e-4de5-92f1-3567cf7ee69f",
+          "body": "{\n  \"success\": true,\n  \"transactionId\": \"txn_{{faker 'string.uuid'}}\",\n  \"scheduleId\": \"{{body 'scheduleId'}}\",\n  \"amount\": {{body 'amount'}},\n  \"currency\": \"{{body 'currency'}}\",\n  \"paymentMethod\": \"card\",\n  \"processedAt\": \"{{now}}\",\n  \"fees\": {\n    \"amount\": {{faker 'number.float' 0.5 5.0 2}},\n    \"currency\": \"{{body 'currency'}}\"\n  },\n  \"status\": \"completed\"\n}",
+          "latency": 1500,
+          "statusCode": 200,
+          "label": "Ödeme Başarılı",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "amount",
+              "value": "0",
+              "invert": true,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "53781cfd-a6f1-4378-be6f-872ab89f8b73",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Yetersiz bakiye\",\n  \"errorCode\": \"insufficient_funds\",\n  \"amount\": {{body 'amount'}},\n  \"availableBalance\": {{faker 'number.float' 0 100 2}}\n}",
+          "latency": 800,
+          "statusCode": 402,
+          "label": "Yetersiz Bakiye",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "amount",
+              "value": "1000",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "99a674ff-c9bd-4786-bda6-186bdfd5d078",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Ödeme işleme hatası\",\n  \"errorCode\": \"payment_processing_error\",\n  \"description\": \"Ödeme sağlayıcısı geçici olarak kullanılamıyor\"\n}",
+          "latency": 5000,
+          "statusCode": 503,
+          "label": "Servis Kullanılamıyor",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "373fb5aa-4591-443e-a08d-bcf6e01f36b3",
+      "type": "http",
+      "documentation": "Activate Payment Schedule - Ödeme planını aktifleştir",
+      "method": "patch",
+      "endpoint": "api/payments/schedules/:scheduleId/activate",
+      "responses": [
+        {
+          "uuid": "688a2e3c-b375-4115-8099-9ce8a7a0188e",
+          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{urlParam 'scheduleId'}}\",\n  \"status\": \"active\",\n  \"activatedAt\": \"{{now}}\",\n  \"nextPaymentDate\": \"{{dateTimeAdd (now) 1 'days'}}\",\n  \"isActive\": true\n}",
+          "latency": 300,
+          "statusCode": 200,
+          "label": "Plan Aktifleştirildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "a077bdd7-9b8d-44d2-904a-e7f4e2550cc6",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Ödeme planı bulunamadı\",\n  \"errorCode\": \"schedule_not_found\",\n  \"scheduleId\": \"{{urlParam 'scheduleId'}}\"\n}",
+          "latency": 100,
+          "statusCode": 404,
+          "label": "Plan Bulunamadı",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "scheduleId",
+              "value": "invalid-.*",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "11d5f117-fe6c-45c4-ae1b-cae4e6514801",
+      "type": "http",
+      "documentation": "Deactivate Payment Schedule - Ödeme planını deaktifleştir",
+      "method": "patch",
+      "endpoint": "api/payments/schedules/:scheduleId/deactivate",
+      "responses": [
+        {
+          "uuid": "e0d0ab89-aafa-47d3-b08c-46f56caf0ccd",
+          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{urlParam 'scheduleId'}}\",\n  \"status\": \"deactive\",\n  \"deactivatedAt\": \"{{now}}\",\n  \"reason\": \"{{body 'reason'}}\",\n  \"isActive\": false\n}",
+          "latency": 200,
+          "statusCode": 200,
+          "label": "Plan Deaktifleştirildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "510a89ef-42e4-4b00-b92b-ee182658f57e",
+      "type": "http",
+      "documentation": "Archive Payment Record - Ödeme kaydını arşivle",
+      "method": "post",
+      "endpoint": "api/payments/schedules/:scheduleId/archive",
+      "responses": [
+        {
+          "uuid": "3de0ad5d-7435-403f-ac36-bc8a37e49dfd",
+          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{urlParam 'scheduleId'}}\",\n  \"status\": \"archived\",\n  \"archivedAt\": \"{{now}}\",\n  \"completionReason\": \"{{body 'completionReason'}}\",\n  \"finalPaymentCount\": {{body 'finalPaymentCount'}}\n}",
+          "latency": 150,
+          "statusCode": 200,
+          "label": "Kayıt Arşivlendi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "0f592f33-c8a9-490b-8c3c-12f3193d9eb3",
+      "type": "http",
+      "documentation": "Increment Retry Counter - Yeniden deneme sayacını artır",
+      "method": "patch",
+      "endpoint": "api/payments/schedules/:scheduleId/retry",
+      "responses": [
+        {
+          "uuid": "e29a1679-70fa-4683-a2c4-cedf6bf8ad98",
+          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{urlParam 'scheduleId'}}\",\n  \"retryCount\": {{body 'retryCount'}},\n  \"retryAt\": \"{{body 'retryAt'}}\",\n  \"maxRetries\": 3,\n  \"retriesRemaining\": {{subtract 3 (body 'retryCount')}}\n}",
+          "latency": 100,
+          "statusCode": 200,
+          "label": "Sayaç Güncellendi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "7a54e9b9-abfc-4574-b274-ccfb8ec53f15",
+      "type": "http",
+      "documentation": "Send Payment Notification Sms - Sms Bilgilendirme",
+      "method": "post",
+      "endpoint": "api/payments/notify/sms",
+      "responses": [
+        {
+          "uuid": "c8cb9051-5141-4d59-be65-54409f532adb",
+          "body": "{\n  \"success\": true,\n  \"sendedAt\": \"{{now}}\"\n}",
+          "latency": 200,
+          "statusCode": 201,
+          "label": "Sms Gönderildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "75c96004-c78a-4790-a7f3-928c533b57b0",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Geçersiz ödeme yapılandırması\",\n  \"errorCode\": \"invalid_payment_config\",\n  \"details\": \"Eksik veya geçersiz parametreler\"\n}",
+          "latency": 100,
+          "statusCode": 400,
+          "label": "Geçersiz Yapılandırma",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "userId",
+              "value": "",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "207ece34-36e7-4926-b96b-d0564f6f24ed",
+      "type": "http",
+      "documentation": "Send Payment Notification Push - Mobile Bilgilendirme",
+      "method": "post",
+      "endpoint": "api/payments/notify/push",
+      "responses": [
+        {
+          "uuid": "634f50b5-8c31-41d4-ade6-6f1ee8a7536a",
+          "body": "{\n  \"success\": true,\n  \"sendedAt\": \"{{now}}\"\n}",
+          "latency": 200,
+          "statusCode": 201,
+          "label": "Push Gönderildi",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "258a1313-08c6-45f4-89dd-9c3c57393510",
+          "body": "{\n  \"success\": false,\n  \"error\": \"Geçersiz ödeme yapılandırması\",\n  \"errorCode\": \"invalid_payment_config\",\n  \"details\": \"Eksik veya geçersiz parametreler\"\n}",
+          "latency": 100,
+          "statusCode": 400,
+          "label": "Geçersiz Yapılandırma",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "userId",
+              "value": "",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "26d4f313-c36c-408b-b532-67f51fe0d118",
+      "type": "http",
+      "documentation": "Get User Info - Kullanıcı Bilgisini Getir",
+      "method": "get",
+      "endpoint": "api/payments/users/:userId",
+      "responses": [
+        {
+          "uuid": "042dae89-63bc-423e-8505-f2825df4245d",
+          "body": "{\n  \"name\": \"John\",\n  \"surname\": \"Smith\",\n  \"email\": \"john.smith@example.com\",\n  \"phoneNumber\": \"905452424847\",\n  \"registeredDevices\": [{\n    \"deviceId\": \"{{faker 'string.uuid'}}\",\n    \"deviceInfo\": \"Ios 18\",\n    \"active\": true\n  }],\n  \"language\": \"tr-TR\"\n}",
+          "latency": 200,
+          "statusCode": 200,
+          "label": "Kullanıcı Bilgisi Döner",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    }
+  ],
+  "rootChildren": [
+    {
+      "type": "route",
+      "uuid": "5a05d227-3eb2-4253-8b26-20b6a95b66ae"
+    },
+    {
+      "type": "folder",
+      "uuid": "46fb060c-5347-41f5-809e-86e40337f2fa"
+    },
+    {
+      "type": "folder",
+      "uuid": "b3a79260-52ee-40db-b9f5-057764d77ceb"
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type,Origin,Accept,Authorization,Content-Length,X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "data": [],
+  "callbacks": []
+}

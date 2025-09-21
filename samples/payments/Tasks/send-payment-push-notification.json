@@ -1,0 +1,26 @@
+{
+  "key": "send-payment-push-notification",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "payments",
+    "notification",
+    "push",
+    "mobile",
+    "communication"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "method": "POST",
+      "url": "http://mockoon:3001/api/payments/notify/push",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 30,
+      "validateSsl": true
+    }
+  }
+}

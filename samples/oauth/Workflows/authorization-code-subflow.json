@@ -1,0 +1,177 @@
+{
+  "key": "authorization-code-subflow",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "oauth2",
+    "authorization-code",
+    "subflow",
+    "authentication",
+    "redirect"
+  ],
+  "attributes": {
+    "type": "S",
+    "timeout": null,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Authorization Code Grant Subflow"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Authorization Code Grant Alt Akışı"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-authorization-code",
+      "target": "validate-authorization-code",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start Authorization Code Flow"
+        },
+        {
+          "language": "tr-TR",
+          "label": "Authorization Code Akışını Başlat"
+        }
+      ],
+      "schema": null,
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "validate-authorization-code",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Validate Authorization Code"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Authorization Code Doğrulama"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "validate-authorization-code",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/ValidateAuthorizationCodeMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFZhbGlkYXRlQXV0aG9yaXphdGlvbkNvZGVNYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgdmFyIGF1dGhDb2RlRGF0YSA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgY29kZSA9IGNvbnRleHQuQm9keS5jb2RlLAogICAgICAgICAgICBjbGllbnRJZCA9IGNvbnRleHQuQm9keS5jbGllbnRfaWQsCiAgICAgICAgICAgIGNsaWVudFNlY3JldCA9IGNvbnRleHQuQm9keS5jbGllbnRfc2VjcmV0LAogICAgICAgICAgICByZWRpcmVjdFVyaSA9IGNvbnRleHQuQm9keS5yZWRpcmVjdF91cmksCiAgICAgICAgICAgIGNvZGVWZXJpZmllciA9IGNvbnRleHQuQm9keS5jb2RlX3ZlcmlmaWVyIC8vIFBLQ0UgZm9yIGVuaGFuY2VkIHNlY3VyaXR5CiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRCb2R5KGF1dGhDb2RlRGF0YSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgICAgICBbIlgtUmVxdWVzdC1JZCJdID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8ucmVxdWVzdElkLAogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgIH0KCiAgICBwdWJsaWMgYXN5bmMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHkuc3RhdHVzQ29kZSA/PyA1MDA7CgogICAgICAgIGlmIChzdGF0dXNDb2RlID09IDIwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgYXV0aGVudGljYXRpb24gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICB1c2VySWQgPSBjb250ZXh0LkJvZHkuZGF0YT8udXNlcklkLAogICAgICAgICAgICAgICAgICAgIGdyYW50VHlwZSA9ICJhdXRob3JpemF0aW9uX2NvZGUiLAogICAgICAgICAgICAgICAgICAgIHJlZGlyZWN0VXJpID0gY29udGV4dC5Cb2R5LmRhdGE/LnJlZGlyZWN0VXJpLAogICAgICAgICAgICAgICAgICAgIGNvZGVDaGFsbGVuZ2UgPSBjb250ZXh0LkJvZHkuZGF0YT8uY29kZUNoYWxsZW5nZSwKICAgICAgICAgICAgICAgICAgICBjb2RlQ2hhbGxlbmdlTWV0aG9kID0gY29udGV4dC5Cb2R5LmRhdGE/LmNvZGVDaGFsbGVuZ2VNZXRob2QsCiAgICAgICAgICAgICAgICAgICAgaXNWYWxpZGF0aW9uU3VjY2VzcyA9IGNvbnRleHQuQm9keS5kYXRhPy5pc1ZhbGlkLAogICAgICAgICAgICAgICAgICAgIGV4cGlyZXNBdCA9IGNvbnRleHQuQm9keS5kYXRhPy5leHBpcmVzQXQsCiAgICAgICAgICAgICAgICAgICAgYXV0aG9yaXphdGlvbkNvZGUgPSBjb250ZXh0LkJvZHkuZGF0YT8uY29kZQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgYXV0aGVudGljYXRpb24gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgZXJyb3IgPSAiSW52YWxpZCBhdXRob3JpemF0aW9uIGNvZGUiLAogICAgICAgICAgICAgICAgICAgIGVycm9yQ29kZSA9ICJpbnZhbGlkX2dyYW50IgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGF1dGhlbnRpY2F0aW9uID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInNlcnZlcl9lcnJvciIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQ=="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "code-valid",
+            "target": "authorization-code-success",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Authorization Code Valid"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Authorization Code Geçerli"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/AuthorizationSuccessRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRob3JpemF0aW9uU3VjY2Vzc1J1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gY29udGV4dC5JbnN0YW5jZS5EYXRhLmF1dGhlbnRpY2F0aW9uLnN1Y2Nlc3MgPT0gdHJ1ZTsKICAgIH0KfQo="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "code-invalid",
+            "target": "authorization-code-failed",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Authorization Code Invalid"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Authorization Code Geçersiz"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/AuthorizationFailedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRob3JpemF0aW9uRmFpbGVkUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEuYXV0aGVudGljYXRpb24uc3VjY2VzcyA9PSBmYWxzZTsKICAgIH0KfQo="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "authorization-code-success",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Authorization Code Success"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Authorization Code Başarılı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "authorization-code-failed",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Authorization Code Failed"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Authorization Code Başarısız"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}
