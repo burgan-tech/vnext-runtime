@@ -188,9 +188,6 @@ Represents different stages of the workflow. For detailed information: [📄 Sta
 
 ```json
 {
-  "key": "string",
-  "domain": "string", 
-  "version": "string",
   "type": "C (Core)|F (Flow)|S (SubFlow)|P (SubProcess)",
   "timeout": {
     "key": "string",
@@ -569,9 +566,6 @@ public class AutoApprovalRule : IConditionMapping
 ### Simple Approval Process
 ```json
 {
-  "key": "simple-approval",
-  "domain": "workflow",
-  "version": "1.0.0",
   "type": "F",
   "startTransition": {
     "key": "start",

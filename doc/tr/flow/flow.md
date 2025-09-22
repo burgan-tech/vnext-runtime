@@ -569,9 +569,6 @@ public class AutoApprovalRule : IConditionMapping
 ### Basit Onay Süreci
 ```json
 {
-  "key": "simple-approval",
-  "domain": "workflow",
-  "version": "1.0.0",
   "type": "F",
   "startTransition": {
     "key": "start",
