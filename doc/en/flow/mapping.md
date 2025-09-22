@@ -38,16 +38,16 @@ These are the basic interfaces used in script-based code writing for definitions
 ### Source Code References
 
 Interface definitions and model classes can be found in the following files:
-- **Main Interfaces**: [`./src/`](./src/) folder
-- **Documentation Copies**: [`src/`](src/) folder  
-- **ScriptContext and ScriptResponse**: [`../src/Models.cs`](../src/Models.cs)
+- **Main Interfaces**: [`../../src/`](../../src/) folder
+- **Documentation Copies**: [`../../src/`](../../src/) folder  
+- **ScriptContext and ScriptResponse**: [`../../src/Models.cs`](../src/Models.cs)
 
 > **Note**: The code examples in this document are for reference purposes. Please check the source files above for current definitions.
 
 ### IMapping
 General mapping interface. Used for input and output bindings of tasks.
 
-> **Source**: [`../src/IMapping.cs`](../src/IMapping.cs)
+> **Source**: [`../../src/IMapping.cs`](../../src/IMapping.cs)
 
 **Usage Areas:**
 - Input data preparation and transformation before task execution
@@ -68,7 +68,7 @@ Task<ScriptResponse> OutputHandler(ScriptContext context);
 ### ITimerMapping
 Used for schedule mapping. Special interface for timer-based workflows and scheduling operations.
 
-> **Source**: [`../src/ITimerMapping.cs`](../src/ITimerMapping.cs)
+> **Source**: [`../../src/ITimerMapping.cs`](../../src/ITimerMapping.cs)
 
 **Usage Areas:**
 - DateTime-based scheduling
@@ -88,7 +88,7 @@ Task<TimerSchedule> Handler(ScriptContext context);
 ### ISubProcessMapping
 Used for input binding for sub processes. For starting independent sub-processes.
 
-> **Source**: [`../src/ISubProcessMapping.cs`](../src/ISubProcessMapping.cs)
+> **Source**: [`../../src/ISubProcessMapping.cs`](../../src/ISubProcessMapping.cs)
 
 **Usage Areas:**
 - Background data processing
@@ -110,7 +110,7 @@ Task<ScriptResponse> InputHandler(ScriptContext context);
 ### ISubFlowMapping
 Used for input binding for sub flows and output binding to transfer data to the parent flow when completed.
 
-> **Source**: [`../src/ISubFlowMapping.cs`](../src/ISubFlowMapping.cs)
+> **Source**: [`../../src/ISubFlowMapping.cs`](../../src/ISubFlowMapping.cs)
 
 **Usage Areas:**
 - Approval workflows
@@ -134,7 +134,7 @@ Task<ScriptResponse> OutputHandler(ScriptContext context);
 ### IConditionMapping
 Used for decision parts like auto transitions. Provides condition checking in automatic transitions.
 
-> **Source**: [`../src/IConditionMapping.cs`](../src/IConditionMapping.cs)
+> **Source**: [`../../src/IConditionMapping.cs`](../../src/IConditionMapping.cs)
 
 **Usage Areas:**
 - Data validation checks
@@ -156,7 +156,7 @@ Task<bool> Handler(ScriptContext context);
 
 `ScriptContext` contains all contextual information available during script execution. This class provides workflow instance, transition information, request data, and other metadata to scripts.
 
-> **Source**: [`../src/Models.cs`](../src/Models.cs) - `ScriptContext` class (lines 112-599)
+> **Source**: [`../../src/Models.cs`](../../src/Models.cs) - `ScriptContext` class (lines 112-599)
 
 ### Basic Properties
 
@@ -232,7 +232,7 @@ var scriptTaskResult = context.TaskResponse["scriptTask"];
 
 `ScriptResponse` is the standard response model returned from mapping interfaces. It carries task audit data, instance merge data, and metadata information.
 
-> **Source**: [`../src/Models.cs`](../src/Models.cs) - `ScriptResponse` class (lines 23-63)
+> **Source**: [`../../src/Models.cs`](../../src/Models.cs) - `ScriptResponse` class (lines 23-63)
 
 ### Structure
 
