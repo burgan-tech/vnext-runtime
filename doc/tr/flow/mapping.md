@@ -38,16 +38,16 @@ Platform üzerinde tanımlara betik tabanlı kod yazımında kullanılan temel a
 ### Kaynak Kod Referansları
 
 Interface tanımları ve model sınıfları aşağıdaki dosyalarda bulunmaktadır:
-- **Ana Interface'ler**: [`./src/`](./src/) klasörü
-- **Dokümantasyon Kopyaları**: [`src/`](src/) klasörü  
-- **ScriptContext ve ScriptResponse**: [`../src/Models.cs`](../src/Models.cs)
+- **Ana Interface'ler**: [`../../src/`](../../src/) klasörü
+- **Dokümantasyon Kopyaları**: [`../../src/`](../../src/) klasörü  
+- **ScriptContext ve ScriptResponse**: [`../../src/Models.cs`](../../src/Models.cs)
 
 > **Not**: Bu dokümandaki kod örnekleri referans amaçlıdır. Güncel tanımlar için yukarıdaki kaynak dosyaları kontrol edilmelidir.
 
 ### IMapping
 Genel mapping arayüzüdür. Task'ların input ve output binding'leri için kullanılır.
 
-> **Kaynak**: [`../src/IMapping.cs`](../src/IMapping.cs)
+> **Kaynak**: [`../../src/IMapping.cs`](../../src/IMapping.cs)
 
 **Kullanım Alanları:**
 - Task execution öncesi input data hazırlama ve dönüştürme
@@ -68,7 +68,7 @@ Task<ScriptResponse> OutputHandler(ScriptContext context);
 ### ITimerMapping
 Schedule mapping için kullanılır. Timer tabanlı iş akışları ve zamanlama işlemleri için özel arayüz.
 
-> **Kaynak**: [`../src/ITimerMapping.cs`](../src/ITimerMapping.cs)
+> **Kaynak**: [`../../src/ITimerMapping.cs`](../../src/ITimerMapping.cs)
 
 **Kullanım Alanları:**
 - DateTime tabanlı zamanlama
@@ -88,7 +88,7 @@ Task<TimerSchedule> Handler(ScriptContext context);
 ### ISubProcessMapping
 Sub process için input binding'i için kullanılır. Bağımsız çalışan alt süreçlerin başlatılması için.
 
-> **Kaynak**: [`../src/ISubProcessMapping.cs`](../src/ISubProcessMapping.cs)
+> **Kaynak**: [`../../src/ISubProcessMapping.cs`](../../src/ISubProcessMapping.cs)
 
 **Kullanım Alanları:**
 - Background data processing
@@ -110,7 +110,7 @@ Task<ScriptResponse> InputHandler(ScriptContext context);
 ### ISubFlowMapping
 Sub flow için input binding'i ve tamamlandığında bir üst flow datası aktarmak için output binding için kullanılır.
 
-> **Kaynak**: [`../src/ISubFlowMapping.cs`](../src/ISubFlowMapping.cs)
+> **Kaynak**: [`../../src/ISubFlowMapping.cs`](../../src/ISubFlowMapping.cs)
 
 **Kullanım Alanları:**
 - Approval workflows
@@ -134,7 +134,7 @@ Task<ScriptResponse> OutputHandler(ScriptContext context);
 ### IConditionMapping
 Auto transition gibi karar kısımları için kullanılır. Otomatik geçişlerde koşul kontrolü sağlar.
 
-> **Kaynak**: [`../src/IConditionMapping.cs`](../src/IConditionMapping.cs)
+> **Kaynak**: [`../../src/IConditionMapping.cs`](../../src/IConditionMapping.cs)
 
 **Kullanım Alanları:**
 - Data validation checks
@@ -156,7 +156,7 @@ Task<bool> Handler(ScriptContext context);
 
 `ScriptContext`, script execution sırasında mevcut olan tüm bağlamsal bilgileri içerir. Bu sınıf, workflow instance'ı, transition bilgileri, request data'sı ve diğer metadata'yı script'lere sunar.
 
-> **Kaynak**: [`../src/Models.cs`](../src/Models.cs) - `ScriptContext` sınıfı (satır 112-599)
+> **Kaynak**: [`../../src/Models.cs`](../../src/Models.cs) - `ScriptContext` sınıfı (satır 112-599)
 
 ### Temel Özellikler
 
@@ -232,7 +232,7 @@ var scriptTaskResult = context.TaskResponse["scriptTask"];
 
 `ScriptResponse`, mapping interface'lerinden dönen standart response modelidir. Task audit data'sı, instance merge data'sı ve metadata bilgilerini taşır.
 
-> **Kaynak**: [`../src/Models.cs`](../src/Models.cs) - `ScriptResponse` sınıfı (satır 23-63)
+> **Kaynak**: [`../../src/Models.cs`](../../src/Models.cs) - `ScriptResponse` sınıfı (satır 23-63)
 
 ### Yapısı
 
