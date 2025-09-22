@@ -15,6 +15,12 @@ To run the system, you need to create the following environment files:
 # VNext Core Runtime Version
 VNEXT_CORE_VERSION=latest
 
+# Application Domain (NEW!)
+# This domain value will replace all "domain" properties in JSON files
+# Allows each developer to work with their own domain locally
+# Default: core
+APP_DOMAIN=core
+
 # Custom Components Path (optional)
 CUSTOM_COMPONENTS_PATH=./vnext/docker/custom-components
 
@@ -235,7 +241,11 @@ The `vnext-core-init` service automatically runs after the vnext-app service bec
    - Views
    - Workflows
 3. **Merges custom components** (if mounted volume is available)
-4. Sends merged components as POST requests to the `vnext-app/api/admin` endpoint
+4. **🆕 Domain Replacement**: Replaces all `"domain"` property values in JSON files with the `APP_DOMAIN` environment variable value
+   - This allows each developer to work with their own domain locally
+   - Default domain is `"core"`, but can be customized via `APP_DOMAIN=mydomain` in `.env` file
+   - Applies to both core system components and custom components
+5. Sends merged and domain-updated components as POST requests to the `vnext-app/api/admin` endpoint
 
 This way, the vnext-app application becomes ready with both system and custom components.
 
@@ -275,10 +285,10 @@ See `vnext/docker/custom-components/README.md` for detailed documentation and ex
 
 We provide a complete e-commerce workflow example that demonstrates the full capabilities of the VNext Runtime system:
 
-- **HTTP Test File**: `vnext/docker/custom-components/ecommerce-workflow.http` - Ready-to-use HTTP requests for testing
+- **HTTP Test File**: `samples/ecommerce/ecommerce-workflow.http` - Ready-to-use HTTP requests for testing
 - **Documentation**: 
-  - 🇺🇸 [English Guide](vnext/docker/custom-components/README-ecommerce-workflow-en.md)
-  - 🇹🇷 [Turkish Guide](vnext/docker/custom-components/README-ecommerce-workflow-tr.md)
+  - 🇺🇸 [English Guide](samples/ecommerce/README-ecommerce-workflow-en.md)
+  - 🇹🇷 [Turkish Guide](samples/ecommerce/README-ecommerce-workflow-tr.md)
 - **Features Demonstrated**:
   - State-based workflow management
   - Authentication flow
@@ -741,6 +751,23 @@ make health          # Health check
 make clean           # Light cleanup
 make reset           # Deep reset (if needed)
 ```
+
+## 📚 Documentation
+
+For comprehensive documentation about the VNext Runtime platform, workflows, and development guides, please refer to:
+
+- **📖 [Complete Documentation (English)](doc/en/README.md)** - Comprehensive developer guide covering platform architecture, workflow components, and detailed API references
+- **🇹🇷 [Türkçe Dokümantasyon](doc/tr/README.md)** - Platform mimarisi, iş akışı bileşenleri ve detaylı API referansları içeren kapsamlı geliştirici rehberi
+
+### Quick Documentation Links
+
+| Topic | English | Turkish |
+|-------|---------|---------|
+| **Platform Fundamentals** | [fundamentals/readme.md](doc/en/fundamentals/readme.md) | [fundamentals/readme.md](doc/tr/fundamentals/readme.md) |
+| **Workflow States** | [flow/state.md](doc/en/flow/state.md) | [flow/state.md](doc/tr/flow/state.md) |
+| **Task Types** | [flow/task.md](doc/en/flow/task.md) | [flow/task.md](doc/tr/flow/task.md) |
+| **Mapping Guide** | [flow/mapping.md](doc/en/flow/mapping.md) | [flow/mapping.md](doc/tr/flow/mapping.md) |
+| **How to Start Instance** | [how-to/start-instance.md](doc/en/how-to/start-instance.md) | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) |
 
 ## 📊 Monitoring and Metrics
 

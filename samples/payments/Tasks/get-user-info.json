@@ -1,0 +1,24 @@
+{
+  "key": "get-user-info",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "users",
+    "lookup",
+    "information",
+    "devices"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "method": "GET",
+      "url": "http://mockoon:3001/api/payments/users/{userId}",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "timeoutSeconds": 30,
+      "validateSsl": true
+    }
+  }
+}

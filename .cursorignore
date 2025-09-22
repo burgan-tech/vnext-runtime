@@ -1,0 +1,28 @@
+# vNext Runtime - Cursor Ignore Rules
+
+# Docker and deployment files - we are focusing on development so ignore these
+vnext/
+
+# Build and deployment files
+Makefile
+
+# CI/CD pipeline files
+.github/
+
+# Binary and log files
+*.log
+*.tmp
+*.cache
+
+# IDE files (VS Code workspace settings except cursor settings)
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.bak
+*.orig

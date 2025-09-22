@@ -1,0 +1,27 @@
+{
+  "key": "generate-tokens",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "oauth2",
+    "token-generation",
+    "jwt",
+    "access-token",
+    "refresh-token"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "http://mockoon:3001/api/oauth2/tokens/generate",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 5,
+      "validateSsl": true
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "key": "send-payment-notification-sms",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "payments",
+    "notification",
+    "sms",
+    "communication"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "method": "POST",
+      "url": "http://mockoon:3001/api/payments/notify/sms",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 30,
+      "validateSsl": true
+    }
+  }
+}

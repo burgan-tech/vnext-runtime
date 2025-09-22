@@ -1,0 +1,373 @@
+{
+  "key": "ecommerce",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "ecommerce",
+    "shopping",
+    "dummyjson",
+    "demo"
+  ],
+  "attributes": {
+    "type": "F",
+    "timeout": null,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "E-commerce Shopping Workflow"
+      },
+      {
+        "language": "tr-TR",
+        "label": "E-ticaret Alışveriş İş Akışı"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-shopping",
+      "target": "authentication",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start Shopping"
+        },
+        {
+          "language": "tr-TR",
+          "label": "Alışverişe Başla"
+        }
+      ],
+      "schema": null,
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "authentication",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "User Authentication"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Kullanıcı Kimlik Doğrulama"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "auth-login",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/AuthLoginMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIEF1dGhMb2dpbk1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIGh0dHBUYXNrID0gdGFzayBhcyBIdHRwVGFzazsKICAgICAgICBodHRwVGFzay5TZXRCb2R5KGNvbnRleHQuQm9keSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIlgtUmVxdWVzdC1JZCJdID0gY29udGV4dC5IZWFkZXJzWyJ4LXJlcXVlc3QtaWQiXSwKICAgICAgICAgICAgWyJYLURldmljZS1JZCJdID0gY29udGV4dC5IZWFkZXJzWyJ4LWRldmljZS1pZCJdCiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRIZWFkZXJzKGhlYWRlcnMpOwogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gY29udGV4dC5JbnN0YW5jZS5EYXRhLAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBTdG9yZSBhdXRoZW50aWNhdGlvbiB0b2tlbiBmb3IgZnV0dXJlIHJlcXVlc3RzCiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHkuc3RhdHVzQ29kZSA/PyA1MDA7CgogICAgICAgIGlmIChzdGF0dXNDb2RlID09IDIwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgbG9naW4gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBjdXJyZW50TG9naW4gPSBjb250ZXh0LkJvZHkuZGF0YQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwNCkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE5vdCBmb3VuZCAtIGhhbmRsZSBzcGVjaWZpY2FsbHkKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBsb2dpbiA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJSZXNvdXJjZSBub3QgZm91bmQiLAogICAgICAgICAgICAgICAgICAgIHNob3VsZFJldHJ5ID0gZmFsc2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gU2VydmVyIGVycm9yIC0gbWlnaHQgd2FudCB0byByZXRyeQogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGxvZ2luID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgc2hvdWxkUmV0cnkgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgIHJldHJ5QWZ0ZXIgPSAzMCAvLyBzZWNvbmRzCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQoKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9Cn0="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "auth-success",
+            "target": "product-browsing",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Authentication Successful"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Kimlik Doğrulama Başarılı"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/AuthSuccessRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRoU3VjY2Vzc1J1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gY29udGV4dC5JbnN0YW5jZS5EYXRhLmxvZ2luLnN1Y2Nlc3MgPT0gdHJ1ZTsKICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "auth-failed",
+            "target": "authentication",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Authentication Failed - Retry"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Kimlik Doğrulama Başarısız - Tekrar Dene"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/AuthFailedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRoRmFpbGVkUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEubG9naW4uc3VjY2VzcyA9PSBmYWxzZTsKICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "product-browsing",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Product Browsing"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Ürün Gezinme"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "select-product",
+            "target": "cart-management",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Select Product"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Ürün Seç"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "continue-browsing",
+            "target": "product-browsing",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Continue Browsing"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Gezinmeye Devam Et"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "cart-management",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Cart Management"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Sepet Yönetimi"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "add-to-cart",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/AddToCartMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtOwp1c2luZyBTeXN0ZW0uQ29sbGVjdGlvbnMuR2VuZXJpYzsKdXNpbmcgU3lzdGVtLkxpbnE7CnVzaW5nIFN5c3RlbS5UaHJlYWRpbmcuVGFza3M7CnVzaW5nIEJCVC5Xb3JrZmxvdy5TY3JpcHRpbmc7CnVzaW5nIEJCVC5Xb3JrZmxvdy5EZWZpbml0aW9uczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZy5GdW5jdGlvbnM7CgpwdWJsaWMgY2xhc3MgQWRkVG9DYXJ0TWFwcGluZyA6IFNjcmlwdEJhc2UsIElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICB0aHJvdyBuZXcgQXJndW1lbnRFeGNlcHRpb24oIlRhc2sgbXVzdCBiZSBvZiB0eXBlIEh0dHBUYXNrIik7CiAgICAgICAgICAgIAogICAgICAgIHZhciBoZWFkZXJzID0gbmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgIHsKICAgICAgICAgICAgWyJBdXRob3JpemF0aW9uIl0gPSAkIkJlcmVhciB7Y29udGV4dC5JbnN0YW5jZS5EYXRhPy5sb2dpbj8uY3VycmVudExvZ2luPy5hY2Nlc3NUb2tlbn0iCiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRIZWFkZXJzKGhlYWRlcnMpOwogICAgICAgIAogICAgICAgIC8vIENoZWNrIGlmIGNhcnQgYWxyZWFkeSBleGlzdHMgaW4gY29udGV4dC5JbnN0YW5jZS5EYXRhLCBpZiBub3QgY3JlYXRlIGl0CiAgICAgICAgTGlzdDxQcm9kdWN0RHRvPiBleGlzdGluZ1Byb2R1Y3RzID0gbmV3IExpc3Q8UHJvZHVjdER0bz4oKTsKICAgICAgICB2YXIgaXNBZGRkZWQgPSB0cnVlOwogICAgICAgIGlmIChIYXNQcm9wZXJ0eShjb250ZXh0Lkluc3RhbmNlLkRhdGEsICJjYXJkIikpCiAgICAgICAgewogICAgICAgICAgICB2YXIgY2FyZERhdGEgPSBHZXRQcm9wZXJ0eVZhbHVlKGNvbnRleHQuSW5zdGFuY2UuRGF0YSwgImNhcmQiKTsKICAgICAgICAgICAgaWYgKEhhc1Byb3BlcnR5KGNhcmREYXRhLCAicHJvZHVjdHMiKSkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgaXNBZGRkZWQgPSBmYWxzZTsKICAgICAgICAgICAgICAgIC8vIENvbnZlcnQgZXhpc3RpbmcgcHJvZHVjdHMgdG8gUHJvZHVjdER0byBsaXN0CiAgICAgICAgICAgICAgICB2YXIgcHJvZHVjdHNEYXRhID0gR2V0UHJvcGVydHlWYWx1ZShjYXJkRGF0YSwgInByb2R1Y3RzIik7CiAgICAgICAgICAgICAgICBpZiAocHJvZHVjdHNEYXRhIGlzIElFbnVtZXJhYmxlPGR5bmFtaWM+IHByb2R1Y3RzKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGZvcmVhY2ggKHZhciBwcm9kdWN0IGluIHByb2R1Y3RzKQogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgZXhpc3RpbmdQcm9kdWN0cy5BZGQobmV3IFByb2R1Y3REdG8oKQogICAgICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZCA9IENvbnZlcnQuVG9JbnQzMihwcm9kdWN0Py5pZCA/PyAwKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHF1YW50aXR5ID0gQ29udmVydC5Ub0ludDMyKHByb2R1Y3Q/LnF1YW50aXR5ID8/IDEpCiAgICAgICAgICAgICAgICAgICAgICAgIH0pOwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgaWYgKGlzQWRkZGVkKQogICAgICAgIHsKICAgICAgICAgICAgaHR0cFRhc2suVXJsID0gaHR0cFRhc2suVXJsLlJlcGxhY2UoIntDQVJEX0FERF9PUl9VUERBVEVfUEFUSH0iLCAiY2FydHMvYWRkIik7CiAgICAgICAgICAgIGh0dHBUYXNrLk1ldGhvZCA9ICJQT1NUIjsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gV0FSTjogSXQgd2lsbCBzaW11bGF0ZSBhIFBPU1QgcmVxdWVzdCBhbmQgd2lsbCByZXR1cm4gdGhlIG5ldyBjcmVhdGVkIGNhcnQgd2l0aCBhIG5ldyBpZCAKICAgICAgICAgICAgLy8gaHR0cFRhc2suVXJsID0gaHR0cFRhc2suVXJsLlJlcGxhY2UoIntDQVJEX0FERF9PUl9VUERBVEVfUEFUSH0iLCAkImNhcnRzL3tjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmNhcmQ/LmlkfSIpOwogICAgICAgICAgICBodHRwVGFzay5VcmwgPSBodHRwVGFzay5VcmwuUmVwbGFjZSgie0NBUkRfQUREX09SX1VQREFURV9QQVRIfSIsICQiY2FydHMvMTAiKTsKICAgICAgICAgICAgaHR0cFRhc2suTWV0aG9kID0gIlBVVCI7ICAgIAogICAgICAgIH0KICAgICAgICAKICAgICAgICAvLyBBZGQgdGhlIG5ldyBwcm9kdWN0IHRvIHRoZSBjYXJ0CiAgICAgICAgdmFyIG5ld1Byb2R1Y3QgPSBuZXcgUHJvZHVjdER0bygpCiAgICAgICAgewogICAgICAgICAgICBpZCA9IENvbnZlcnQuVG9JbnQzMihjb250ZXh0LkJvZHk/LmlkID8/IDApLAogICAgICAgICAgICBxdWFudGl0eSA9IDEKICAgICAgICB9OwogICAgICAgIAogICAgICAgIC8vIENoZWNrIGlmIHByb2R1Y3QgYWxyZWFkeSBleGlzdHMgaW4gY2FydCwgaWYgc28gdXBkYXRlIHF1YW50aXR5CiAgICAgICAgdmFyIGV4aXN0aW5nUHJvZHVjdCA9IGV4aXN0aW5nUHJvZHVjdHMuRmlyc3RPckRlZmF1bHQocCA9PiBwLmlkID09IG5ld1Byb2R1Y3QuaWQpOwogICAgICAgIGlmIChleGlzdGluZ1Byb2R1Y3QgIT0gbnVsbCkKICAgICAgICB7CiAgICAgICAgICAgIGV4aXN0aW5nUHJvZHVjdC5xdWFudGl0eSArPSBuZXdQcm9kdWN0LnF1YW50aXR5OwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICBleGlzdGluZ1Byb2R1Y3RzLkFkZChuZXdQcm9kdWN0KTsKICAgICAgICB9CgogICAgICAgIHZhciBjYXJkUGF5bG9hZCA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgdXNlcklkID0gQ29udmVydC5Ub0ludDMyKGNvbnRleHQuSW5zdGFuY2UuRGF0YT8ubG9naW4/LmN1cnJlbnRMb2dpbj8uaWQgPz8gMCksCiAgICAgICAgICAgIG1lcmdlID0gdHJ1ZSwKICAgICAgICAgICAgcHJvZHVjdHMgPSBleGlzdGluZ1Byb2R1Y3RzCiAgICAgICAgfTsKCiAgICAgICAgaHR0cFRhc2suU2V0Qm9keShjYXJkUGF5bG9hZCk7CgogICAgICAgIC8vIFN0b3JlIHRoZSB1cGRhdGVkIGNhcnQgaW4gY29udGV4dC5JbnN0YW5jZS5EYXRhIGZvciBwZXJzaXN0ZW5jZQogICAgICAgIHZhciB1cGRhdGVkRGF0YSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YTsKICAgICAgICBpZiAodXBkYXRlZERhdGEgIT0gbnVsbCkKICAgICAgICB7CiAgICAgICAgICAgIHVwZGF0ZWREYXRhLmNhcmQgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdXNlcklkID0gQ29udmVydC5Ub0ludDMyKGNvbnRleHQuSW5zdGFuY2UuRGF0YT8ubG9naW4/LmN1cnJlbnRMb2dpbj8uaWQgPz8gMCksCiAgICAgICAgICAgICAgICBwcm9kdWN0cyA9IGV4aXN0aW5nUHJvZHVjdHMKICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gdXBkYXRlZERhdGEsCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9CgogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIC8vIFN0b3JlIGF1dGhlbnRpY2F0aW9uIHRva2VuIGZvciBmdXR1cmUgcmVxdWVzdHMKICAgICAgICB2YXIgcmVzcG9uc2UgPSBuZXcgU2NyaXB0UmVzcG9uc2UoKTsKCiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHk/LnN0YXR1c0NvZGUgPz8gNTAwOwogICAgICAgIGlmIChzdGF0dXNDb2RlID49IDIwMCB8fCBzdGF0dXNDb2RlIDw9IDMwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgc3VjY2VzcyA9IHRydWUsCiAgICAgICAgICAgICAgICBjYXJkID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgaWQgPSBjb250ZXh0LkJvZHk/LmRhdGE/LmlkLAogICAgICAgICAgICAgICAgICAgIHByb2R1Y3RzID0gY29udGV4dC5Cb2R5Py5kYXRhPy5wcm9kdWN0cwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwNCkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE5vdCBmb3VuZCAtIGhhbmRsZSBzcGVjaWZpY2FsbHkKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBjYXJkID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlJlc291cmNlIG5vdCBmb3VuZCIsCiAgICAgICAgICAgICAgICAgICAgc2hvdWxkUmV0cnkgPSBmYWxzZQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICAvLyBTZXJ2ZXIgZXJyb3IgLSBtaWdodCB3YW50IHRvIHJldHJ5CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgY2FyZCA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJTZXJ2ZXIgZXJyb3Igb2NjdXJyZWQiLAogICAgICAgICAgICAgICAgICAgIHNob3VsZFJldHJ5ID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICByZXRyeUFmdGVyID0gMzAgLy8gc2Vjb25kcwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KCiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChyZXNwb25zZSk7CiAgICB9CgogICAgaW50ZXJuYWwgY2xhc3MgUHJvZHVjdER0bwogICAgewogICAgICAgIHB1YmxpYyBpbnQgaWQgeyBnZXQ7IHNldDsgfQogICAgICAgIHB1YmxpYyBpbnQgcXVhbnRpdHkgeyBnZXQ7IHNldDsgfQogICAgfQp9"
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "proceed-to-checkout",
+            "target": "order-processing",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Proceed to Checkout"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Ödemeye Geç"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "continue-shopping",
+            "target": "product-browsing",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Continue Shopping"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Alışverişe Devam Et"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "order-processing",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Order Processing"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Sipariş İşleme"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "process-order",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/ProcessOrderMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFByb2Nlc3NPcmRlck1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIGh0dHBUYXNrID0gdGFzayBhcyBIdHRwVGFzazsKICAgICAgICB2YXIgaGVhZGVycyA9IG5ldyBEaWN0aW9uYXJ5PHN0cmluZywgc3RyaW5nPz4KICAgICAgICB7CiAgICAgICAgICAgIFsiQXV0aG9yaXphdGlvbiJdID0gJCJCZXJlYXIge2NvbnRleHQuSW5zdGFuY2UuRGF0YT8ubG9naW4/LmN1cnJlbnRMb2dpbj8uYWNjZXNzVG9rZW59IgogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKICAgICAgICBjb250ZXh0LkJvZHkudXNlcklkID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5sb2dpbj8uY3VycmVudExvZ2luPy5pZDsKICAgICAgICBodHRwVGFzay5TZXRCb2R5KGNvbnRleHQuQm9keSk7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBuZXcgeyB9LAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBTdG9yZSBhdXRoZW50aWNhdGlvbiB0b2tlbiBmb3IgZnV0dXJlIHJlcXVlc3RzCiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CgogICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5LnN0YXR1c0NvZGUgPz8gNTAwOwogICAgICAgIGlmIChzdGF0dXNDb2RlID09IDIwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgb3JkZXIgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBjb250ZXh0LkJvZHkuZGF0YQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwNCkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE5vdCBmb3VuZCAtIGhhbmRsZSBzcGVjaWZpY2FsbHkKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBvcmRlciA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJSZXNvdXJjZSBub3QgZm91bmQiLAogICAgICAgICAgICAgICAgICAgIHNob3VsZFJldHJ5ID0gZmFsc2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gU2VydmVyIGVycm9yIC0gbWlnaHQgd2FudCB0byByZXRyeQogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIG9yZGVyID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgc2hvdWxkUmV0cnkgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgIHJldHJ5QWZ0ZXIgPSAzMCAvLyBzZWNvbmRzCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQoKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9Cn0="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "order-completed",
+            "target": "order-confirmation",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Order Completed"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Sipariş Tamamlandı"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "payment-failed",
+            "target": "cart-management",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Payment Failed - Return to Cart"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Ödeme Başarısız - Sepete Dön"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "order-confirmation",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Order Confirmation"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Sipariş Onayı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}

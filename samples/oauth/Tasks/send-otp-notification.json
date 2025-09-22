@@ -1,0 +1,28 @@
+{
+  "key": "send-otp-notification",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "oauth2",
+    "otp",
+    "notification",
+    "mfa",
+    "sms",
+    "email"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "http://mockoon:3001/api/oauth2/otp/send",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 10,
+      "validateSsl": true
+    }
+  }
+}

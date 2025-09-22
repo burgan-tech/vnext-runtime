@@ -15,6 +15,12 @@ Sistemi çalıştırmak için aşağıdaki environment dosyalarını oluşturman
 # VNext Core Runtime Version
 VNEXT_CORE_VERSION=latest
 
+# Uygulama Domain'i (YENİ!)
+# Bu domain değeri JSON dosyalarındaki tüm "domain" property'lerini değiştirir
+# Her geliştiricinin kendi domain'inde lokal ortamda çalışmasını sağlar
+# Varsayılan: core
+APP_DOMAIN=core
+
 # Custom Components Path (isteğe bağlı)
 CUSTOM_COMPONENTS_PATH=./vnext/docker/custom-components
 
@@ -235,7 +241,11 @@ curl http://localhost:4201/health
    - Views (Görünümler)
    - Workflows (İş Akışları)
 3. **Custom component'leri birleştirir** (eğer mount edilmiş volume varsa)
-4. Birleştirilmiş component'leri `vnext-app/api/admin` endpoint'ine POST request'leri olarak gönderir
+4. **🆕 Domain Değiştirme**: JSON dosyalarındaki tüm `"domain"` property değerlerini `APP_DOMAIN` environment variable değeri ile değiştirir
+   - Bu sayede her geliştirici kendi domain'inde lokal ortamda çalışabilir
+   - Varsayılan domain `"core"`'dur, ancak `.env` dosyasında `APP_DOMAIN=mydomain` ile özelleştirilebilir
+   - Hem core sistem bileşenlerine hem de custom component'lere uygulanır
+5. Birleştirilmiş ve domain güncellenmiş component'leri `vnext-app/api/admin` endpoint'ine POST request'leri olarak gönderir
 
 Bu şekilde vnext-app uygulaması hem sistem hem de custom component'lerle hazır hale gelir.
 
@@ -275,10 +285,10 @@ Detaylı dokümantasyon ve örnekler için `vnext/docker/custom-components/READM
 
 VNext Runtime sisteminin tüm yeteneklerini gösteren kapsamlı bir e-ticaret workflow örneği sunuyoruz:
 
-- **HTTP Test Dosyası**: `vnext/docker/custom-components/ecommerce-workflow.http` - Test için hazır HTTP istekleri
+- **HTTP Test Dosyası**: `samples/ecommerce/ecommerce-workflow.http` - Test için hazır HTTP istekleri
 - **Dokümantasyon**: 
-  - 🇺🇸 [İngilizce Rehber](vnext/docker/custom-components/README-ecommerce-workflow-en.md)
-  - 🇹🇷 [Türkçe Rehber](vnext/docker/custom-components/README-ecommerce-workflow-tr.md)
+  - 🇺🇸 [İngilizce Rehber](samples/ecommerce/README-ecommerce-workflow-en.md)
+  - 🇹🇷 [Türkçe Rehber](samples/ecommerce/README-ecommerce-workflow-tr.md)
 - **Gösterilen Özellikler**:
   - State tabanlı workflow yönetimi
   - Kimlik doğrulama akışı
@@ -741,6 +751,23 @@ make health          # Sağlık kontrolü
 make clean           # Hafif temizlik
 make reset           # Derin reset (gerekirse)
 ```
+
+## 📚 Dokümantasyon
+
+VNext Runtime platformu, iş akışları ve geliştirme rehberleri hakkında kapsamlı dokümantasyon için lütfen şu kaynaklara başvurun:
+
+- **📖 [Kapsamlı Dokümantasyon (Türkçe)](doc/tr/README.md)** - Platform mimarisi, iş akışı bileşenleri ve detaylı API referansları içeren kapsamlı geliştirici rehberi
+- **🇺🇸 [English Documentation](doc/en/README.md)** - Comprehensive developer guide covering platform architecture, workflow components, and detailed API references
+
+### Hızlı Dokümantasyon Linkleri
+
+| Konu | Türkçe | İngilizce |
+|------|--------|-----------|
+| **Platform Temelleri** | [fundamentals/readme.md](doc/tr/fundamentals/readme.md) | [fundamentals/readme.md](doc/en/fundamentals/readme.md) |
+| **İş Akışı Durumları** | [flow/state.md](doc/tr/flow/state.md) | [flow/state.md](doc/en/flow/state.md) |
+| **Görev Türleri** | [flow/task.md](doc/tr/flow/task.md) | [flow/task.md](doc/en/flow/task.md) |
+| **Haritalama Rehberi** | [flow/mapping.md](doc/tr/flow/mapping.md) | [flow/mapping.md](doc/en/flow/mapping.md) |
+| **Instance Nasıl Başlatılır** | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) | [how-to/start-instance.md](doc/en/how-to/start-instance.md) |
 
 ## 📊 Monitoring ve Metrics
 

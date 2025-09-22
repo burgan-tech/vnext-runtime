@@ -1,0 +1,354 @@
+{
+  "key": "otp-mfa-subflow",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "oauth2",
+    "mfa",
+    "otp",
+    "subflow",
+    "two-factor"
+  ],
+  "attributes": {
+    "type": "S",
+    "timeout": {
+      "key": "otp-timeout",
+      "target": "otp-expired",
+      "versionStrategy": "Minor",
+      "timer": {
+        "reset": "OnEntry",
+        "duration": "PT5M"
+      }
+    },
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "OTP Multi-Factor Authentication Subflow"
+      },
+      {
+        "language": "tr-TR",
+        "label": "OTP Çok Faktörlü Kimlik Doğrulama Alt Akışı"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-otp-mfa",
+      "target": "send-otp",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start OTP MFA"
+        },
+        {
+          "language": "tr-TR",
+          "label": "OTP MFA Başlat"
+        }
+      ],
+      "schema": null,
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "send-otp",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Send OTP Code"
+          },
+          {
+            "language": "tr-TR",
+            "label": "OTP Kodu Gönder"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "send-otp-notification",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/SendOtpNotificationMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFNlbmRPdHBOb3RpZmljYXRpb25NYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgdmFyIG90cERhdGEgPSBuZXcKICAgICAgICB7CiAgICAgICAgICAgIHVzZXJJZCA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YT8uYXV0aGVudGljYXRpb24/LnVzZXJJZCwKICAgICAgICAgICAgZW1haWwgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmF1dGhlbnRpY2F0aW9uPy5lbWFpbCwKICAgICAgICAgICAgcGhvbmUgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmF1dGhlbnRpY2F0aW9uPy5waG9uZSwKICAgICAgICAgICAgbWV0aG9kID0gInNtcyIsIC8vIERlZmF1bHQgdG8gc21zLCBjYW4gYmUgInNtcyIgb3IgImVtYWlsIgogICAgICAgICAgICBkZXZpY2VJZCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LmRldmljZUlkLAogICAgICAgICAgICBsYW5ndWFnZSA9IGNvbnRleHQuSGVhZGVyc1siYWNjZXB0LWxhbmd1YWdlIl0gPz8gImVuLVVTIgogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0Qm9keShvdHBEYXRhKTsKICAgICAgICB2YXIgaGVhZGVycyA9IG5ldyBEaWN0aW9uYXJ5PHN0cmluZywgc3RyaW5nPz4KICAgICAgICB7CiAgICAgICAgICAgIFsiQ29udGVudC1UeXBlIl0gPSAiYXBwbGljYXRpb24vanNvbiIsCiAgICAgICAgICAgIFsiWC1SZXF1ZXN0LUlkIl0gPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5yZXF1ZXN0SWQsCiAgICAgICAgICAgIFsiWC1Vc2VyLUlkIl0gPSBjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmF1dGhlbnRpY2F0aW9uPy51c2VySWQKICAgICAgICB9OwogICAgICAgIGh0dHBUYXNrLlNldEhlYWRlcnMoaGVhZGVycyk7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKSk7CiAgICB9CgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciByZXNwb25zZSA9IG5ldyBTY3JpcHRSZXNwb25zZSgpOwogICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5LnN0YXR1c0NvZGUgPz8gNTAwOwoKICAgICAgICBpZiAoc3RhdHVzQ29kZSA9PSAyMDApCiAgICAgICAgewogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIG90cCA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHNlbnQgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgIG90cElkID0gY29udGV4dC5Cb2R5LmRhdGE/Lm90cElkLAogICAgICAgICAgICAgICAgICAgIGV4cGlyZXNBdCA9IGNvbnRleHQuQm9keS5kYXRhPy5leHBpcmVzQXQsCiAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gY29udGV4dC5Cb2R5LmRhdGE/Lm1ldGhvZCwKICAgICAgICAgICAgICAgICAgICBhdHRlbXB0c1JlbWFpbmluZyA9IGNvbnRleHQuQm9keS5kYXRhPy5hdHRlbXB0c1JlbWFpbmluZyA/PyAzCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgICAgIGVsc2UKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgb3RwID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc2VudCA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIkZhaWxlZCB0byBzZW5kIE9UUCIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gIm90cF9zZW5kX2ZhaWxlZCIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQ=="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "otp-sent",
+            "target": "submit-otp",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "OTP Sent Successfully"
+              },
+              {
+                "language": "tr-TR",
+                "label": "OTP Başarıyla Gönderildi"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/OtpSentRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBPdHBTZW50UnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEub3RwLnNlbnQgPT0gdHJ1ZTsKICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "otp-send-failed",
+            "target": "otp-failed",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "OTP Send Failed"
+              },
+              {
+                "language": "tr-TR",
+                "label": "OTP Gönderme Başarısız"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/OtpSendFailedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBPdHBTZW5kRmFpbGVkUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEub3RwLnNlbnQgPT0gZmFsc2U7CiAgICB9Cn0="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "submit-otp",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Submit OTP Code"
+          },
+          {
+            "language": "tr-TR",
+            "label": "OTP Kodunu Gönder"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "submit-otp",
+            "target": "verify-otp",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "OTP Verified Successfully"
+              },
+              {
+                "language": "tr-TR",
+                "label": "OTP Başarıyla Doğrulandı"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": [
+              {
+                "order": 1,
+                "task": {
+                  "key": "verify-otp-code",
+                  "domain": "core",
+                  "version": "1.0.0",
+                  "flow": "sys-tasks"
+                },
+                "mapping": {
+                  "location": "./src/VerifyOtpCodeMapping.csx",
+                  "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFZlcmlmeU90cENvZGVNYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgdmFyIHZlcmlmeURhdGEgPSBuZXcKICAgICAgICB7CiAgICAgICAgICAgIG90cElkID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5vdHA/Lm90cElkLAogICAgICAgICAgICBvdHBDb2RlID0gY29udGV4dC5Cb2R5Lm90cF9jb2RlLAogICAgICAgICAgICB1c2VySWQgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmF1dGhlbnRpY2F0aW9uPy51c2VySWQsCiAgICAgICAgICAgIGRldmljZUlkID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8uZGV2aWNlSWQKICAgICAgICB9OwogICAgICAgIGh0dHBUYXNrLlNldEJvZHkodmVyaWZ5RGF0YSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIkNvbnRlbnQtVHlwZSJdID0gImFwcGxpY2F0aW9uL2pzb24iLAogICAgICAgICAgICBbIlgtUmVxdWVzdC1JZCJdID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8ucmVxdWVzdElkLAogICAgICAgICAgICBbIlgtVXNlci1JZCJdID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5hdXRoZW50aWNhdGlvbj8udXNlcklkCiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRIZWFkZXJzKGhlYWRlcnMpOwogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgcmVzcG9uc2UgPSBuZXcgU2NyaXB0UmVzcG9uc2UoKTsKICAgICAgICB2YXIgc3RhdHVzQ29kZSA9IGNvbnRleHQuQm9keS5zdGF0dXNDb2RlID8/IDUwMDsKCiAgICAgICAgaWYgKHN0YXR1c0NvZGUgPT0gMjAwKQogICAgICAgIHsKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBtZmEgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBvdHBWZXJpZmllZCA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgbWV0aG9kID0gIm90cCIsCiAgICAgICAgICAgICAgICAgICAgdmVyaWZpZWRBdCA9IERhdGVUaW1lLlV0Y05vdy5Ub1N0cmluZygibyIpCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgICAgIGVsc2UgaWYgKHN0YXR1c0NvZGUgPT0gNDAwKQogICAgICAgIHsKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBtZmEgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgZXJyb3IgPSAiSW52YWxpZCBPVFAgY29kZSIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gImludmFsaWRfb3RwIiwKICAgICAgICAgICAgICAgICAgICBhdHRlbXB0c1JlbWFpbmluZyA9IGNvbnRleHQuQm9keS5kYXRhPy5hdHRlbXB0c1JlbWFpbmluZyA/PyAwCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQogICAgICAgIGVsc2UKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgbWZhID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInNlcnZlcl9lcnJvciIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQ=="
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "verify-otp",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Verify OTP Code"
+          },
+          {
+            "language": "tr-TR",
+            "label": "OTP Kodu Doğrula"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "otp-verified",
+            "target": "otp-success",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "OTP Verified Successfully"
+              },
+              {
+                "language": "tr-TR",
+                "label": "OTP Başarıyla Doğrulandı"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/MfaSuccessRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBNZmFTdWNjZXNzUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEubWZhLnN1Y2Nlc3MgPT0gdHJ1ZTsKICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "otp-invalid-retry",
+            "target": "submit-otp",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "OTP Invalid - Retry"
+              },
+              {
+                "language": "tr-TR",
+                "label": "OTP Geçersiz - Tekrar Dene"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/OtpInvalidRetryRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBPdHBJbnZhbGlkUmV0cnlSdWxlIDogSUNvbmRpdGlvbk1hcHBpbmcKewogICAgcHVibGljIGFzeW5jIFRhc2s8Ym9vbD4gSGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgcmV0dXJuIGNvbnRleHQuSW5zdGFuY2UuRGF0YS5tZmEuc3VjY2VzcyA9PSBmYWxzZSAmJiAKICAgICAgICAgICAgICAgY29udGV4dC5JbnN0YW5jZS5EYXRhLm1mYS5hdHRlbXB0c1JlbWFpbmluZyA+IDA7CiAgICB9Cn0="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "otp-invalid-max-attempts",
+            "target": "otp-failed",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "OTP Invalid - Max Attempts Reached"
+              },
+              {
+                "language": "tr-TR",
+                "label": "OTP Geçersiz - Maksimum Deneme Sayısına Ulaşıldı"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/OtpInvalidMaxAttemptsRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBPdHBJbnZhbGlkTWF4QXR0ZW1wdHNSdWxlIDogSUNvbmRpdGlvbk1hcHBpbmcKewogICAgcHVibGljIGFzeW5jIFRhc2s8Ym9vbD4gSGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgcmV0dXJuIGNvbnRleHQuSW5zdGFuY2UuRGF0YS5tZmEuc3VjY2VzcyA9PSBmYWxzZSAmJiAKICAgICAgICAgICAgICAgY29udGV4dC5JbnN0YW5jZS5EYXRhLm1mYS5hdHRlbXB0c1JlbWFpbmluZyA8PSAwOwogICAgfQp9"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "otp-success",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "OTP MFA Success"
+          },
+          {
+            "language": "tr-TR",
+            "label": "OTP MFA Başarılı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "otp-failed",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "OTP MFA Failed"
+          },
+          {
+            "language": "tr-TR",
+            "label": "OTP MFA Başarısız"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "otp-expired",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "OTP Expired"
+          },
+          {
+            "language": "tr-TR",
+            "label": "OTP Süresi Doldu"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}

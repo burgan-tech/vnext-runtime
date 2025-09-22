@@ -1,0 +1,300 @@
+# vNext Runtime Platform - Cursor AI Rules
+
+This repository enables developers to run and test the vNext Runtime platform in their local environments. This platform manages complex business processes by defining workflows and tasks.
+
+## Platform Overview
+
+vNext Runtime is a state machine-based workflow orchestration platform. Core components:
+
+- **Workflows**: Define business flows (JSON format)
+- **Tasks**: Task types like HTTP, Timer, Script, Condition (JSON format)  
+- **Mappings**: Task input/output transformations (C# .csx scripts)
+- **States**: Workflow states and transitions
+- **Transitions**: State transition rules
+
+## Project Structure
+
+```
+├── samples/                    # Sample workflows and tasks
+│   ├── ecommerce/             # E-commerce example
+│   ├── oauth/                 # OAuth authentication example
+│   └── payments/              # Scheduled payments example
+├── doc/                       # Comprehensive documentation
+├── vnext/                     # Docker infrastructure (IGNORE)
+└── Makefile                   # Development commands (IGNORE)
+```
+
+## AI Assistant Rules
+
+### 1. Workflow Creation
+
+When creating new workflows, use this JSON structure:
+
+```json
+{
+  "key": "workflow-name",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0", 
+  "tags": ["tag1", "tag2"],
+  "attributes": {
+    "type": "F",
+    "timeout": null,
+    "labels": [
+      {"language": "en-US", "label": "English Label"},
+      {"language": "tr-TR", "label": "Türkçe Etiket"}
+    ],
+    "startTransition": {
+      "key": "start-transition",
+      "target": "initial-state",
+      "triggerType": 0,
+      "labels": [...],
+      "schema": null,
+      "rule": null
+    },
+    "states": [
+      {
+        "key": "state-name",
+        "stateType": 1, // 1=Intermediate, 2=Final
+        "labels": [...],
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "task-name",
+              "domain": "core", 
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/MappingFile.csx",
+              "code": "base64-encoded-csx-content"
+            }
+          }
+        ]
+      }
+    ],
+    "transitions": [
+      {
+        "key": "transition-name",
+        "source": "source-state",
+        "target": "target-state",
+        "labels": [...],
+        "rule": {
+          "location": "./src/RuleFile.csx", 
+          "code": "base64-encoded-csx-content"
+        }
+      }
+    ]
+  }
+}
+```
+
+### 2. Task Creation
+
+Task types and examples:
+
+#### HTTP Task (type: "6")
+```json
+{
+  "key": "task-name",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "tags": ["api", "http"],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "https://api.example.com/endpoint",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {TOKEN}"
+      },
+      "body": {},
+      "timeoutSeconds": 30,
+      "validateSsl": true
+    }
+  }
+}
+```
+
+#### Timer Task (type: "4")
+```json
+{
+  "key": "timer-task",
+  "attributes": {
+    "type": "4",
+    "config": {
+      "interval": "00:05:00", // 5 minutes
+      "executeOnce": false
+    }
+  }
+}
+```
+
+#### Script Task (type: "5")
+```json
+{
+  "key": "script-task", 
+  "attributes": {
+    "type": "5",
+    "config": {
+      "language": "csharp",
+      "timeoutSeconds": 10
+    }
+  }
+}
+```
+
+#### Condition Task (type: "3")
+```json
+{
+  "key": "condition-task",
+  "attributes": {
+    "type": "3",
+    "config": {
+      "expression": "context.Data.status == 'success'"
+    }
+  }
+}
+```
+
+### 3. Mapping Creation (.csx files)
+
+C# mapping file template:
+
+```csharp
+using System.Threading.Tasks;
+using BBT.Workflow.Scripting;
+using BBT.Workflow.Definitions;
+
+public class TaskNameMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        // Prepare task input
+        var httpTask = task as HttpTask;
+        httpTask.SetBody(new {
+            // Data to be sent to API
+            userId = context.Instance.Data.userId,
+            amount = context.Body.amount
+        });
+        
+        var headers = new Dictionary<string, string?>
+        {
+            ["X-Request-Id"] = context.Headers["x-request-id"],
+            ["Authorization"] = $"Bearer {context.Instance.Data.token}"
+        };
+        httpTask.SetHeaders(headers);
+        
+        return Task.FromResult(new ScriptResponse
+        {
+            Data = context.Instance.Data,
+            Headers = null
+        });
+    }
+
+    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        // Process task output
+        var response = new ScriptResponse();
+        var statusCode = context.Body.statusCode ?? 500;
+
+        if (statusCode == 200)
+        {
+            response.Data = new
+            {
+                success = true,
+                result = context.Body.data,
+                // Data to be added to workflow state
+                processedAt = DateTime.UtcNow
+            };
+        }
+        else
+        {
+            response.Data = new
+            {
+                success = false,
+                error = context.Body.message ?? "Unknown error",
+                shouldRetry = statusCode >= 500,
+                retryAfter = 30
+            };
+        }
+
+        return response;
+    }
+}
+```
+
+### 4. Transition Rules (.csx files)
+
+```csharp
+using BBT.Workflow.Scripting;
+
+public class TransitionRule : IRule
+{
+    public Task<bool> Evaluate(ScriptContext context)
+    {
+        // Evaluate transition condition
+        var success = context.Instance.Data.success ?? false;
+        var shouldRetry = context.Instance.Data.shouldRetry ?? false;
+        
+        // Move to next state if successful
+        return Task.FromResult(success && !shouldRetry);
+    }
+}
+```
+
+### 5. Best Practices
+
+#### File Organization
+- Workflows: `samples/{domain}/Workflows/`
+- Tasks: `samples/{domain}/Tasks/`
+- Mappings: `samples/{domain}/Workflows/src/`
+- Documentation: `samples/{domain}/README-{name}-{lang}.md`
+
+#### Naming Conventions
+- Workflow keys: kebab-case (e.g.: `user-registration`)
+- Task keys: kebab-case (e.g.: `send-email`)
+- Mapping classes: PascalCase (e.g.: `SendEmailMapping`)
+- State keys: kebab-case (e.g.: `email-verification`)
+
+#### Error Handling
+- Set timeout values in HTTP tasks
+- Check status codes in mappings
+- Use `shouldRetry` and `retryAfter` for retry logic
+- Provide meaningful error messages in error cases
+
+#### Documentation
+- Create EN and TR README files for each example
+- Add workflow state diagrams
+- Document API endpoints and test scenarios
+
+### 6. Development Workflow
+
+1. **Analysis**: Analyze business requirements and define states
+2. **Tasks**: Create required HTTP/Timer/Script tasks  
+3. **Mappings**: Write task input/output mappings
+4. **Workflow**: Define state machine as JSON
+5. **Rules**: Write transition conditions
+6. **Test**: Prepare test scenarios with `.http` files
+7. **Documentation**: Write comprehensive documentation
+
+### 7. Common Use Cases
+
+- **Authentication flows**: Login, MFA, OAuth
+- **E-commerce processes**: Cart, payment, order tracking
+- **Payment processing**: Scheduled payments, retry logic
+- **Notification systems**: Email, SMS, Push notifications
+- **Data processing**: ETL, batch operations
+- **Integration workflows**: API orchestration, data sync
+
+### 8. Debugging
+
+- Query workflow instances via API
+- Log state transitions
+- Implement detailed error handling in mappings
+- Use HTTP files for testing
+
+By following these rules, I can create effective and maintainable workflows for the vNext Runtime platform.

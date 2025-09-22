@@ -6,6 +6,10 @@ echo "Waiting for vnext-app to be healthy..."
 VNEXT_APP_URL=${VNEXT_APP_URL:-"http://vnext-app:5000"}
 API_ENDPOINT="${VNEXT_APP_URL}/api/v1/admin/publish"
 
+# Get APP_DOMAIN from environment variable, default to "core"
+APP_DOMAIN=${APP_DOMAIN:-"core"}
+echo "Using APP_DOMAIN: $APP_DOMAIN"
+
 # Wait for the vnext-app to be ready with health check
 while true; do
     if curl -s "${VNEXT_APP_URL}/health" > /dev/null 2>&1; then
@@ -42,6 +46,79 @@ if [ -d "$CUSTOM_PATH" ]; then
 else
     echo "Custom components directory not found, using only core components"
 fi
+
+# Function to replace domain values in JSON file with specific rules
+replace_domain_in_json() {
+    local input_file="$1"
+    local output_file="$2"
+    local target_domain="$3"
+    
+    # Check if input file exists and is readable
+    if [ ! -f "$input_file" ]; then
+        echo "✗ Error: Input file not found: $input_file"
+        return 1
+    fi
+    
+    if [ ! -r "$input_file" ]; then
+        echo "✗ Error: Input file not readable: $input_file"
+        return 1
+    fi
+    
+    # Check if file has content
+    if [ ! -s "$input_file" ]; then
+        echo "✗ Error: Input file is empty: $input_file"
+        return 1
+    fi
+    
+    echo "  - Replacing domain values with '$target_domain' in $(basename "$input_file") (with specific rules)"
+    
+    # Use jq with specific rules for domain replacement
+    if ! jq --arg domain "$target_domain" '
+        def should_replace_domain:
+            # Replace domain if it has key, flow, version, domain fields
+            # and domain is a string
+            if type == "object" and has("domain") and (.domain | type) == "string" then
+                if has("key") and has("flow") and has("version") then
+                    true
+                else
+                    false
+                end
+            else
+                false
+            end;
+        
+        def replace_domain_selective:
+            if type == "object" then
+                # Replace domain if it matches the criteria
+                if should_replace_domain then
+                    .domain = $domain
+                else
+                    .
+                end |
+                # Recursively process all object properties
+                with_entries(.value |= replace_domain_selective)
+            elif type == "array" then
+                # For arrays, apply the same logic to each item
+                map(replace_domain_selective)
+            else
+                .
+            end;
+        
+        replace_domain_selective
+    ' "$input_file" > "$output_file"; then
+        echo "✗ Error: Failed to replace domain values in $(basename "$input_file")"
+        return 1
+    fi
+    
+    # Verify the output file is valid JSON
+    if ! jq '.' "$output_file" >/dev/null 2>&1; then
+        echo "✗ Error: Output file is not valid JSON after domain replacement"
+        return 1
+    fi
+    
+    echo "  - Successfully replaced domain values in $(basename "$input_file") with selective rules"
+    return 0
+}
 
 # Function to upload a JSON file to the API
 upload_json_file() {
@@ -267,6 +344,30 @@ merge_custom_components() {
     fi
     
     echo "  - Merge completed successfully"
+    
+    # Apply domain replacement if APP_DOMAIN is set and different from "core"
+    if [ -n "$APP_DOMAIN" ] && [ "$APP_DOMAIN" != "core" ]; then
+        echo "  - Applying domain replacement: core -> $APP_DOMAIN"
+        local domain_replaced_file="${temp_file}.domain_replaced"
+        
+        if replace_domain_in_json "$temp_file" "$domain_replaced_file" "$APP_DOMAIN"; then
+            # Replace the original temp file with domain-replaced version
+            if mv "$domain_replaced_file" "$temp_file"; then
+                echo "  - Domain replacement completed successfully"
+            else
+                echo "✗ Error: Failed to replace temp file with domain-replaced version"
+                rm -f "$domain_replaced_file"
+                return 1
+            fi
+        else
+            echo "✗ Error: Domain replacement failed"
+            rm -f "$domain_replaced_file"
+            return 1
+        fi
+    else
+        echo "  - Skipping domain replacement (APP_DOMAIN=$APP_DOMAIN)"
+    fi
+    
     echo "DEBUG: Returning temp file path: $temp_file"
     
     # Close stderr redirection and return only the file path to stdout
@@ -471,4 +572,5 @@ echo "=========================================="
 echo "All system components have been successfully loaded."
 
 # Infinite loop to prevent the container from closing (optional)
+# tail -f /dev/null
 # tail -f /dev/null

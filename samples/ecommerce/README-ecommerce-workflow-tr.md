@@ -22,7 +22,7 @@ Bu iş akışı tam bir e-ticaret deneyimini simüle eder ve aşağıdaki state'
 
 ### State Diyagramı
 
-![Shopping State Diagram](../../../doc/img/shopping-state-diagram.png)
+![Shopping State Diagram](../../doc/img/shopping-state-diagram.png)
 
 ### Workflow States & Flow
 

@@ -1,0 +1,416 @@
+{
+  "key": "payment-process",
+  "flow": "sys-flows",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": [
+    "payments",
+    "process",
+    "retry",
+    "processing",
+    "transaction"
+  ],
+  "attributes": {
+    "type": "S",
+    "timeout": null,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Payment Processing"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Ödeme İşleme"
+      }
+    ],
+    "functions": [],
+    "features": [],
+    "extensions": [],
+    "sharedTransitions": [],
+    "startTransition": {
+      "key": "start-payment-processing",
+      "target": "payment-pending",
+      "triggerType": 0,
+      "versionStrategy": "Minor",
+      "labels": [
+        {
+          "language": "en-US",
+          "label": "Start Payment Processing"
+        },
+        {
+          "language": "tr-TR",
+          "label": "Ödeme İşlemeyi Başlat"
+        }
+      ],
+      "schema": null,
+      "rule": null,
+      "timer": null,
+      "view": null,
+      "onExecutionTasks": []
+    },
+    "states": [
+      {
+        "key": "payment-pending",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Payment Pending"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Ödeme Beklemede"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "scheduled-payment-due",
+            "target": "process-payment",
+            "triggerType": 2,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Scheduled - Payment Due Date/Time"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Zamanlanmış - Ödeme Vade Tarihi/Saati"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": {
+              "location": "./src/PaymentDueTimerRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zLlRpbWVyOwoKcHVibGljIGNsYXNzIFBheW1lbnREdWVUaW1lclJ1bGUgOiBJVGltZXJNYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPFRpbWVyU2NoZWR1bGU+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIFRpbWVyU2NoZWR1bGUuRnJvbURhdGVUaW1lKERhdGVUaW1lLlV0Y05vdy5BZGRTZWNvbmRzKDYwKSk7IC8vIEZvciB0ZXN0aW5nCiAgICAgICAgICAgIC8vIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEucGF5bWVudFNjaGVkdWxlOwogICAgICAgICAgICAvLyBpZiAocGF5bWVudFNjaGVkdWxlID09IG51bGwpCiAgICAgICAgICAgIC8vICAgICByZXR1cm4gVGltZXJTY2hlZHVsZS5Gcm9tRGF0ZVRpbWUoRGF0ZVRpbWUuVXRjTm93LkFkZERheXMoMSkpOyAvLyBEZWZhdWx0IHRvIDEgZGF5CiAgICAKICAgICAgICAgICAgLy8gaWYgKHBheW1lbnRTY2hlZHVsZS5uZXh0UGF5bWVudERhdGUgIT0gbnVsbCkKICAgICAgICAgICAgLy8gewogICAgICAgICAgICAvLyAgICAgaWYgKERhdGVUaW1lLlRyeVBhcnNlKHBheW1lbnRTY2hlZHVsZS5uZXh0UGF5bWVudERhdGUuVG9TdHJpbmcoKSwgb3V0IERhdGVUaW1lIG5leHRQYXltZW50KSkKICAgICAgICAgICAgLy8gICAgICAgICByZXR1cm4gVGltZXJTY2hlZHVsZS5Gcm9tRGF0ZVRpbWUobmV4dFBheW1lbnQpOwogICAgICAgICAgICAvLyB9CgogICAgICAgICAgICAvLyAvLyBDYWxjdWxhdGUgbmV4dCBwYXltZW50IGJhc2VkIG9uIGZyZXF1ZW5jeQogICAgICAgICAgICAvLyB2YXIgZnJlcXVlbmN5ID0gY29udGV4dC5JbnN0YW5jZS5EYXRhLmZyZXF1ZW5jeT8uVG9TdHJpbmcoKS5Ub0xvd2VyKCkgPz8gIm1vbnRobHkiOwogICAgICAgICAgICAvLyByZXR1cm4gZnJlcXVlbmN5IHN3aXRjaAogICAgICAgICAgICAvLyB7CiAgICAgICAgICAgIC8vICAgICAiZGFpbHkiID0+IFRpbWVyU2NoZWR1bGUuRnJvbURhdGVUaW1lKERhdGVUaW1lLlV0Y05vdy5BZGREYXlzKDEpKSwKICAgICAgICAgICAgLy8gICAgICJ3ZWVrbHkiID0+IFRpbWVyU2NoZWR1bGUuRnJvbURhdGVUaW1lKERhdGVUaW1lLlV0Y05vdy5BZGREYXlzKDcpKSwKICAgICAgICAgICAgLy8gICAgICJtb250aGx5IiA9PiBUaW1lclNjaGVkdWxlLkZyb21EYXRlVGltZShEYXRlVGltZS5VdGNOb3cuQWRkTW9udGhzKDEpKSwKICAgICAgICAgICAgLy8gICAgICJxdWFydGVybHkiID0+IFRpbWVyU2NoZWR1bGUuRnJvbURhdGVUaW1lKERhdGVUaW1lLlV0Y05vdy5BZGRNb250aHMoMykpLAogICAgICAgICAgICAvLyAgICAgInllYXJseSIgPT4gVGltZXJTY2hlZHVsZS5Gcm9tRGF0ZVRpbWUoRGF0ZVRpbWUuVXRjTm93LkFkZFllYXJzKDEpKSwKICAgICAgICAgICAgLy8gICAgIF8gPT4gVGltZXJTY2hlZHVsZS5Gcm9tRGF0ZVRpbWUoRGF0ZVRpbWUuVXRjTm93LkFkZE1vbnRocygxKSkKICAgICAgICAgICAgLy8gfTsKICAgICAgICB9CiAgICAgICAgY2F0Y2ggKEV4Y2VwdGlvbikKICAgICAgICB7CiAgICAgICAgICAgIHJldHVybiBUaW1lclNjaGVkdWxlLkZyb21EYXRlVGltZShEYXRlVGltZS5VdGNOb3cuQWRkRGF5cygxKSk7IC8vIEZhbGxiYWNrCiAgICAgICAgfQogICAgfQp9Cg=="
+            },
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "manual-pay-now",
+            "target": "process-payment",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Manual - Pay Now"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Manuel - Hemen Öde"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "process-payment",
+        "stateType": 1,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "ProcessPayment"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Ödeme İşle"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "process-payment",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/ProcessPaymentMapping.csx",
+              "code": "CnVzaW5nIFN5c3RlbS5UaHJlYWRpbmcuVGFza3M7CnVzaW5nIEJCVC5Xb3JrZmxvdy5TY3JpcHRpbmc7CnVzaW5nIEJCVC5Xb3JrZmxvdy5EZWZpbml0aW9uczsKCi8vLyA8c3VtbWFyeT4KLy8vIFByb2Nlc3MgUGF5bWVudCBNYXBwaW5nIC0gSGFuZGxlcyBwYXltZW50IHByb2Nlc3NpbmcgbG9naWMKLy8vIDwvc3VtbWFyeT4KcHVibGljIGNsYXNzIFByb2Nlc3NQYXltZW50TWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICB0aHJvdyBuZXcgSW52YWxpZE9wZXJhdGlvbkV4Y2VwdGlvbigiVGFzayBtdXN0IGJlIGFuIEh0dHBUYXNrIGZvciBwYXltZW50IHByb2Nlc3NpbmciKTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gUHJlcGFyZSBwYXltZW50IHByb2Nlc3NpbmcgZGF0YQogICAgICAgICAgICB2YXIgcGF5bWVudFNjaGVkdWxlID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8ucGF5bWVudFNjaGVkdWxlOwogICAgICAgICAgICB2YXIgcGF5bWVudFJlcXVlc3QgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgc2NoZWR1bGVJZCA9IHBheW1lbnRTY2hlZHVsZT8uc2NoZWR1bGVJZCwKICAgICAgICAgICAgICAgIHVzZXJJZCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LnVzZXJJZCwKICAgICAgICAgICAgICAgIGFtb3VudCA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LmFtb3VudCwKICAgICAgICAgICAgICAgIGN1cnJlbmN5ID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8uY3VycmVuY3ksCiAgICAgICAgICAgICAgICBwcm9jZXNzZWRBdCA9IERhdGVUaW1lLlV0Y05vdwogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0Qm9keShwYXltZW50UmVxdWVzdCk7CgogICAgICAgICAgICAvLyBTZXQgSGVhZGVycwogICAgICAgICAgICB2YXIgaGVhZGVycyA9IG5ldyBEaWN0aW9uYXJ5PHN0cmluZywgc3RyaW5nPz4KICAgICAgICAgICAgewogICAgICAgICAgICAgICAgWyJDb250ZW50LVR5cGUiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgICAgIFsiWC1TY2hlZHVsZS1JZCJdID0gcGF5bWVudFNjaGVkdWxlPy5zY2hlZHVsZUlkPy5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgWyJYLVBheW1lbnQtUmVxdWVzdC1JZCJdID0gR3VpZC5OZXdHdWlkKCkuVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgIFsiWC1SZXRyeS1Db3VudCJdID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YS5tYXhSZXRyaWVzLlRvU3RyaW5nKCkKICAgICAgICAgICAgfTsKCiAgICAgICAgICAgIGh0dHBUYXNrLlNldEhlYWRlcnMoaGVhZGVycyk7CgogICAgICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgICAgICB9CiAgICAgICAgY2F0Y2ggKEV4Y2VwdGlvbiBleCkKICAgICAgICB7CiAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIEtleSA9ICJwYXltZW50LXByb2Nlc3NpbmctZXJyb3IiLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldyB7IGVycm9yID0gZXguTWVzc2FnZSB9CiAgICAgICAgICAgIH0pOwogICAgICAgIH0KICAgIH0KCiAgICBwdWJsaWMgYXN5bmMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICB2YXIgc3RhdHVzQ29kZSA9IGNvbnRleHQuQm9keT8uc3RhdHVzQ29kZSA/PyA1MDA7CiAgICAgICAgICAgIHZhciByZXNwb25zZURhdGEgPSBjb250ZXh0LkJvZHk/LmRhdGE7CgogICAgICAgICAgICBpZiAoc3RhdHVzQ29kZSA+PSAyMDAgJiYgc3RhdHVzQ29kZSA8IDMwMCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdmFyIHBheW1lbnRSZXN1bHQgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdGF0dXMgPSAic3VjY2VzcyIsCiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgdHJhbnNhY3Rpb25JZCA9IHJlc3BvbnNlRGF0YT8udHJhbnNhY3Rpb25JZCwKICAgICAgICAgICAgICAgICAgICBhbW91bnQgPSByZXNwb25zZURhdGE/LmFtb3VudCwKICAgICAgICAgICAgICAgICAgICBjdXJyZW5jeSA9IHJlc3BvbnNlRGF0YT8uY3VycmVuY3ksCiAgICAgICAgICAgICAgICAgICAgcHJvY2Vzc2VkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICAgICAgcGF5bWVudE1ldGhvZCA9IHJlc3BvbnNlRGF0YT8ucGF5bWVudE1ldGhvZCwKICAgICAgICAgICAgICAgICAgICBmZWVzID0gcmVzcG9uc2VEYXRhPy5mZWVzCiAgICAgICAgICAgICAgICB9OwoKICAgICAgICAgICAgICAgIC8vIFVwZGF0ZSBwYXltZW50IGNvdW50ZXIKICAgICAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50U2NoZWR1bGUgPz8gbmV3IHsgfTsKICAgICAgICAgICAgICAgIHBheW1lbnRTY2hlZHVsZS5jb21wbGV0ZWRQYXltZW50cyA9IChwYXltZW50U2NoZWR1bGUuY29tcGxldGVkUGF5bWVudHMgPz8gMCkgKyAxOwogICAgICAgICAgICAgICAgcGF5bWVudFNjaGVkdWxlLmxhc3RQYXltZW50QXQgPSBEYXRlVGltZS5VdGNOb3c7CgogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJwYXltZW50LXN1Y2Nlc3MiLAogICAgICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHBheW1lbnRSZXN1bHQgPSBwYXltZW50UmVzdWx0LAogICAgICAgICAgICAgICAgICAgICAgICBwYXltZW50U2NoZWR1bGUgPSBwYXltZW50U2NoZWR1bGUKICAgICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJwYXltZW50cyIsICJzdWNjZXNzIiwgInRyYW5zYWN0aW9uIiB9CiAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdmFyIGVycm9ySW5mbyA9IEV4dHJhY3RFcnJvckluZm9ybWF0aW9uKGNvbnRleHQsIHN0YXR1c0NvZGUpOwogICAgICAgICAgICAgICAgdmFyIGN1cnJlbnRSZXRyeUNvdW50ID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8ubWF4UmV0cmllcyA/PyAwOwoKICAgICAgICAgICAgICAgIHZhciBwYXltZW50UmVzdWx0ID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3RhdHVzID0gImZhaWxlZCIsCiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gZXJyb3JJbmZvLm1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gZXJyb3JJbmZvLmNvZGUsCiAgICAgICAgICAgICAgICAgICAgZXJyb3JEZXNjcmlwdGlvbiA9IGVycm9ySW5mby5kZXNjcmlwdGlvbiwKICAgICAgICAgICAgICAgICAgICBzdGF0dXNDb2RlID0gc3RhdHVzQ29kZSwKICAgICAgICAgICAgICAgICAgICBmYWlsZWRBdCA9IERhdGVUaW1lLlV0Y05vdywKICAgICAgICAgICAgICAgICAgICByZXRyeUNvdW50ID0gY3VycmVudFJldHJ5Q291bnQKICAgICAgICAgICAgICAgIH07CgogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJwYXltZW50LWZhaWx1cmUiLAogICAgICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHBheW1lbnRSZXN1bHQgPSBwYXltZW50UmVzdWx0LAogICAgICAgICAgICAgICAgICAgICAgICByZXRyeUNvdW50ID0gY3VycmVudFJldHJ5Q291bnQKICAgICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJwYXltZW50cyIsICJmYWlsdXJlIiwgImVycm9yIiwgInJldHJ5LXBvdGVudGlhbCIgfQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBLZXkgPSAicGF5bWVudC1wcm9jZXNzaW5nLWV4Y2VwdGlvbiIsCiAgICAgICAgICAgICAgICBEYXRhID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgcGF5bWVudFJlc3VsdCA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgc3RhdHVzID0gImZhaWxlZCIsCiAgICAgICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3IgPSAiSW50ZXJuYWwgcHJvY2Vzc2luZyBlcnJvciIsCiAgICAgICAgICAgICAgICAgICAgICAgIGVycm9yQ29kZSA9ICJwcm9jZXNzaW5nX2Vycm9yIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JEZXNjcmlwdGlvbiA9IGV4Lk1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgICAgIGZhaWxlZEF0ID0gRGF0ZVRpbWUuVXRjTm93CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJwYXltZW50cyIsICJmYWlsdXJlIiwgImVycm9yIiwgImV4Y2VwdGlvbiIgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgIH0KCiAgICBwcml2YXRlIHN0YXRpYyAoc3RyaW5nIG1lc3NhZ2UsIHN0cmluZyBjb2RlLCBzdHJpbmcgZGVzY3JpcHRpb24pIEV4dHJhY3RFcnJvckluZm9ybWF0aW9uKFNjcmlwdENvbnRleHQgY29udGV4dCwgaW50IHN0YXR1c0NvZGUpCiAgICB7CiAgICAgICAgdmFyIGVycm9yRGF0YSA9IGNvbnRleHQuQm9keT8uZXJyb3IgPz8gY29udGV4dC5Cb2R5Py5kYXRhPy5lcnJvcjsKCiAgICAgICAgc3RyaW5nIG1lc3NhZ2UgPSAiUGF5bWVudCBwcm9jZXNzaW5nIGZhaWxlZCI7CiAgICAgICAgc3RyaW5nIGNvZGUgPSAicGF5bWVudF9wcm9jZXNzaW5nX2Vycm9yIjsKICAgICAgICBzdHJpbmcgZGVzY3JpcHRpb24gPSAiVW5hYmxlIHRvIHByb2Nlc3MgcGF5bWVudCI7CgogICAgICAgIGlmIChlcnJvckRhdGEgIT0gbnVsbCkKICAgICAgICB7CiAgICAgICAgICAgIG1lc3NhZ2UgPSBlcnJvckRhdGEubWVzc2FnZSA/PyBlcnJvckRhdGEuZXJyb3IgPz8gbWVzc2FnZTsKICAgICAgICAgICAgY29kZSA9IGVycm9yRGF0YS5jb2RlID8/IGVycm9yRGF0YS5lcnJvcl9jb2RlID8/IGNvZGU7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gZXJyb3JEYXRhLmRlc2NyaXB0aW9uID8/IGVycm9yRGF0YS5lcnJvcl9kZXNjcmlwdGlvbiA/PyBkZXNjcmlwdGlvbjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA9PSA0MDApCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gImludmFsaWRfcmVxdWVzdCI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIkludmFsaWQgcGF5bWVudCByZXF1ZXN0IjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA9PSA0MDEpCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gInVuYXV0aG9yaXplZCI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIlVuYXV0aG9yaXplZCBwYXltZW50IGF0dGVtcHQiOwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwMikKICAgICAgICB7CiAgICAgICAgICAgIGNvZGUgPSAiaW5zdWZmaWNpZW50X2Z1bmRzIjsKICAgICAgICAgICAgZGVzY3JpcHRpb24gPSAiSW5zdWZmaWNpZW50IGZ1bmRzIGZvciBwYXltZW50IjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA9PSA0MDMpCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gImZvcmJpZGRlbiI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIlBheW1lbnQgZm9yYmlkZGVuIjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA9PSA0MDQpCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gInBheW1lbnRfbWV0aG9kX25vdF9mb3VuZCI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIlBheW1lbnQgbWV0aG9kIG5vdCBmb3VuZCI7CiAgICAgICAgfQogICAgICAgIGVsc2UgaWYgKHN0YXR1c0NvZGUgPT0gNDI5KQogICAgICAgIHsKICAgICAgICAgICAgY29kZSA9ICJ0b29fbWFueV9yZXF1ZXN0cyI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIlRvbyBtYW55IHBheW1lbnQgcmVxdWVzdHMiOwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID49IDUwMCkKICAgICAgICB7CiAgICAgICAgICAgIGNvZGUgPSAic2VydmVyX2Vycm9yIjsKICAgICAgICAgICAgZGVzY3JpcHRpb24gPSAiSW50ZXJuYWwgc2VydmVyIGVycm9yIGR1cmluZyBwYXltZW50IHByb2Nlc3NpbmciOwogICAgICAgIH0KCiAgICAgICAgcmV0dXJuIChtZXNzYWdlLCBjb2RlLCBkZXNjcmlwdGlvbik7CiAgICB9Cn0="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "payment-success",
+            "target": "payment-success-state",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Payment Processed"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Ödeme İşlendi"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PaymentSuccessRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50U3VjY2Vzc1J1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBwYXltZW50UmVzdWx0ID0gY29udGV4dC5JbnN0YW5jZS5EYXRhLnBheW1lbnRSZXN1bHQ7CiAgICAgICAgICAgIGlmIChwYXltZW50UmVzdWx0ID09IG51bGwpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICByZXR1cm4gcGF5bWVudFJlc3VsdC5zdWNjZXNzID09IHRydWUgJiYgcGF5bWVudFJlc3VsdC5zdGF0dXMgPT0gInN1Y2Nlc3MiOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uKQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwogICAgICAgIH0KICAgIH0KfQo="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "payment-error",
+            "target": "payment-failed-state",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Payment Error"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Ödeme Hatası"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/PaymentErrorRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQYXltZW50RXJyb3JSdWxlIDogSUNvbmRpdGlvbk1hcHBpbmcKewogICAgcHVibGljIGFzeW5jIFRhc2s8Ym9vbD4gSGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICB2YXIgcGF5bWVudFJlc3VsdCA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YS5wYXltZW50UmVzdWx0OwogICAgICAgICAgICBpZiAocGF5bWVudFJlc3VsdCA9PSBudWxsKQogICAgICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwoKICAgICAgICAgICAgcmV0dXJuIHBheW1lbnRSZXN1bHQuc3VjY2VzcyA9PSBmYWxzZSAmJiBwYXltZW50UmVzdWx0LnN0YXR1cyA9PSAiZmFpbGVkIjsKICAgICAgICB9CiAgICAgICAgY2F0Y2ggKEV4Y2VwdGlvbikKICAgICAgICB7CiAgICAgICAgICAgIHJldHVybiB0cnVlOyAvLyBEZWZhdWx0IHRvIGVycm9yIGlmIGV4Y2VwdGlvbiBvY2N1cnMKICAgICAgICB9CiAgICB9Cn0K"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-failed-state",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Failed"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Başarısız"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "auto-retry-payment",
+            "target": "payment-retry",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - Retry Payment"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Ödemeyi Tekrar Dene"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/AutoRetryPaymentRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRvUmV0cnlQYXltZW50UnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgdmFyIHBheW1lbnRTY2hlZHVsZSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YS5wYXltZW50U2NoZWR1bGU7CiAgICAgICAgICAgIGlmIChwYXltZW50U2NoZWR1bGUgPT0gbnVsbCkKICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsKCiAgICAgICAgICAgIC8vIENoZWNrIGlmIGF1dG8tcmV0cnkgaXMgZW5hYmxlZAogICAgICAgICAgICBpZiAocGF5bWVudFNjaGVkdWxlLmlzQXV0b1JldHJ5ICE9IHRydWUpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICAvLyBDaGVjayBtYXggcmV0cmllcwogICAgICAgICAgICB2YXIgY3VycmVudFJldHJ5Q291bnQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5yZXRyeUNvdW50ID8/IDA7CiAgICAgICAgICAgIHZhciBtYXhSZXRyaWVzID0gcGF5bWVudFNjaGVkdWxlLm1heFJldHJpZXMgPz8gMzsKCiAgICAgICAgICAgIHJldHVybiBjdXJyZW50UmV0cnlDb3VudCA8IG1heFJldHJpZXM7CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24pCiAgICAgICAgewogICAgICAgICAgICByZXR1cm4gZmFsc2U7CiAgICAgICAgfQogICAgfQp9Cg=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "manual-user-triggers-retry",
+            "target": "payment-retry",
+            "triggerType": 0,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Manual - User Triggers Retry"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Manuel - Kullanıcı Yeniden Deneme Tetikler"
+              }
+            ],
+            "schema": null,
+            "rule": null,
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "max-retries-reached",
+            "target": "payment-cancelled",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Max Retries Reached"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Maksimum Yeniden Deneme Sayısına Ulaşıldı"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/MaxRetriesReachedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBNYXhSZXRyaWVzUmVhY2hlZFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEucGF5bWVudFNjaGVkdWxlOwogICAgICAgICAgICBpZiAocGF5bWVudFNjaGVkdWxlID09IG51bGwpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICB2YXIgY3VycmVudFJldHJ5Q291bnQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5yZXRyeUNvdW50ID8/IDA7CiAgICAgICAgICAgIHZhciBtYXhSZXRyaWVzID0gcGF5bWVudFNjaGVkdWxlLm1heFJldHJpZXMgPz8gMzsKCiAgICAgICAgICAgIHJldHVybiBjdXJyZW50UmV0cnlDb3VudCA+PSBtYXhSZXRyaWVzOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uKQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIHRydWU7IC8vIERlZmF1bHQgdG8gdHJ1ZSBpZiBleGNlcHRpb24gb2NjdXJzCiAgICAgICAgfQogICAgfQp9"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          },
+          {
+            "key": "main-workflow-deactivated",
+            "target": "payment-cancelled",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Main Workflow Deactivated"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Ana İş Akışı Deaktive Edildi"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/MainWorkflowDeactivatedRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBNYWluV29ya2Zsb3dEZWFjdGl2YXRlZFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBwYXltZW50U2NoZWR1bGUgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEucGF5bWVudFNjaGVkdWxlOwogICAgICAgICAgICBpZiAocGF5bWVudFNjaGVkdWxlID09IG51bGwpCiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CgogICAgICAgICAgICAvLyBDaGVjayBpZiBwYXltZW50IHNjaGVkdWxlIGlzIGRlYWN0aXZhdGVkIG9yIG5vdCBhY3RpdmUKICAgICAgICAgICAgcmV0dXJuIHBheW1lbnRTY2hlZHVsZS5zdGF0dXMgPT0gImRlYWN0aXZlIiB8fCBwYXltZW50U2NoZWR1bGUuaXNBY3RpdmUgPT0gZmFsc2U7CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24pCiAgICAgICAgewogICAgICAgICAgICByZXR1cm4gZmFsc2U7CiAgICAgICAgfQogICAgfQp9"
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-retry",
+        "stateType": 2,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Retry"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Yeniden Dene"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [
+          {
+            "order": 1,
+            "task": {
+              "key": "increment-retry-counter",
+              "domain": "core",
+              "version": "1.0.0",
+              "flow": "sys-tasks"
+            },
+            "mapping": {
+              "location": "./src/IncrementRetryCounterMapping.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIEluY3JlbWVudFJldHJ5Q291bnRlck1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIGh0dHBUYXNrID0gdGFzayBhcyBIdHRwVGFzazsKICAgICAgICBpZiAoaHR0cFRhc2sgPT0gbnVsbCkKICAgICAgICAgICAgdGhyb3cgbmV3IEludmFsaWRPcGVyYXRpb25FeGNlcHRpb24oIlRhc2sgbXVzdCBiZSBhbiBIdHRwVGFzayIpOwoKICAgICAgICB2YXIgY3VycmVudFJldHJ5Q291bnQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5yZXRyeUNvdW50ID8/IDA7CiAgICAgICAgdmFyIGluY3JlbWVudERhdGEgPSBuZXcKICAgICAgICB7CiAgICAgICAgICAgIHNjaGVkdWxlSWQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50U2NoZWR1bGU/LnNjaGVkdWxlSWQsCiAgICAgICAgICAgIHJldHJ5Q291bnQgPSBjdXJyZW50UmV0cnlDb3VudCArIDEsCiAgICAgICAgICAgIHJldHJ5QXQgPSBEYXRlVGltZS5VdGNOb3cKICAgICAgICB9OwoKICAgICAgICBodHRwVGFzay5TZXRCb2R5KGluY3JlbWVudERhdGEpOwogICAgICAgIHZhciBoZWFkZXJzID0gbmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgIHsKICAgICAgICAgICAgWyJDb250ZW50LVR5cGUiXSA9ICJhcHBsaWNhdGlvbi9qc29uIiwKICAgICAgICAgICAgWyJYLVNjaGVkdWxlLUlkIl0gPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wYXltZW50U2NoZWR1bGU/LnNjaGVkdWxlSWQ/LlRvU3RyaW5nKCkKICAgICAgICB9OwogICAgICAgIGh0dHBUYXNrLlNldEhlYWRlcnMoaGVhZGVycyk7CgogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgcmVzcG9uc2UgPSBuZXcgU2NyaXB0UmVzcG9uc2UoKTsKICAgICAgICB2YXIgY3VycmVudFJldHJ5Q291bnQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5yZXRyeUNvdW50ID8/IDA7CiAgICAgICAgCiAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgcmV0cnlDb3VudCA9IGN1cnJlbnRSZXRyeUNvdW50ICsgMSwKICAgICAgICAgICAgcmV0cnlTY2hlZHVsZWRBdCA9IERhdGVUaW1lLlV0Y05vdwogICAgICAgIH07CgogICAgICAgIHJldHVybiByZXNwb25zZTsKICAgIH0KfQ=="
+            }
+          }
+        ],
+        "onExits": [],
+        "transitions": [
+          {
+            "key": "retry-logic",
+            "target": "process-payment",
+            "triggerType": 1,
+            "versionStrategy": "Minor",
+            "labels": [
+              {
+                "language": "en-US",
+                "label": "Auto - Retry Logic"
+              },
+              {
+                "language": "tr-TR",
+                "label": "Otomatik - Yeniden Deneme Mantığı"
+              }
+            ],
+            "schema": null,
+            "rule": {
+              "location": "./src/RetryLogicRule.csx",
+              "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBSZXRyeUxvZ2ljUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIC8vIEFsd2F5cyByZXR1cm4gdHJ1ZSB0byBwcm9jZWVkIHdpdGggcmV0cnkKICAgICAgICByZXR1cm4gdHJ1ZTsKICAgIH0KfQ=="
+            },
+            "timer": null,
+            "view": null,
+            "onExecutionTasks": []
+          }
+        ]
+      },
+      {
+        "key": "payment-success-state",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Success"
+          },
+          {
+            "language": "tr-TR",
+            "label": "Başarılı"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      },
+      {
+        "key": "payment-cancelled",
+        "stateType": 3,
+        "versionStrategy": "Minor",
+        "labels": [
+          {
+            "language": "en-US",
+            "label": "Cancelled"
+          },
+          {
+            "language": "tr-TR",
+            "label": "İptal Edildi"
+          }
+        ],
+        "view": null,
+        "subFlow": null,
+        "onEntries": [],
+        "onExits": [],
+        "transitions": []
+      }
+    ]
+  }
+}

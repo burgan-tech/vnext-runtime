@@ -1,0 +1,127 @@
+### OAuth2.0 Authentication Workflow API Endpoints
+
+### Variables
+@baseUrl = http://localhost:4201
+@instanceId = {{initiateAuth.response.body.id}}
+
+### 1. Initiate Authentication - Start OAuth2.0 authentication workflow
+# @name initiateAuth
+POST {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/start
+Accept-Language: tr-TR
+X-Request-Id: {{$uuid}}
+X-Device-Id: {{$uuid}}
+X-Token-Id: {{$uuid}}
+X-Device-Info: IOS 16
+X-Forwarded-For: 192.168.2.1
+Content-Type: application/json
+
+{
+    "key": "34987491872323",
+    "tags": [
+        "test",
+        "oauth",
+        "authentication"
+    ],
+    "attributes": {
+        "username": "34987491778",
+        "password": "112233",
+        "grant_type": "password",
+        "client_id": "acme",
+        "client_secret": "1q2w3e*",
+        "scope": "openid profile product-api"
+    }
+}
+
+###
+
+### 2. Get Instance Data - Check current OAuth authentication status
+GET {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}
+Content-Type: application/json
+
+###
+
+### 3. Push Send Approval - Approve push notification for MFA
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/push-approved
+Content-Type: application/json
+
+###
+
+### 3.1. Push Send Denied - Deny push notification for MFA (Alternative to approval)
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/push-denied
+Content-Type: application/json
+
+###
+
+### 4. Authorization Code Flow - Use authorization code grant type
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/authorization-code-flow
+Content-Type: application/json
+
+{
+    "authorization_code": "AUTH_CODE_12345",
+    "redirect_uri": "https://example.com/callback",
+    "code_verifier": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+}
+
+###
+
+### 5. Client Credentials Flow - Use client credentials grant type
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/client-credentials-flow
+Content-Type: application/json
+
+{
+    "client_id": "acme-service",
+    "client_secret": "service-secret-key",
+    "scope": "service-api"
+}
+
+###
+
+### 6. Password Flow - Use resource owner password credentials
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/password-flow
+Content-Type: application/json
+
+{
+    "username": "user@example.com",
+    "password": "user-password",
+    "scope": "read write"
+}
+
+###
+
+### 7. OTP Verification - Verify OTP code for MFA
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/otp-verified
+Content-Type: application/json
+
+{
+    "otp_code": "123456",
+    "device_id": "{{$uuid}}"
+}
+
+###
+
+### 8. MFA Success - Complete multi-factor authentication
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/mfa-success
+Content-Type: application/json
+
+###
+
+### 9. MFA Failed - Handle MFA failure
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/mfa-failed
+Content-Type: application/json
+
+{
+    "failure_reason": "invalid_otp",
+    "retry_available": true
+}
+
+###
+
+### 10. Generate Tokens - Generate access and refresh tokens
+PATCH {{baseUrl}}/api/v1/core/workflows/oauth-authentication/instances/{{instanceId}}/transitions/generate-tokens
+Content-Type: application/json
+
+{
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "refresh_token_expires_in": 86400
+}
