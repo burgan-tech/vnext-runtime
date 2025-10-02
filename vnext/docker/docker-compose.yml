@@ -2,8 +2,7 @@ services:
 
   vnext-app:
     container_name: vnext-app
-    #image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
-    image: "vnext-orchestration:latest"
+    image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
     env_file:
       - .env.orchestration
     healthcheck:
@@ -44,8 +43,7 @@ services:
       
   vnext-execution-app:
     container_name: vnext-execution-app
-    #image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
-    image: "vnext-execution:latest"
+    image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
     env_file:
       - .env.execution
     healthcheck:
@@ -313,9 +311,62 @@ services:
       - prometheus
     restart: unless-stopped
 
+  metabase:
+    container_name: vnext-metabase
+    image: metabase/metabase:${METABASE_VERSION:-latest}
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: postgres
+      MB_DB_PASS: postgres
+      MB_DB_HOST: postgres
+      MB_ENCRYPTION_SECRET_KEY: "vnext-metabase-secret-key-change-this-in-production"
+      JAVA_OPTS: "-Xmx2g"
+    ports:
+      - "3002:3000"
+    volumes:
+      - metabase:/metabase.db
+      - ../../metabase-dashboards:/metabase-dashboards:ro
+    networks:
+      - vnext-development
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  clickhouse:
+    container_name: vnext-clickhouse
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION:-latest}
+    environment:
+      CLICKHOUSE_DB: workflow_analytics
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8123:8123"  # HTTP interface
+      - "9000:9000"  # Native interface
+    volumes:
+      - clickhouse:/var/lib/clickhouse
+      - ./config/clickhouse:/etc/clickhouse-server/config.d
+      - ./config/clickhouse/users.xml:/etc/clickhouse-server/users.xml
+      - ./config/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - vnext-development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
   # Mockoon API Mock Server
   mockoon:
-    image: mockoon/cli:latest
+    image: mockoon/cli:${MOCKOON_VERSION:-latest}
     container_name: migration-mockoon
     command: ["--data", "/data/migration-api.json", "--port", "3001", "--hostname", "0.0.0.0"]
     ports:
@@ -343,3 +394,5 @@ volumes:
   openobserve:
   prometheus:
   grafana:
+  metabase:
+  clickhouse:

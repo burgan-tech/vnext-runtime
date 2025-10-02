@@ -284,7 +284,6 @@ public class TransitionRule : IRule
 ### 7. Common Use Cases
 
 - **Authentication flows**: Login, MFA, OAuth
-- **E-commerce processes**: Cart, payment, order tracking
 - **Payment processing**: Scheduled payments, retry logic
 - **Notification systems**: Email, SMS, Push notifications
 - **Data processing**: ETL, batch operations

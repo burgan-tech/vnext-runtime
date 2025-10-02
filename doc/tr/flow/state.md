@@ -46,7 +46,6 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
    - State'de tanımlı transition'lar kontrol edilir
    - Client sadece manuel ve event transition'ları tetikleyebilir
    - Auto ve schedule transition'lar sadece sistem tarafından çalıştırılır
-   - Bir transition aynı state'i tekrar target olarak seçemez
 
 2. **Current Transition OnExecutionTasks**
    - Mevcut transition'ın OnExecutionTask'ları çalıştırılır
