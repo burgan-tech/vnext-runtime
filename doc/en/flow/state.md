@@ -46,7 +46,6 @@ The state machine follows the following lifecycle:
    - Transitions defined in the state are checked
    - Client can only trigger manual and event transitions
    - Auto and schedule transitions are only executed by the system
-   - A transition cannot select the same state as target again
 
 2. **Current Transition OnExecutionTasks**
    - OnExecutionTasks of the current transition are executed
