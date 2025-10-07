@@ -1,0 +1,301 @@
+{
+    "key": "notification-subflow",
+    "version": "1.0.0",
+    "domain": "core",
+    "flow": "sys-flows",
+    "flowVersion": "1.0.0",
+    "tags": [
+      "notification",
+      "subflow",
+      "sms",
+      "push"
+    ],
+    "attributes": {
+      "type": "S",
+      "labels": [
+        {
+          "label": "Notification Subflow",
+          "language": "en-US"
+        },
+        {
+          "label": "Bildirim Alt Akışı",
+          "language": "tr-TR"
+        }
+      ],
+      "sharedTransitions":[],
+      "startTransition": {
+        "key": "start",
+        "target": "check-notification",
+        "versionStrategy": "Minor",
+        "triggerType": 0,
+        "labels": [
+          {
+            "label": "Başlangıç",
+            "language": "tr-TR"
+          },
+          {
+            "label": "Start",
+            "language": "en-US"
+          }
+        ]
+      },
+      "states": [
+        {
+          "key": "check-notification",
+          "stateType": 1,
+          "versionStrategy": "Minor",
+          "labels": [
+            {
+              "label": "Bildirim Tipi Kontrolü",
+              "language": "tr-TR"
+            },
+            {
+              "label": "Check Notification Type",
+              "language": "en-US"
+            }
+          ],
+          "view": null,
+          "onEntries": [
+            {
+              "order": 1,
+              "task": {
+                "key": "script-task",
+                "flow": "sys-tasks",
+                "domain": "core",
+                "version": "1.0.0"
+              },
+              "mapping": {
+                "location": "/test-vnext-project/Workflows/src/CheckNotificationTypeMapping.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgU3lzdGVtLlRleHQuSnNvbjsKCnB1YmxpYyBjbGFzcyBDaGVja05vdGlmaWNhdGlvblR5cGVNYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgfQoKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAgdmFyIHJlc3BvbnNlRGF0YSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YTsKICAgICAgICAvLyBCaWxkaXJpbSB0aXBpbmkgSW5zdGFuY2VEYXRhJ2Rha2kgaHVtYW5UYXNrTm90aWZpY2F0aW9uJ2EgZ8O2cmUgYmVsaXJsZQogICAgICAgIGR5bmFtaWMgbm90aWZpY2F0aW9uRGF0YSA9IG5ldyBFeHBhbmRvT2JqZWN0KCk7CiAgICAgICAgCiAgICAgICAgLy8gSW5zdGFuY2VEYXRhJ2RhbiBodW1hblRhc2tOb3RpZmljYXRpb24gZGXEn2VyaW5pIGFsCiAgICAgICAgdmFyIGh1bWFuVGFza05vdGlmaWNhdGlvbiA9IHJlc3BvbnNlRGF0YS5odW1hblRhc2tOb3RpZmljYXRpb24/LlRvU3RyaW5nKCk7CiAgICAgICAgCiAgICAgICAgLy8gQmlsZGlyaW0gdGlwaW5lIGfDtnJlIGthcmFyIHZlcgogICAgICAgIGlmICghc3RyaW5nLklzTnVsbE9yRW1wdHkoaHVtYW5UYXNrTm90aWZpY2F0aW9uKSkKICAgICAgICB7CiAgICAgICAgICAgIHN3aXRjaCAoaHVtYW5UYXNrTm90aWZpY2F0aW9uLlRvTG93ZXIoKSkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgY2FzZSAic21zIjoKICAgICAgICAgICAgICAgICAgICBub3RpZmljYXRpb25EYXRhLnNob3VsZFNlbmRTTVM9dHJ1ZTsKICAgICAgICAgICAgICAgICAgICBub3RpZmljYXRpb25EYXRhLnNob3VsZFNlbmRQdXNoPWZhbHNlOwogICAgICAgICAgICAgICAgICAgIG5vdGlmaWNhdGlvbkRhdGEuc2hvdWxkU2tpcD1mYWxzZTsKICAgICAgICAgICAgICAgICAgICBicmVhazsKICAgICAgICAgICAgICAgIGNhc2UgInB1c2giOgogICAgICAgICAgICAgICAgICAgIG5vdGlmaWNhdGlvbkRhdGEuc2hvdWxkU2VuZFNNUz1mYWxzZTsKICAgICAgICAgICAgICAgICAgICBub3RpZmljYXRpb25EYXRhLnNob3VsZFNlbmRQdXNoPXRydWU7CiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5zaG91bGRTa2lwPWZhbHNlOwogICAgICAgICAgICAgICAgICAgIGJyZWFrOwogICAgICAgICAgICAgICAgY2FzZSAiYm90aCI6CiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5zaG91bGRTZW5kU01TPXRydWU7CiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5zaG91bGRTZW5kUHVzaD10cnVlOwogICAgICAgICAgICAgICAgICAgIG5vdGlmaWNhdGlvbkRhdGEuc2hvdWxkU2tpcD1mYWxzZTsKICAgICAgICAgICAgICAgICAgICBicmVhazsKICAgICAgICAgICAgICAgIGNhc2UgInNraXAiOgogICAgICAgICAgICAgICAgY2FzZSAibm9uZSI6CiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5zaG91bGRTZW5kU01TPWZhbHNlOwogICAgICAgICAgICAgICAgICAgIG5vdGlmaWNhdGlvbkRhdGEuc2hvdWxkU2VuZFB1c2g9ZmFsc2U7CiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5zaG91bGRTa2lwPXRydWU7CiAgICAgICAgICAgICAgICAgICAgYnJlYWs7CiAgICAgICAgICAgICAgICBkZWZhdWx0OgogICAgICAgICAgICAgICAgICAgIC8vIERlZmF1bHQgb2xhcmFrIGhpw6cgYmlyIMWfZXkgeWFwbWEKICAgICAgICAgICAgICAgICAgICBub3RpZmljYXRpb25EYXRhLnNob3VsZFNlbmRTTVM9ZmFsc2U7CiAgICAgICAgICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5zaG91bGRTZW5kUHVzaD1mYWxzZTsKICAgICAgICAgICAgICAgICAgICBub3RpZmljYXRpb25EYXRhLnNob3VsZFNraXA9dHJ1ZTsKICAgICAgICAgICAgICAgICAgICBicmVhazsKICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICAvLyBodW1hblRhc2tOb3RpZmljYXRpb24geW9rc2EgZGVmYXVsdCBvbGFyYWsgU01TIGfDtm5kZXIKICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5TZXRTY29wZSgic2hvdWxkU2VuZFNNUyIsIHRydWUpOwogICAgICAgICAgICBub3RpZmljYXRpb25EYXRhLlNldFNjb3BlKCJzaG91bGRTZW5kUHVzaCIsIGZhbHNlKTsKICAgICAgICAgICAgbm90aWZpY2F0aW9uRGF0YS5TZXRTY29wZSgic2hvdWxkU2tpcCIsIGZhbHNlKTsKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKQogICAgICAgIHsKICAgICAgICAgICAgRGF0YSA9IG5vdGlmaWNhdGlvbkRhdGEKICAgICAgICB9KTsKICAgIH0KfQo="
+              }
+            }
+          ],
+          "transitions": [
+            {
+              "key": "send-sms",
+              "triggerType": 1,
+              "target": "parse-phone",
+              "versionStrategy": "Minor",
+              "rule": {
+                "location": "/test-vnext-project/Workflows/src/ShouldSendSMSRule.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBTaG91bGRTZW5kU01TUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIC8vIFNNUyBnb25kZXJpbSBrb250cm9sIGxvZ2nEn2kgYnVyYWRhIG9sYWNhawogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEuc2hvdWxkU2VuZFNNUyA9PSB0cnVlOwogICAgfQp9Cg=="
+              },
+              "labels": [
+                {
+                  "label": "SMS Gönder",
+                  "language": "tr-TR"
+                },
+                {
+                  "label": "Send SMS",
+                  "language": "en-US"
+                }
+              ]
+            },
+            {
+              "key": "send-push",
+              "triggerType": 1,
+              "target": "send-push-notification",
+              "versionStrategy": "Minor",
+              "rule": {
+                "location": "/test-vnext-project/Workflows/src/ShouldSendPushRule.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBTaG91bGRTZW5kUHVzaFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBQdXNoIGJpbGRpcmltIGdvbmRlcmltIGtvbnRyb2wgbG9nacSfaSBidXJhZGEgb2xhY2FrCiAgICAgICAgcmV0dXJuIGNvbnRleHQuSW5zdGFuY2UuRGF0YS5zaG91bGRTZW5kUHVzaCA9PSB0cnVlOwogICAgfQp9Cg=="
+              },
+              "labels": [
+                {
+                  "label": "Push Bildirim Gönder",
+                  "language": "tr-TR"
+                },
+                {
+                  "label": "Send Push Notification",
+                  "language": "en-US"
+                }
+              ]
+            },
+            {
+              "key": "skip",
+              "triggerType": 1,
+              "target": "completed",
+              "versionStrategy": "Minor",
+              "rule": {
+                "location": "/test-vnext-project/Workflows/src/ShouldSkipRule.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBTaG91bGRTa2lwUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIC8vIEF0bGEgbG9nacSfaSBidXJhZGEgb2xhY2FrCiAgICAgICAgcmV0dXJuIGNvbnRleHQuSW5zdGFuY2UuRGF0YS5zaG91bGRTa2lwID09IHRydWU7CiAgICB9Cn0K"
+              },
+              "labels": [
+                {
+                  "label": "Atla",
+                  "language": "tr-TR"
+                },
+                {
+                  "label": "Skip",
+                  "language": "en-US"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "parse-phone",
+          "stateType": 2,
+          "versionStrategy": "Minor",
+          "labels": [
+            {
+              "label": "Telefon Numarası Ayrıştır",
+              "language": "tr-TR"
+            },
+            {
+              "label": "Parse Phone Number",
+              "language": "en-US"
+            }
+          ],
+          "view": null,
+          "onEntries": [
+            {
+              "order": 1,
+              "task": {
+                "key": "script-task",
+                "flow": "sys-tasks",
+                "domain": "core",
+                "version": "1.0.0"
+              },
+              "mapping": {
+                "location": "/test-vnext-project/Workflows/src/ParsePhoneNumberMapping.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgU3lzdGVtLlRleHQuSnNvbjsKCnB1YmxpYyBjbGFzcyBQYXJzZVBob25lTnVtYmVyTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgIH0KCiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgLy8gVGVsZWZvbiBudW1hcmFzxLFuxLEgaGVhZGVycydkYW4gYWwgdmUgYXlyxLHFn3TEsXIKICAgICAgICB2YXIgcGhvbmVEYXRhID0gbmV3IEV4cGFuZG9PYmplY3QoKTsKICAgICAgICAKICAgICAgICAvLyBIZWFkZXJzJ2RhbiBwaG9uZV9udW1iZXIgYWwKICAgICAgICB2YXIgcGhvbmVOdW1iZXIgPSBjb250ZXh0LkhlYWRlcnM/LkdldFZhbHVlKCJwaG9uZV9udW1iZXIiKT8uVG9TdHJpbmcoKTsKICAgICAgICAKICAgICAgICBpZiAoIXN0cmluZy5Jc051bGxPckVtcHR5KHBob25lTnVtYmVyKSkKICAgICAgICB7CiAgICAgICAgICAgIC8vIFRlbGVmb24gbnVtYXJhc8SxbsSxIHBhcnNlIGV0ICjDtnJuZWs6ICs5MDUwMDEyMzQ1NjcpCiAgICAgICAgICAgIGlmIChwaG9uZU51bWJlci5TdGFydHNXaXRoKCIrOTAiKSkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcGhvbmVEYXRhLlNldFNjb3BlKCJjb3VudHJ5Q29kZSIsICIrOTAiKTsKICAgICAgICAgICAgICAgIHZhciBudW1iZXJQYXJ0ID0gcGhvbmVOdW1iZXIuU3Vic3RyaW5nKDMpOyAvLyA1MDAxMjM0NTY3CiAgICAgICAgICAgICAgICBpZiAobnVtYmVyUGFydC5MZW5ndGggPj0gMTApCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgcGhvbmVEYXRhLlNldFNjb3BlKCJwaG9uZVByZWZpeCIsIG51bWJlclBhcnQuU3Vic3RyaW5nKDAsIDMpKTsgLy8gNTAwCiAgICAgICAgICAgICAgICAgICAgcGhvbmVEYXRhLlNldFNjb3BlKCJwaG9uZU51bWJlciIsIG51bWJlclBhcnQuU3Vic3RyaW5nKDMpKTsgLy8gMTIzNDU2NwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgICAgIHBob25lRGF0YS5mb3JtYXR0ZWRQaG9uZT1waG9uZU51bWJlcjsKICAgICAgICAgICAgcGhvbmVEYXRhLmlzVmFsaWQ9dHJ1ZTsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gRGVmYXVsdCBkZcSfZXJsZXIKICAgICAgICAgICAgcGhvbmVEYXRhLmNvdW50cnlDb2RlPSIrOTAiOwogICAgICAgICAgICAgcGhvbmVEYXRhLnBob25lUHJlZml4PSI1NTQiOwogICAgICAgICAgICAgIHBob25lRGF0YS5waG9uZU51bWJlcj0iMzgxNjg0NiI7CiAgICAgICAgICAgICAgIHBob25lRGF0YS5mb3JtYXR0ZWRQaG9uZT0iOTA1NTQzODE2ODQ2IjsKICAgICAgICAgICAgICAgIHBob25lRGF0YS5pc1ZhbGlkPWZhbHNlOwogICAgICAgIH0KICAgICAgICAKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gcGhvbmVEYXRhCiAgICAgICAgfSk7CiAgICB9Cn0K"
+              }
+            }
+          ],
+          "transitions": [
+            {
+              "key": "phone-parsed",
+              "triggerType": 1,
+              "target": "send-sms-notification",
+              "versionStrategy": "Minor",
+              "labels": [
+                {
+                  "label": "Telefon Ayrıştırıldı",
+                  "language": "tr-TR"
+                },
+                {
+                  "label": "Phone Parsed",
+                  "language": "en-US"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "send-sms-notification",
+          "stateType": 2,
+          "versionStrategy": "Minor",
+          "labels": [
+            {
+              "label": "SMS Bildirimi Gönder",
+              "language": "tr-TR"
+            },
+            {
+              "label": "Send SMS Notification",
+              "language": "en-US"
+            }
+          ],
+          "view": null,
+          "onEntries": [
+            {
+              "order": 1,
+              "task": {
+                "key": "send-sms-notification",
+                "flow": "sys-tasks",
+                "domain": "core",
+                "version": "1.0.0"
+              },
+              "mapping": {
+                "location": "/test-vnext-project/Workflows/src/SendSmsNotificationInputMapping.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgU3lzdGVtLlRleHQuSnNvbjsKCnB1YmxpYyBjbGFzcyBTZW5kU21zTm90aWZpY2F0aW9uSW5wdXRNYXBwaW5nIDogSU1hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihXb3JrZmxvd1Rhc2sgdGFzaywgU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgCiAgICAgICAgdmFyIGh0dHBUYXNrID0gKHRhc2sgYXMgSHR0cFRhc2spITsKICAgICAgICBodHRwVGFzay5Cb2R5LnBob25lLmNvdW50cnlDb2RlPWNvbnRleHQuSW5zdGFuY2UuRGF0YS5jb3VudHJ5Q29kZTsKICAgICAgICBodHRwVGFzay5Cb2R5LnBob25lLnBob25lUHJlZml4PWNvbnRleHQuSW5zdGFuY2UuRGF0YS5waG9uZVByZWZpeDsKICAgICAgICBodHRwVGFzay5Cb2R5LnBob25lLnBob25lTnVtYmVyPWNvbnRleHQuSW5zdGFuY2UuRGF0YS5waG9uZU51bWJlcjsKICAgICAgICBodHRwVGFzay5Cb2R5LmNvbnRlbnQ9Y29udGV4dC5JbnN0YW5jZS5EYXRhLmh1bWFuVGFza0Rlc2M7CiAgICAgICAKICAgICAgICAKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gaW5wdXREYXRhCiAgICAgICAgfSk7CiAgICB9CgogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBjb250ZXh0LkJvZHkKICAgICAgICB9KTsKICAgIH0KfQo="
+              }
+            }
+          ],
+          "transitions": [
+            {
+              "key": "sms-sent",
+              "triggerType": 1,
+              "target": "completed",
+              "versionStrategy": "Minor",
+              "labels": [
+                {
+                  "label": "SMS Gönderildi",
+                  "language": "tr-TR"
+                },
+                {
+                  "label": "SMS Sent",
+                  "language": "en-US"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "send-push-notification",
+          "stateType": 2,
+          "versionStrategy": "Minor",
+          "labels": [
+            {
+              "label": "Push Bildirimi Gönder",
+              "language": "tr-TR"
+            },
+            {
+              "label": "Send Push Notification",
+              "language": "en-US"
+            }
+          ],
+          "view": null,
+          "onEntries": [
+            {
+              "order": 1,
+              "task": {
+                "key": "send-push-notification",
+                "flow": "sys-tasks",
+                "domain": "core",
+                "version": "1.0.0"
+              },
+              "mapping": {
+                "location": "/test-vnext-project/Workflows/src/SendPushNotificationInputMapping.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgU3lzdGVtLlRleHQuSnNvbjsKCnB1YmxpYyBjbGFzcyBTZW5kUHVzaE5vdGlmaWNhdGlvbklucHV0TWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBQdXNoIG5vdGlmaWNhdGlvbiBpY2luIGdlcmVrbGkgZGVnZXJsZXJpIGF5YXJsYQogICAgICAgIHZhciBpbnB1dERhdGEgPSBuZXcgRXhwYW5kb09iamVjdCgpOwogICAgICAgIAogICAgICAgIC8vIEh1bWFuVGFzayBiaWxnaWxlcmluaSBJbnN0YW5jZURhdGEnZGFuIGFsCiAgICAgICAgaHR0cFRhc2suQm9keS5jaXRpemVuc2hpcE5vPWNvbnRleHQuSW5zdGFuY2UuRGF0YS5odW1hblRhc2tBc3NpZ25lZTsKICAgICAgICBodHRwVGFzay5Cb2R5LmN1c3RvbWVyTm89Y29udGV4dC5IZWFkZXJzLmN1c3RvbWVyX25vOwogICAgICAgIGh0dHBUYXNrLkJvZHkuY29udGVudD1jb250ZXh0Lkluc3RhbmNlLkRhdGEuaHVtYW5UYXNrRGVzYzsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gaW5wdXREYXRhCiAgICAgICAgfSk7CiAgICB9CgogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBjb250ZXh0LkJvZHkKICAgICAgICB9KTsKICAgIH0KfQo="
+              }
+            }
+          ],
+          "transitions": [
+            {
+              "key": "push-sent",
+              "triggerType": 1,
+              "target": "completed",
+              "versionStrategy": "Minor",
+              "labels": [
+                {
+                  "label": "Push Gönderildi",
+                  "language": "tr-TR"
+                },
+                {
+                  "label": "Push Sent",
+                  "language": "en-US"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "completed",
+          "stateType": 3,
+          "versionStrategy": "Minor",
+          "labels": [
+            {
+              "label": "Tamamlandı",
+              "language": "tr-TR"
+            },
+            {
+              "label": "Completed",
+              "language": "en-US"
+            }
+          ],
+          "view": null
+        }
+      ]
+    }
+  }

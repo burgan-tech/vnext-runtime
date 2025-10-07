@@ -1,0 +1,18 @@
+{
+  "key": "account-type-selection-view",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-views",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "account-type",
+    "selection",
+    "ui-view"
+  ],
+  "attributes": {
+    "type": 1,
+    "target": 1,
+    "content": "{}"
+  }
+}
