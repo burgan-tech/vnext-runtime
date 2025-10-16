@@ -13,6 +13,32 @@
   "attributes": {
     "type": 1,
     "target": 1,
-    "content": "{}"
+    "content": "{\"test\":1}",
+    "display": "full-page",
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Test Label"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Deneme"
+      }
+    ],
+    "platformOverrides": {
+      "android": {
+        "content": "{ \"widget\": \"MaterialCard\", \"title\": \"Android Profile\" }",
+        "display": "bottom-sheet"
+      },
+      "ios": {
+        "content": "{ \"widget\": \"CupertinoPage\", \"title\": \"iOS Profile\" }",
+        "display": "full-page"
+      },
+      "web": {
+        "type": 2,
+        "content": "<div class=\"profile\">Web Profile</div>",
+        "display": "inline"
+      }
+    }
   }
 }
