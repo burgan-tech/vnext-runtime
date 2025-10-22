@@ -8,789 +8,6 @@
 	},
 	"item": [
 		{
-			"name": "e-commerce",
-			"item": [
-				{
-					"name": "Definitions",
-					"item": [
-						{
-							"name": "Flows",
-							"item": [
-								{
-									"name": "1 - Start - e-Commerce",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"if (pm.response.code === 200 || pm.response.code === 201) {",
-													"    var jsonData = pm.response.json();",
-													"    pm.collectionVariables.set('instanceId', jsonData.id);",
-													"}"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"key\": \"ecommerce\",\n  \"flow\": \"sys-flows\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"ecommerce\",\n    \"shopping\",\n    \"dummyjson\",\n    \"demo\"\n  ],\n  \"attributes\": {\n    \"type\": \"F\",\n    \"timeout\": null,\n    \"labels\": [\n      {\n        \"language\": \"en-US\",\n        \"label\": \"E-commerce Shopping Workflow\"\n      },\n      {\n        \"language\": \"tr-TR\",\n        \"label\": \"E-ticaret Alışveriş İş Akışı\"\n      }\n    ],\n    \"functions\": [],\n    \"features\": [],\n    \"extensions\": [],\n    \"sharedTransitions\": [],\n    \"startTransition\": {\n      \"key\": \"start-shopping\",\n      \"target\": \"authentication\",\n      \"triggerType\": 0,\n      \"versionStrategy\": \"Minor\",\n      \"labels\": [\n        {\n          \"language\": \"en-US\",\n          \"label\": \"Start Shopping\"\n        },\n        {\n          \"language\": \"tr-TR\",\n          \"label\": \"Alışverişe Başla\"\n        }\n      ],\n      \"schema\": null,\n      \"rule\": null,\n      \"timer\": null,\n      \"view\": null,\n      \"onExecutionTasks\": []\n    },\n    \"states\": [\n      {\n        \"key\": \"authentication\",\n        \"stateType\": 1,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"User Authentication\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Kullanıcı Kimlik Doğrulama\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [\n          {\n            \"order\": 1,\n            \"task\": {\n              \"key\": \"auth-login\",\n              \"domain\": \"{{domain}}\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-tasks\"\n            },\n            \"mapping\": {\n              \"location\": \"./src/AuthLoginMapping.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIEF1dGhMb2dpbk1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIGh0dHBUYXNrID0gdGFzayBhcyBIdHRwVGFzazsKICAgICAgICBodHRwVGFzay5TZXRCb2R5KGNvbnRleHQuQm9keSk7CiAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgewogICAgICAgICAgICBbIlgtUmVxdWVzdC1JZCJdID0gY29udGV4dC5IZWFkZXJzWyJ4LXJlcXVlc3QtaWQiXSwKICAgICAgICAgICAgWyJYLURldmljZS1JZCJdID0gY29udGV4dC5IZWFkZXJzWyJ4LWRldmljZS1pZCJdCiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRIZWFkZXJzKGhlYWRlcnMpOwogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gY29udGV4dC5JbnN0YW5jZS5EYXRhLAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBTdG9yZSBhdXRoZW50aWNhdGlvbiB0b2tlbiBmb3IgZnV0dXJlIHJlcXVlc3RzCiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHkuc3RhdHVzQ29kZSA/PyA1MDA7CgogICAgICAgIGlmIChzdGF0dXNDb2RlID09IDIwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgbG9naW4gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBjdXJyZW50TG9naW4gPSBjb250ZXh0LkJvZHkuZGF0YQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwNCkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE5vdCBmb3VuZCAtIGhhbmRsZSBzcGVjaWZpY2FsbHkKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBsb2dpbiA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJSZXNvdXJjZSBub3QgZm91bmQiLAogICAgICAgICAgICAgICAgICAgIHNob3VsZFJldHJ5ID0gZmFsc2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gU2VydmVyIGVycm9yIC0gbWlnaHQgd2FudCB0byByZXRyeQogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGxvZ2luID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgc2hvdWxkUmV0cnkgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgIHJldHJ5QWZ0ZXIgPSAzMCAvLyBzZWNvbmRzCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQoKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9Cn0=\"\n            }\n          }\n        ],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"auth-success\",\n            \"target\": \"product-browsing\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Authentication Successful\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Kimlik Doğrulama Başarılı\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": {\n              \"location\": \"./src/AuthSuccessRule.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRoU3VjY2Vzc1J1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gY29udGV4dC5JbnN0YW5jZS5EYXRhLmxvZ2luLnN1Y2Nlc3MgPT0gdHJ1ZTsKICAgIH0KfQ==\"\n            },\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          },\n          {\n            \"key\": \"auth-failed\",\n            \"target\": \"authentication\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Authentication Failed - Retry\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Kimlik Doğrulama Başarısız - Tekrar Dene\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": {\n              \"location\": \"./src/AuthFailedRule.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBBdXRoRmFpbGVkUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBjb250ZXh0Lkluc3RhbmNlLkRhdGEubG9naW4uc3VjY2VzcyA9PSBmYWxzZTsKICAgIH0KfQ==\"\n            },\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"product-browsing\",\n        \"stateType\": 2,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Product Browsing\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Ürün Gezinme\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"select-product\",\n            \"target\": \"cart-management\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Select Product\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Ürün Seç\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          },\n          {\n            \"key\": \"continue-browsing\",\n            \"target\": \"product-browsing\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Continue Browsing\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Gezinmeye Devam Et\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"cart-management\",\n        \"stateType\": 2,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Cart Management\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Sepet Yönetimi\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [\n          {\n            \"order\": 1,\n            \"task\": {\n              \"key\": \"add-to-cart\",\n              \"domain\": \"{{domain}}\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-tasks\"\n            },\n            \"mapping\": {\n              \"location\": \"./src/AddToCartMapping.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtOwp1c2luZyBTeXN0ZW0uQ29sbGVjdGlvbnMuR2VuZXJpYzsKdXNpbmcgU3lzdGVtLkxpbnE7CnVzaW5nIFN5c3RlbS5UaHJlYWRpbmcuVGFza3M7CnVzaW5nIEJCVC5Xb3JrZmxvdy5TY3JpcHRpbmc7CnVzaW5nIEJCVC5Xb3JrZmxvdy5EZWZpbml0aW9uczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZy5GdW5jdGlvbnM7CgpwdWJsaWMgY2xhc3MgQWRkVG9DYXJ0TWFwcGluZyA6IFNjcmlwdEJhc2UsIElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICB0aHJvdyBuZXcgQXJndW1lbnRFeGNlcHRpb24oIlRhc2sgbXVzdCBiZSBvZiB0eXBlIEh0dHBUYXNrIik7CiAgICAgICAgICAgIAogICAgICAgIHZhciBoZWFkZXJzID0gbmV3IERpY3Rpb25hcnk8c3RyaW5nLCBzdHJpbmc/PgogICAgICAgIHsKICAgICAgICAgICAgWyJBdXRob3JpemF0aW9uIl0gPSAkIkJlcmVhciB7Y29udGV4dC5JbnN0YW5jZS5EYXRhPy5sb2dpbj8uY3VycmVudExvZ2luPy5hY2Nlc3NUb2tlbn0iCiAgICAgICAgfTsKICAgICAgICBodHRwVGFzay5TZXRIZWFkZXJzKGhlYWRlcnMpOwogICAgICAgIAogICAgICAgIC8vIENoZWNrIGlmIGNhcnQgYWxyZWFkeSBleGlzdHMgaW4gY29udGV4dC5JbnN0YW5jZS5EYXRhLCBpZiBub3QgY3JlYXRlIGl0CiAgICAgICAgTGlzdDxQcm9kdWN0RHRvPiBleGlzdGluZ1Byb2R1Y3RzID0gbmV3IExpc3Q8UHJvZHVjdER0bz4oKTsKICAgICAgICB2YXIgaXNBZGRkZWQgPSB0cnVlOwogICAgICAgIGlmIChIYXNQcm9wZXJ0eShjb250ZXh0Lkluc3RhbmNlLkRhdGEsICJjYXJkIikpCiAgICAgICAgewogICAgICAgICAgICB2YXIgY2FyZERhdGEgPSBHZXRQcm9wZXJ0eVZhbHVlKGNvbnRleHQuSW5zdGFuY2UuRGF0YSwgImNhcmQiKTsKICAgICAgICAgICAgaWYgKEhhc1Byb3BlcnR5KGNhcmREYXRhLCAicHJvZHVjdHMiKSkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgaXNBZGRkZWQgPSBmYWxzZTsKICAgICAgICAgICAgICAgIC8vIENvbnZlcnQgZXhpc3RpbmcgcHJvZHVjdHMgdG8gUHJvZHVjdER0byBsaXN0CiAgICAgICAgICAgICAgICB2YXIgcHJvZHVjdHNEYXRhID0gR2V0UHJvcGVydHlWYWx1ZShjYXJkRGF0YSwgInByb2R1Y3RzIik7CiAgICAgICAgICAgICAgICBpZiAocHJvZHVjdHNEYXRhIGlzIElFbnVtZXJhYmxlPGR5bmFtaWM+IHByb2R1Y3RzKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGZvcmVhY2ggKHZhciBwcm9kdWN0IGluIHByb2R1Y3RzKQogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgZXhpc3RpbmdQcm9kdWN0cy5BZGQobmV3IFByb2R1Y3REdG8oKQogICAgICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZCA9IENvbnZlcnQuVG9JbnQzMihwcm9kdWN0Py5pZCA/PyAwKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHF1YW50aXR5ID0gQ29udmVydC5Ub0ludDMyKHByb2R1Y3Q/LnF1YW50aXR5ID8/IDEpCiAgICAgICAgICAgICAgICAgICAgICAgIH0pOwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgaWYgKGlzQWRkZGVkKQogICAgICAgIHsKICAgICAgICAgICAgaHR0cFRhc2suVXJsID0gaHR0cFRhc2suVXJsLlJlcGxhY2UoIntDQVJEX0FERF9PUl9VUERBVEVfUEFUSH0iLCAiY2FydHMvYWRkIik7CiAgICAgICAgICAgIGh0dHBUYXNrLk1ldGhvZCA9ICJQT1NUIjsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gV0FSTjogSXQgd2lsbCBzaW11bGF0ZSBhIFBPU1QgcmVxdWVzdCBhbmQgd2lsbCByZXR1cm4gdGhlIG5ldyBjcmVhdGVkIGNhcnQgd2l0aCBhIG5ldyBpZCAKICAgICAgICAgICAgLy8gaHR0cFRhc2suVXJsID0gaHR0cFRhc2suVXJsLlJlcGxhY2UoIntDQVJEX0FERF9PUl9VUERBVEVfUEFUSH0iLCAkImNhcnRzL3tjb250ZXh0Lkluc3RhbmNlLkRhdGE/LmNhcmQ/LmlkfSIpOwogICAgICAgICAgICBodHRwVGFzay5VcmwgPSBodHRwVGFzay5VcmwuUmVwbGFjZSgie0NBUkRfQUREX09SX1VQREFURV9QQVRIfSIsICQiY2FydHMvMTAiKTsKICAgICAgICAgICAgaHR0cFRhc2suTWV0aG9kID0gIlBVVCI7ICAgIAogICAgICAgIH0KICAgICAgICAKICAgICAgICAvLyBBZGQgdGhlIG5ldyBwcm9kdWN0IHRvIHRoZSBjYXJ0CiAgICAgICAgdmFyIG5ld1Byb2R1Y3QgPSBuZXcgUHJvZHVjdER0bygpCiAgICAgICAgewogICAgICAgICAgICBpZCA9IENvbnZlcnQuVG9JbnQzMihjb250ZXh0LkJvZHk/LmlkID8/IDApLAogICAgICAgICAgICBxdWFudGl0eSA9IDEKICAgICAgICB9OwogICAgICAgIAogICAgICAgIC8vIENoZWNrIGlmIHByb2R1Y3QgYWxyZWFkeSBleGlzdHMgaW4gY2FydCwgaWYgc28gdXBkYXRlIHF1YW50aXR5CiAgICAgICAgdmFyIGV4aXN0aW5nUHJvZHVjdCA9IGV4aXN0aW5nUHJvZHVjdHMuRmlyc3RPckRlZmF1bHQocCA9PiBwLmlkID09IG5ld1Byb2R1Y3QuaWQpOwogICAgICAgIGlmIChleGlzdGluZ1Byb2R1Y3QgIT0gbnVsbCkKICAgICAgICB7CiAgICAgICAgICAgIGV4aXN0aW5nUHJvZHVjdC5xdWFudGl0eSArPSBuZXdQcm9kdWN0LnF1YW50aXR5OwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICBleGlzdGluZ1Byb2R1Y3RzLkFkZChuZXdQcm9kdWN0KTsKICAgICAgICB9CgogICAgICAgIHZhciBjYXJkUGF5bG9hZCA9IG5ldwogICAgICAgIHsKICAgICAgICAgICAgdXNlcklkID0gQ29udmVydC5Ub0ludDMyKGNvbnRleHQuSW5zdGFuY2UuRGF0YT8ubG9naW4/LmN1cnJlbnRMb2dpbj8uaWQgPz8gMCksCiAgICAgICAgICAgIG1lcmdlID0gdHJ1ZSwKICAgICAgICAgICAgcHJvZHVjdHMgPSBleGlzdGluZ1Byb2R1Y3RzCiAgICAgICAgfTsKCiAgICAgICAgaHR0cFRhc2suU2V0Qm9keShjYXJkUGF5bG9hZCk7CgogICAgICAgIC8vIFN0b3JlIHRoZSB1cGRhdGVkIGNhcnQgaW4gY29udGV4dC5JbnN0YW5jZS5EYXRhIGZvciBwZXJzaXN0ZW5jZQogICAgICAgIHZhciB1cGRhdGVkRGF0YSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YTsKICAgICAgICBpZiAodXBkYXRlZERhdGEgIT0gbnVsbCkKICAgICAgICB7CiAgICAgICAgICAgIHVwZGF0ZWREYXRhLmNhcmQgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdXNlcklkID0gQ29udmVydC5Ub0ludDMyKGNvbnRleHQuSW5zdGFuY2UuRGF0YT8ubG9naW4/LmN1cnJlbnRMb2dpbj8uaWQgPz8gMCksCiAgICAgICAgICAgICAgICBwcm9kdWN0cyA9IGV4aXN0aW5nUHJvZHVjdHMKICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gdXBkYXRlZERhdGEsCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9CgogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIC8vIFN0b3JlIGF1dGhlbnRpY2F0aW9uIHRva2VuIGZvciBmdXR1cmUgcmVxdWVzdHMKICAgICAgICB2YXIgcmVzcG9uc2UgPSBuZXcgU2NyaXB0UmVzcG9uc2UoKTsKCiAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBjb250ZXh0LkJvZHk/LnN0YXR1c0NvZGUgPz8gNTAwOwogICAgICAgIGlmIChzdGF0dXNDb2RlID49IDIwMCB8fCBzdGF0dXNDb2RlIDw9IDMwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgc3VjY2VzcyA9IHRydWUsCiAgICAgICAgICAgICAgICBjYXJkID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgaWQgPSBjb250ZXh0LkJvZHk/LmRhdGE/LmlkLAogICAgICAgICAgICAgICAgICAgIHByb2R1Y3RzID0gY29udGV4dC5Cb2R5Py5kYXRhPy5wcm9kdWN0cwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwNCkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE5vdCBmb3VuZCAtIGhhbmRsZSBzcGVjaWZpY2FsbHkKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBjYXJkID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlJlc291cmNlIG5vdCBmb3VuZCIsCiAgICAgICAgICAgICAgICAgICAgc2hvdWxkUmV0cnkgPSBmYWxzZQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlCiAgICAgICAgewogICAgICAgICAgICAvLyBTZXJ2ZXIgZXJyb3IgLSBtaWdodCB3YW50IHRvIHJldHJ5CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgY2FyZCA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJTZXJ2ZXIgZXJyb3Igb2NjdXJyZWQiLAogICAgICAgICAgICAgICAgICAgIHNob3VsZFJldHJ5ID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICByZXRyeUFmdGVyID0gMzAgLy8gc2Vjb25kcwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KCiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChyZXNwb25zZSk7CiAgICB9CgogICAgaW50ZXJuYWwgY2xhc3MgUHJvZHVjdER0bwogICAgewogICAgICAgIHB1YmxpYyBpbnQgaWQgeyBnZXQ7IHNldDsgfQogICAgICAgIHB1YmxpYyBpbnQgcXVhbnRpdHkgeyBnZXQ7IHNldDsgfQogICAgfQp9\"\n            }\n          }\n        ],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"proceed-to-checkout\",\n            \"target\": \"order-processing\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Proceed to Checkout\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Ödemeye Geç\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          },\n          {\n            \"key\": \"continue-shopping\",\n            \"target\": \"product-browsing\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Continue Shopping\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Alışverişe Devam Et\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"order-processing\",\n        \"stateType\": 2,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Order Processing\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Sipariş İşleme\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [\n          {\n            \"order\": 1,\n            \"task\": {\n              \"key\": \"process-order\",\n              \"domain\": \"{{domain}}\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-tasks\"\n            },\n            \"mapping\": {\n              \"location\": \"./src/ProcessOrderMapping.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFByb2Nlc3NPcmRlck1hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdmFyIGh0dHBUYXNrID0gdGFzayBhcyBIdHRwVGFzazsKICAgICAgICB2YXIgaGVhZGVycyA9IG5ldyBEaWN0aW9uYXJ5PHN0cmluZywgc3RyaW5nPz4KICAgICAgICB7CiAgICAgICAgICAgIFsiQXV0aG9yaXphdGlvbiJdID0gJCJCZXJlYXIge2NvbnRleHQuSW5zdGFuY2UuRGF0YT8ubG9naW4/LmN1cnJlbnRMb2dpbj8uYWNjZXNzVG9rZW59IgogICAgICAgIH07CiAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKICAgICAgICBjb250ZXh0LkJvZHkudXNlcklkID0gY29udGV4dC5JbnN0YW5jZS5EYXRhPy5sb2dpbj8uY3VycmVudExvZ2luPy5pZDsKICAgICAgICBodHRwVGFzay5TZXRCb2R5KGNvbnRleHQuQm9keSk7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBuZXcgeyB9LAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQoKICAgIHB1YmxpYyBhc3luYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBPdXRwdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICAvLyBTdG9yZSBhdXRoZW50aWNhdGlvbiB0b2tlbiBmb3IgZnV0dXJlIHJlcXVlc3RzCiAgICAgICAgdmFyIHJlc3BvbnNlID0gbmV3IFNjcmlwdFJlc3BvbnNlKCk7CgogICAgICAgIHZhciBzdGF0dXNDb2RlID0gY29udGV4dC5Cb2R5LnN0YXR1c0NvZGUgPz8gNTAwOwogICAgICAgIGlmIChzdGF0dXNDb2RlID09IDIwMCkKICAgICAgICB7CiAgICAgICAgICAgIHJlc3BvbnNlLkRhdGEgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgb3JkZXIgPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBjb250ZXh0LkJvZHkuZGF0YQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9OwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwNCkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE5vdCBmb3VuZCAtIGhhbmRsZSBzcGVjaWZpY2FsbHkKICAgICAgICAgICAgcmVzcG9uc2UuRGF0YSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBvcmRlciA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJSZXNvdXJjZSBub3QgZm91bmQiLAogICAgICAgICAgICAgICAgICAgIHNob3VsZFJldHJ5ID0gZmFsc2UKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICAgICAgZWxzZQogICAgICAgIHsKICAgICAgICAgICAgLy8gU2VydmVyIGVycm9yIC0gbWlnaHQgd2FudCB0byByZXRyeQogICAgICAgICAgICByZXNwb25zZS5EYXRhID0gbmV3CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIG9yZGVyID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgIGVycm9yID0gIlNlcnZlciBlcnJvciBvY2N1cnJlZCIsCiAgICAgICAgICAgICAgICAgICAgc2hvdWxkUmV0cnkgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgIHJldHJ5QWZ0ZXIgPSAzMCAvLyBzZWNvbmRzCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICAgICAgfQoKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICB9Cn0=\"\n            }\n          }\n        ],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"order-completed\",\n            \"target\": \"order-confirmation\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Order Completed\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Sipariş Tamamlandı\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          },\n          {\n            \"key\": \"payment-failed\",\n            \"target\": \"cart-management\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Payment Failed - Return to Cart\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Ödeme Başarısız - Sepete Dön\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"order-confirmation\",\n        \"stateType\": 3,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Order Confirmation\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Sipariş Onayı\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": [],\n        \"transitions\": []\n      }\n    ]\n  }\n}",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												"start"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-flows"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "2 - Activate - e-Commerce Flow",
-									"request": {
-										"method": "PATCH",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												":instanceId",
-												"transitions",
-												"activate"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-flows"
-												},
-												{
-													"key": "instanceId",
-													"value": "{{instanceId}}"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "Tasks",
-							"item": [
-								{
-									"name": "1 - Start - Auth Login",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"if (pm.response.code === 200 || pm.response.code === 201) {",
-													"    var jsonData = pm.response.json();",
-													"    pm.collectionVariables.set('instanceId', jsonData.id);",
-													"}"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"key\": \"auth-login\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"ecommerce\",\n    \"authentication\",\n    \"login\",\n    \"dummyjson\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"https://dummyjson.com/auth/login\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {\n      },\n      \"timeoutSeconds\": 3,\n      \"validateSsl\": false\n    }\n  }\n}\n",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												"start"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-tasks"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "2 - Activate - Auth Login",
-									"request": {
-										"method": "PATCH",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												":instanceId",
-												"transitions",
-												"activate"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-tasks"
-												},
-												{
-													"key": "instanceId",
-													"value": "{{instanceId}}"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "1 - Start - Add to Card",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"if (pm.response.code === 200 || pm.response.code === 201) {",
-													"    var jsonData = pm.response.json();",
-													"    pm.collectionVariables.set('instanceId', jsonData.id);",
-													"}"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"key\": \"add-to-cart\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"ecommerce\",\n    \"cart\",\n    \"shopping\",\n    \"dummyjson\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"https://dummyjson.com/{CARD_ADD_OR_UPDATE_PATH}\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {\n      },\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": false\n    }\n  }\n}\n",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												"start"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-tasks"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "2 - Activate - Add to Card",
-									"request": {
-										"method": "PATCH",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												":instanceId",
-												"transitions",
-												"activate"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-tasks"
-												},
-												{
-													"key": "instanceId",
-													"value": "{{instanceId}}"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "1 - Start - Process Order",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"if (pm.response.code === 200 || pm.response.code === 201) {",
-													"    var jsonData = pm.response.json();",
-													"    pm.collectionVariables.set('instanceId', jsonData.id);",
-													"}"
-												],
-												"type": "text/javascript",
-												"packages": {}
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n  \"key\": \"process-order\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"ecommerce\",\n    \"order\",\n    \"checkout\",\n    \"dummyjson\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"https://dummyjson.com/recipes/add\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": false\n    }\n  }\n}\n",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												"start"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-tasks"
-												}
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "2 - Activate - Process Order",
-									"request": {
-										"method": "PATCH",
-										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												":domain",
-												"workflows",
-												":flow",
-												"instances",
-												":instanceId",
-												"transitions",
-												"activate"
-											],
-											"query": [
-												{
-													"key": "sync",
-													"value": "true"
-												}
-											],
-											"variable": [
-												{
-													"key": "domain",
-													"value": "{{domain}}"
-												},
-												{
-													"key": "flow",
-													"value": "sys-tasks"
-												},
-												{
-													"key": "instanceId",
-													"value": "{{instanceId}}"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						}
-					]
-				},
-				{
-					"name": "Instance Execute",
-					"item": [
-						{
-							"name": "Get Instance Data",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										":domain",
-										"workflows",
-										":flow",
-										"instances",
-										":instance"
-									],
-									"variable": [
-										{
-											"key": "domain",
-											"value": "{{domain}}"
-										},
-										{
-											"key": "flow",
-											"value": "ecommerce"
-										},
-										{
-											"key": "instance",
-											"value": "{{instanceId}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Step 1: Start Instance",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"if (pm.response.code === 200 || pm.response.code === 201) {",
-											"    var jsonData = pm.response.json();",
-											"    pm.collectionVariables.set('instanceId', jsonData.id);",
-											"}"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"var uuid = require('uuid');",
-											"pm.collectionVariables.set(\"requestId\",uuid.v4());"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Accept-Language",
-										"value": "tr-TR",
-										"type": "text"
-									},
-									{
-										"key": "X-Request-Id",
-										"value": "{{requestId}}",
-										"type": "text"
-									},
-									{
-										"key": "X-Device-Id",
-										"value": "{{requestId}}",
-										"type": "text"
-									},
-									{
-										"key": "X-Token-Id",
-										"value": "{{requestId}}",
-										"type": "text"
-									},
-									{
-										"key": "X-Device-Info",
-										"value": "IOS 16",
-										"type": "text"
-									},
-									{
-										"key": "X-Forwarded-For",
-										"value": "192.168.2.1",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"key\": \"34987491721\",\n    \"tags\": [\n        \"test\",\n        \"ecommerce\",\n        \"order\"\n    ],\n    \"attributes\": {\n        \"username\": \"emilys\",\n        \"password\": \"emilyspass\",\n        \"expiresInMins\": 30\n    }\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										":domain",
-										"workflows",
-										":flow",
-										"instances",
-										"start"
-									],
-									"query": [
-										{
-											"key": "sync",
-											"value": "true"
-										}
-									],
-									"variable": [
-										{
-											"key": "domain",
-											"value": "{{domain}}"
-										},
-										{
-											"key": "flow",
-											"value": "ecommerce"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Step 2: Select Product",
-							"request": {
-								"method": "PATCH",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"id\":2\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/select-product?sync=true",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										":domain",
-										"workflows",
-										":flow",
-										"instances",
-										":instance",
-										"transitions",
-										"select-product"
-									],
-									"query": [
-										{
-											"key": "sync",
-											"value": "true"
-										}
-									],
-									"variable": [
-										{
-											"key": "domain",
-											"value": "{{domain}}"
-										},
-										{
-											"key": "flow",
-											"value": "ecommerce"
-										},
-										{
-											"key": "instance",
-											"value": "{{instanceId}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Step 2.1: Continue Shopping",
-							"request": {
-								"method": "PATCH",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/continue-shopping?sync=true",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										":domain",
-										"workflows",
-										":flow",
-										"instances",
-										":instance",
-										"transitions",
-										"continue-shopping"
-									],
-									"query": [
-										{
-											"key": "sync",
-											"value": "true"
-										}
-									],
-									"variable": [
-										{
-											"key": "domain",
-											"value": "{{domain}}"
-										},
-										{
-											"key": "flow",
-											"value": "ecommerce"
-										},
-										{
-											"key": "instance",
-											"value": "{{instanceId}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Step 3: Proceed to Checkout",
-							"request": {
-								"method": "PATCH",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Classic Margherita Pizza\",\n    \"ingredients\": [\n        \"Pizza dough\",\n        \"Tomato sauce\",\n        \"Fresh mozzarella cheese\",\n        \"Fresh basil leaves\",\n        \"Olive oil\",\n        \"Salt and pepper to taste\"\n    ],\n    \"instructions\": [\n        \"Preheat the oven to 475°F (245°C).\",\n        \"Roll out the pizza dough and spread tomato sauce evenly.\",\n        \"Top with slices of fresh mozzarella and fresh basil leaves.\",\n        \"Drizzle with olive oil and season with salt and pepper.\",\n        \"Bake in the preheated oven for 12-15 minutes or until the crust is golden brown.\",\n        \"Slice and serve hot.\"\n    ],\n    \"prepTimeMinutes\": 20,\n    \"cookTimeMinutes\": 15,\n    \"servings\": 4,\n    \"difficulty\": \"Easy\",\n    \"cuisine\": \"Italian\",\n    \"caloriesPerServing\": 300,\n    \"tags\": [\n        \"Pizza\",\n        \"Italian\"\n    ],\n    \"userId\": 45,\n    \"image\": \"https://cdn.dummyjson.com/recipe-images/1.webp\",\n    \"rating\": 4.6,\n    \"reviewCount\": 3,\n    \"mealType\": [\n        \"Dinner\"\n    ]\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/proceed-to-checkout?sync=true",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										":domain",
-										"workflows",
-										":flow",
-										"instances",
-										":instance",
-										"transitions",
-										"proceed-to-checkout"
-									],
-									"query": [
-										{
-											"key": "sync",
-											"value": "true"
-										}
-									],
-									"variable": [
-										{
-											"key": "domain",
-											"value": "{{domain}}"
-										},
-										{
-											"key": "flow",
-											"value": "ecommerce"
-										},
-										{
-											"key": "instance",
-											"value": "{{instanceId}}"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				}
-			]
-		},
-		{
 			"name": "oAuth2.0",
 			"item": [
 				{
@@ -1721,7 +938,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -2679,7 +1897,8 @@
 											"}"
 										],
 										"type": "text/javascript",
-										"packages": {}
+										"packages": {},
+										"requests": {}
 									}
 								},
 								{
@@ -2690,7 +1909,8 @@
 											"pm.collectionVariables.set(\"requestId\",uuid.v4());"
 										],
 										"type": "text/javascript",
-										"packages": {}
+										"packages": {},
+										"requests": {}
 									}
 								}
 							],
@@ -2730,7 +1950,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"key\": \"34987491872323\",\n    \"tags\": [\n        \"test\",\n        \"oauth\",\n        \"authentication\"\n    ],\n    \"attributes\": {\n        \"username\": \"34987491778\",\n        \"password\": \"112233\",\n        \"grant_type\": \"password\",\n        \"client_id\": \"acme\",\n        \"client_secret\": \"1q2w3e*\",\n        \"scope\": \"openid profile product-api\"\n    }\n}",
+									"raw": "{\n    \"key\": \"34987491002\",\n    \"tags\": [\n        \"test\",\n        \"oauth\",\n        \"authentication\"\n    ],\n    \"attributes\": {\n        \"username\": \"34987491778\",\n        \"password\": \"112233\",\n        \"grant_type\": \"password\",\n        \"client_id\": \"acme\",\n        \"client_secret\": \"1q2w3e*\",\n        \"scope\": \"openid profile product-api\"\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -3251,7 +2471,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3260,7 +2481,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"activate-payment-schedule\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"scheduled\",\n    \"activation\",\n    \"status\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"http://mockoon:3001/api/payments/schedules/{scheduleId}/activate\",\n      \"method\": \"PATCH\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"raw": "{\n  \"key\": \"activate-payment-schedule\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"scheduled\",\n    \"activation\",\n    \"status\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/payments/schedules/{scheduleId}/activate\",\n      \"method\": \"PATCH\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": true\n    }\n  }\n}\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3364,7 +2585,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3373,7 +2595,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"archive-payment-record\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"archive\",\n    \"cleanup\",\n    \"completion\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"http://mockoon:3001/api/payments/schedules/{scheduleId}/archive\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 10,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"raw": "{\n  \"key\": \"archive-payment-record\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"archive\",\n    \"cleanup\",\n    \"completion\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/payments/schedules/{scheduleId}/archive\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 10,\n      \"validateSsl\": true\n    }\n  }\n}\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3477,7 +2699,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3486,7 +2709,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"deactivate-payment-schedule\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"scheduled\",\n    \"deactivation\",\n    \"status\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"http://mockoon:3001/api/payments/schedules/{scheduleId}/deactivate\",\n      \"method\": \"PATCH\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"raw": "{\n  \"key\": \"deactivate-payment-schedule\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"scheduled\",\n    \"deactivation\",\n    \"status\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/payments/schedules/{scheduleId}/deactivate\",\n      \"method\": \"PATCH\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": true\n    }\n  }\n}\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3590,7 +2813,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3599,7 +2823,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"increment-retry-counter\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"retry\",\n    \"counter\",\n    \"tracking\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"http://mockoon:3001/api/payments/schedules/{scheduleId}/retry\",\n      \"method\": \"PATCH\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"raw": "{\n  \"key\": \"increment-retry-counter\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"retry\",\n    \"counter\",\n    \"tracking\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/payments/schedules/{scheduleId}/retry\",\n      \"method\": \"PATCH\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 5,\n      \"validateSsl\": true\n    }\n  }\n}\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3703,7 +2927,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3712,7 +2937,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"process-payment\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"processing\",\n    \"transaction\",\n    \"financial\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"http://mockoon:3001/api/payments/process\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"raw": "{\n  \"key\": \"process-payment\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"processing\",\n    \"transaction\",\n    \"financial\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/payments/process\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3816,7 +3041,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3825,7 +3051,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"save-payment-configuration\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"scheduled\",\n    \"configuration\",\n    \"setup\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"http://mockoon:3001/api/payments/schedules\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 10,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"raw": "{\n  \"key\": \"save-payment-configuration\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"{{domain}}\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"scheduled\",\n    \"configuration\",\n    \"setup\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/payments/schedules\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 10,\n      \"validateSsl\": true\n    }\n  }\n}\n",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -3929,7 +3155,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -3938,7 +3165,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"get-user-info\",\n  \"flow\": \"sys-tasks\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"users\",\n    \"lookup\",\n    \"information\",\n    \"devices\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"method\": \"GET\",\n      \"url\": \"http://mockoon:3001/api/payments/users/{userId}\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}",
+											"raw": "{\n  \"key\": \"get-user-info\",\n  \"flow\": \"sys-tasks\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"users\",\n    \"lookup\",\n    \"information\",\n    \"devices\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"method\": \"GET\",\n      \"url\": \"{{mockoonApi}}/api/payments/users/{userId}\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4042,7 +3269,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -4051,7 +3279,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"send-payment-notification-sms\",\n  \"flow\": \"sys-tasks\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"notification\",\n    \"sms\",\n    \"communication\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"method\": \"POST\",\n      \"url\": \"http://mockoon:3001/api/payments/notify/sms\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}",
+											"raw": "{\n  \"key\": \"send-payment-notification-sms\",\n  \"flow\": \"sys-tasks\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"notification\",\n    \"sms\",\n    \"communication\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"method\": \"POST\",\n      \"url\": \"{{mockoonApi}}/api/payments/notify/sms\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4155,7 +3383,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -4164,7 +3393,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"key\": \"send-payment-push-notification\",\n  \"flow\": \"sys-tasks\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"notification\",\n    \"push\",\n    \"mobile\",\n    \"communication\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"method\": \"POST\",\n      \"url\": \"http://mockoon:3001/api/payments/notify/push\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}",
+											"raw": "{\n  \"key\": \"send-payment-push-notification\",\n  \"flow\": \"sys-tasks\",\n  \"domain\": \"{{domain}}\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"payments\",\n    \"notification\",\n    \"push\",\n    \"mobile\",\n    \"communication\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"method\": \"POST\",\n      \"url\": \"{{mockoonApi}}/api/payments/notify/push\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 30,\n      \"validateSsl\": true\n    }\n  }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4273,7 +3502,8 @@
 													"}"
 												],
 												"type": "text/javascript",
-												"packages": {}
+												"packages": {},
+												"requests": {}
 											}
 										}
 									],
@@ -4282,7 +3512,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"key\": \"payment-start-validation\",\n    \"version\": \"1.0.0\",\n    \"domain\": \"{{domain}}\",\n    \"flow\": \"sys-schemas\",\n    \"flowVersion\": \"1.0.0\",\n    \"tags\": [\n        \"payments\",\n        \"validation\",\n        \"scheduled-payments\",\n        \"start-transition\"\n    ],\n    \"attributes\": {\n        \"type\": \"transition\",\n        \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n        \"$id\": \"https://schemas.vnext.com/payments/payments-start-transition.json\",\n        \"title\": \"Payment Start Transition Definition\",\n        \"description\": \"Payment start transition payload şeması\",\n        \"schema\": {\n            \"type\": \"object\",\n            \"required\": [\n                \"userId\",\n                \"amount\",\n                \"currency\",\n                \"frequency\",\n                \"startDate\",\n                \"endDate\",\n                \"paymentMethodId\",\n                \"recipientId\"\n            ],\n            \"properties\": {\n                \"userId\": {\n                    \"type\": \"integer\",\n                    \"minimum\": 1,\n                    \"description\": \"Unique identifier for the user initiating the payment schedule\"\n                },\n                \"amount\": {\n                    \"type\": \"number\",\n                    \"minimum\": 0.01,\n                    \"multipleOf\": 0.01,\n                    \"description\": \"Payment amount (supports decimal values for cents)\"\n                },\n                \"currency\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"TL\",\n                        \"USD\",\n                        \"EUR\",\n                        \"GBP\"\n                    ],\n                    \"description\": \"Currency code for the payment\"\n                },\n                \"frequency\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"daily\",\n                        \"weekly\",\n                        \"monthly\",\n                        \"quarterly\",\n                        \"yearly\"\n                    ],\n                    \"description\": \"Payment frequency schedule\"\n                },\n                \"startDate\": {\n                    \"type\": \"string\",\n                    \"format\": \"date-time\",\n                    \"description\": \"ISO 8601 date-time when payments should start\"\n                },\n                \"endDate\": {\n                    \"type\": \"string\",\n                    \"format\": \"date-time\",\n                    \"description\": \"ISO 8601 date-time when payments should end\"\n                },\n                \"paymentMethodId\": {\n                    \"type\": \"string\",\n                    \"minLength\": 1,\n                    \"description\": \"Identifier for the payment method to be used\"\n                },\n                \"description\": {\n                    \"type\": \"string\",\n                    \"maxLength\": 500,\n                    \"description\": \"Optional description for the payment schedule\"\n                },\n                \"recipientId\": {\n                    \"type\": \"string\",\n                    \"minLength\": 1,\n                    \"description\": \"Identifier for the payment recipient\"\n                },\n                \"isAutoRetry\": {\n                    \"type\": \"boolean\",\n                    \"default\": false,\n                    \"description\": \"Whether to automatically retry failed payments\"\n                },\n                \"maxRetries\": {\n                    \"type\": \"integer\",\n                    \"minimum\": 0,\n                    \"maximum\": 10,\n                    \"default\": 3,\n                    \"description\": \"Maximum number of retry attempts for failed payments\"\n                }\n            },\n            \"additionalProperties\": false,\n            \"if\": {\n                \"properties\": {\n                    \"isAutoRetry\": {\n                        \"const\": true\n                    }\n                }\n            },\n            \"then\": {\n                \"properties\": {\n                    \"maxRetries\": {\n                        \"minimum\": 1\n                    }\n                }\n            }\n        }\n    }\n}",
+											"raw": "{\n    \"key\": \"payment-start-validation\",\n    \"version\": \"1.0.0\",\n    \"domain\": \"core\",\n    \"flow\": \"sys-schemas\",\n    \"flowVersion\": \"1.0.0\",\n    \"tags\": [\n        \"payments\",\n        \"validation\",\n        \"scheduled-payments\",\n        \"start-transition\"\n    ],\n    \"attributes\": {\n        \"type\": \"workflow\",\n        \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n        \"$id\": \"https://schemas.vnext.com/payments/start-transition.json\",\n        \"title\": \"Payment Start Transition Schema\",\n        \"description\": \"Schema validation for scheduled payments workflow start transition payload\",\n        \"schema\": {\n            \"type\": \"object\",\n            \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n            \"$id\": \"https://schemas.vnext.com/payments/start-transition.json\",\n            \"title\": \"Payment Start Transition Schema\",\n            \"description\": \"Schema validation for scheduled payments workflow start transition payload\",\n            \"required\": [\n                \"userId\",\n                \"amount\",\n                \"currency\",\n                \"frequency\",\n                \"startDate\",\n                \"endDate\",\n                \"paymentMethodId\",\n                \"recipientId\"\n            ],\n            \"properties\": {\n                \"userId\": {\n                    \"type\": \"integer\",\n                    \"minimum\": 1,\n                    \"description\": \"Unique identifier for the user initiating the payment schedule\"\n                },\n                \"amount\": {\n                    \"type\": \"number\",\n                    \"minimum\": 0.01,\n                    \"multipleOf\": 0.01,\n                    \"description\": \"Payment amount (supports decimal values for cents)\"\n                },\n                \"currency\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"TL\",\n                        \"USD\",\n                        \"EUR\",\n                        \"GBP\"\n                    ],\n                    \"description\": \"Currency code for the payment\"\n                },\n                \"frequency\": {\n                    \"type\": \"string\",\n                    \"enum\": [\n                        \"daily\",\n                        \"weekly\",\n                        \"monthly\",\n                        \"quarterly\",\n                        \"yearly\"\n                    ],\n                    \"description\": \"Payment frequency schedule\"\n                },\n                \"startDate\": {\n                    \"type\": \"string\",\n                    \"format\": \"date-time\",\n                    \"description\": \"ISO 8601 date-time when payments should start\"\n                },\n                \"endDate\": {\n                    \"type\": \"string\",\n                    \"format\": \"date-time\",\n                    \"description\": \"ISO 8601 date-time when payments should end\"\n                },\n                \"paymentMethodId\": {\n                    \"type\": \"string\",\n                    \"minLength\": 1,\n                    \"description\": \"Identifier for the payment method to be used\"\n                },\n                \"description\": {\n                    \"type\": \"string\",\n                    \"maxLength\": 500,\n                    \"description\": \"Optional description for the payment schedule\"\n                },\n                \"recipientId\": {\n                    \"type\": \"string\",\n                    \"minLength\": 1,\n                    \"description\": \"Identifier for the payment recipient\"\n                },\n                \"isAutoRetry\": {\n                    \"type\": \"boolean\",\n                    \"default\": false,\n                    \"description\": \"Whether to automatically retry failed payments\"\n                },\n                \"maxRetries\": {\n                    \"type\": \"integer\",\n                    \"minimum\": 0,\n                    \"maximum\": 10,\n                    \"default\": 3,\n                    \"description\": \"Maximum number of retry attempts for failed payments\"\n                }\n            },\n            \"additionalProperties\": false,\n            \"if\": {\n                \"properties\": {\n                    \"isAutoRetry\": {\n                        \"const\": true\n                    }\n                }\n            },\n            \"then\": {\n                \"properties\": {\n                    \"maxRetries\": {\n                        \"minimum\": 1\n                    }\n                }\n            }\n        }\n    }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -4440,7 +3670,8 @@
 											"}"
 										],
 										"type": "text/javascript",
-										"packages": {}
+										"packages": {},
+										"requests": {}
 									}
 								},
 								{
@@ -4451,7 +3682,8 @@
 											"pm.collectionVariables.set(\"requestId\",uuid.v4());"
 										],
 										"type": "text/javascript",
-										"packages": {}
+										"packages": {},
+										"requests": {}
 									}
 								}
 							],
@@ -4497,7 +3729,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"key\": \"34748285793\",\n    \"tags\": [\n        \"test\",\n        \"oauth\",\n        \"authentication\"\n    ],\n    \"attributes\": {\n        \"userId\": 2,\n        \"amount\": 12000,\n        \"currency\": \"TL\",\n        \"frequency\": \"monthly\",\n        \"startDate\": \"2025-10-01T09:02:38.201Z\",\n        \"endDate\": \"2026-10-01T09:02:38.201Z\",\n        \"paymentMethodId\": \"1\",\n        \"description\": \"Tayfun ödeme\",\n        \"recipientId\": \"324324\",\n        \"isAutoRetry\": false,\n        \"maxRetries\": 3\n    }\n}",
+									"raw": "{\n    \"key\": \"34987491018\",\n    \"tags\": [\n        \"test\",\n        \"oauth\",\n        \"authentication\"\n    ],\n    \"attributes\": {\n        \"userId\": 2,\n        \"amount\": 12000,\n        \"currency\": \"TL\",\n        \"frequency\": \"monthly\",\n        \"startDate\": \"2025-10-01T09:02:38.201Z\",\n        \"endDate\": \"2026-10-01T09:02:38.201Z\",\n        \"paymentMethodId\": \"1\",\n        \"description\": \"Tayfun ödeme\",\n        \"recipientId\": \"324324\",\n        \"isAutoRetry\": false,\n        \"maxRetries\": 3\n    }\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -4551,7 +3783,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/:transition?sync=true",
+									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/:transition?sync=false",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -4567,7 +3799,7 @@
 									"query": [
 										{
 											"key": "sync",
-											"value": "true"
+											"value": "false"
 										}
 									],
 									"variable": [
@@ -4595,6 +3827,1968 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Account Opening",
+			"item": [
+				{
+					"name": "Definitions",
+					"item": [
+						{
+							"name": "Flows",
+							"item": [
+								{
+									"name": "1 - Start - Account Opening Flow",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-opening\",\n  \"flow\": \"sys-flows\",\n  \"domain\": \"core\",\n  \"version\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-opening\",\n    \"demand-deposit\",\n    \"digital-banking\",\n    \"customer-onboarding\"\n  ],\n  \"attributes\": {\n    \"type\": \"F\",\n    \"timeout\": null,\n    \"labels\": [\n      {\n        \"language\": \"en-US\",\n        \"label\": \"Digital Banking Account Opening Workflow\"\n      },\n      {\n        \"language\": \"tr-TR\",\n        \"label\": \"Dijital Bankacılık Hesap Açılışı İş Akışı\"\n      }\n    ],\n    \"functions\": [],\n    \"features\": [],\n    \"extensions\": [],\n    \"sharedTransitions\": [],\n    \"startTransition\": {\n      \"key\": \"initiate-account-opening\",\n      \"target\": \"account-type-selection\",\n      \"triggerType\": 0,\n      \"versionStrategy\": \"Minor\",\n      \"labels\": [\n        {\n          \"language\": \"en-US\",\n          \"label\": \"Initiate Account Opening\"\n        },\n        {\n          \"language\": \"tr-TR\",\n          \"label\": \"Hesap Açılışını Başlat\"\n        }\n      ],\n      \"schema\": null,\n      \"rule\": null,\n      \"timer\": null,\n      \"view\": {\n        \"key\": \"account-type-selection-view\",\n        \"domain\": \"core\",\n        \"version\": \"1.0.0\",\n        \"flow\": \"sys-views\"\n      },\n      \"onExecutionTasks\": [\n        {\n          \"order\": 1,\n          \"task\": {\n            \"key\": \"user-session\",\n            \"domain\": \"core\",\n            \"version\": \"1.0.0\",\n            \"flow\": \"sys-tasks\"\n          },\n          \"mapping\": {\n            \"location\": \"./src/UserSessionMapping.csx\",\n            \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFVzZXJTZXNzaW9uTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgIH0KCiAgICAvLy8gPHN1bW1hcnk+CiAgICAvLy8gUG9wdWxhdGUgdGhlIHVzZXIgc2Vzc2lvbiBkYXRhIGludG8gdGhlIHdvcmtmbG93IGluc3RhbmNlCiAgICAvLy8gPC9zdW1tYXJ5PgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgS2V5ID0gInVzZXItc2Vzc2lvbi1vdXRwdXQiLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHVzZXJTZXNzaW9uID0gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICB1c2VySWQgPSBjb250ZXh0LkhlYWRlcnM/WyJ1c2VyX3JlZmVyZW5jZSJdLAogICAgICAgICAgICAgICAgICAgICAgICBkZXZpY2VJZCA9IGNvbnRleHQuSGVhZGVycz9bIngtZGV2aWNlLWlkIl0sCiAgICAgICAgICAgICAgICAgICAgICAgIHVzZXJBZ2VudCA9IGNvbnRleHQuSGVhZGVycz9bInVzZXItYWdlbnQiXSwKICAgICAgICAgICAgICAgICAgICAgICAgaXBBZGRyZXNzID0gY29udGV4dC5IZWFkZXJzP1sieC1mb3J3YXJkZWQtZm9yIl0gPz8gY29udGV4dC5IZWFkZXJzP1sieC1yZWFsLWlwIl0KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICB9Cn0K\"\n          }\n        }\n      ]\n    },\n    \"states\": [\n      {\n        \"key\": \"account-type-selection\",\n        \"stateType\": 1,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Account Type Selection\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Hesap Türü Seçimi\"\n          }\n        ],\n        \"view\": {\n          \"key\": \"account-type-selection-view\",\n          \"domain\": \"core\",\n          \"version\": \"1.0.0\",\n          \"flow\": \"sys-views\"\n        },\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"select-demand-deposit\",\n            \"target\": \"account-details-input\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Select Demand Deposit Account\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Vadesiz Hesap Seç\"\n              }\n            ],\n            \"schema\": {\n              \"key\": \"account-type-selection\",\n              \"version\": \"1.0.0\",\n              \"domain\": \"core\",\n              \"flow\": \"sys-schemas\"\n            },\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"account-details-input\",\n        \"stateType\": 1,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Account Details Input\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Hesap Bilgileri Girişi\"\n          }\n        ],\n        \"view\": {\n          \"key\": \"account-details-input-view\",\n          \"domain\": \"core\",\n          \"version\": \"1.0.0\",\n          \"flow\": \"sys-views\"\n        },\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"submit-account-details\",\n            \"target\": \"account-confirmation\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Submit Account Details\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Hesap Bilgilerini Gönder\"\n              }\n            ],\n            \"schema\": {\n              \"key\": \"account-details-input\",\n              \"version\": \"1.0.0\",\n              \"domain\": \"core\",\n              \"flow\": \"sys-schemas\"\n            },\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"account-confirmation\",\n        \"stateType\": 1,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Account Confirmation\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Hesap Onayı\"\n          }\n        ],\n        \"view\": {\n          \"key\": \"account-confirmation-view\",\n          \"domain\": \"core\",\n          \"version\": \"1.0.0\",\n          \"flow\": \"sys-views\"\n        },\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"confirm-account-opening\",\n            \"target\": \"policy-validation\",\n            \"triggerType\": 0,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Confirm Account Opening\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Hesap Açılışını Onayla\"\n              }\n            ],\n            \"schema\": {\n              \"key\": \"account-confirmation\",\n              \"domain\": \"core\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-schemas\"\n            },\n            \"rule\": null,\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"policy-validation\",\n        \"stateType\": 2,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Policy Validation\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Politika Doğrulama\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [\n          {\n            \"order\": 1,\n            \"task\": {\n              \"key\": \"validate-account-policies\",\n              \"domain\": \"core\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-tasks\"\n            },\n            \"mapping\": {\n              \"location\": \"./src/ValidateAccountPoliciesMapping.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKLy8vIDxzdW1tYXJ5PgovLy8gQWNjb3VudCBQb2xpY2llcyBWYWxpZGF0aW9uIE1hcHBpbmcgLSBWYWxpZGF0ZXMgYWNjb3VudCBvcGVuaW5nIGFnYWluc3QgYmFuayBwb2xpY2llcwovLy8gVGhpcyBtYXBwaW5nIHZhbGlkYXRlcyBhY2NvdW50IG9wZW5pbmcgcmVxdWVzdCBhZ2FpbnN0IGNvbXBsaWFuY2UgYW5kIHJpc2sgcG9saWNpZXMuCi8vLyA8L3N1bW1hcnk+CnB1YmxpYyBjbGFzcyBWYWxpZGF0ZUFjY291bnRQb2xpY2llc01hcHBpbmcgOiBJTWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFdvcmtmbG93VGFzayB0YXNrLCBTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICB2YXIgaHR0cFRhc2sgPSB0YXNrIGFzIEh0dHBUYXNrOwogICAgICAgICAgICBpZiAoaHR0cFRhc2sgPT0gbnVsbCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgdGhyb3cgbmV3IEludmFsaWRPcGVyYXRpb25FeGNlcHRpb24oIlRhc2sgbXVzdCBiZSBhbiBIdHRwVGFzayBmb3IgcG9saWN5IHZhbGlkYXRpb24iKTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gR2V0IHVzZXIgc2Vzc2lvbiBhbmQgYWNjb3VudCBkZXRhaWxzIGZyb20gd29ya2Zsb3cgY29udGV4dAogICAgICAgICAgICB2YXIgdXNlclNlc3Npb24gPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy51c2VyU2Vzc2lvbjsKICAgICAgICAgICAgdmFyIGFjY291bnREZXRhaWxzID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8uYWNjb3VudERldGFpbHM7CiAgICAgICAgICAgIHZhciBhY2NvdW50VHlwZSA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LmFjY291bnRUeXBlOwoKICAgICAgICAgICAgLy8gUHJlcGFyZSB0aGUgcmVxdWVzdCBib2R5IGZvciBwb2xpY3kgdmFsaWRhdGlvbgogICAgICAgICAgICB2YXIgcmVxdWVzdEJvZHkgPSBuZXcKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgLy8gVXNlciBpbmZvcm1hdGlvbgogICAgICAgICAgICAgICAgdXNlcklkID0gdXNlclNlc3Npb24/LnVzZXJJZCwKICAgICAgICAgICAgICAgIHVzZXJFbWFpbCA9IHVzZXJTZXNzaW9uPy51c2VyRW1haWwsCiAgICAgICAgICAgICAgICBjdXN0b21lclNlZ21lbnQgPSB1c2VyU2Vzc2lvbj8uY3VzdG9tZXJTZWdtZW50LAogICAgICAgICAgICAgICAgY3VzdG9tZXJTaW5jZSA9IHVzZXJTZXNzaW9uPy5jdXN0b21lclNpbmNlLAogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBBY2NvdW50IGRldGFpbHMKICAgICAgICAgICAgICAgIGFjY291bnRUeXBlID0gYWNjb3VudFR5cGU/LmFjY291bnRUeXBlID8/ICJkZW1hbmQtZGVwb3NpdCIsCiAgICAgICAgICAgICAgICBhY2NvdW50TmFtZSA9IGFjY291bnREZXRhaWxzPy5hY2NvdW50TmFtZSwKICAgICAgICAgICAgICAgIGN1cnJlbmN5ID0gYWNjb3VudERldGFpbHM/LmN1cnJlbmN5LAogICAgICAgICAgICAgICAgYnJhbmNoQ29kZSA9IGFjY291bnREZXRhaWxzPy5icmFuY2hDb2RlLAogICAgICAgICAgICAgICAgaW5pdGlhbERlcG9zaXQgPSBhY2NvdW50RGV0YWlscz8uaW5pdGlhbERlcG9zaXQgPz8gMCwKICAgICAgICAgICAgICAgIGFjY291bnRQdXJwb3NlID0gYWNjb3VudERldGFpbHM/LmFjY291bnRQdXJwb3NlLAogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBSaXNrIGFzc2Vzc21lbnQgZGF0YQogICAgICAgICAgICAgICAgcmVxdWVzdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICBpcEFkZHJlc3MgPSBjb250ZXh0LkhlYWRlcnM/WyJ4LWZvcndhcmRlZC1mb3IiXSA/PyBjb250ZXh0LkhlYWRlcnM/WyJ4LXJlYWwtaXAiXSwKICAgICAgICAgICAgICAgIHVzZXJBZ2VudCA9IGNvbnRleHQuSGVhZGVycz9bInVzZXItYWdlbnQiXSwKICAgICAgICAgICAgICAgIGRldmljZUlkID0gY29udGV4dC5IZWFkZXJzP1sieC1kZXZpY2UtaWQiXSwKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQ29tcGxpYW5jZSBjaGVja3MKICAgICAgICAgICAgICAgIHRlcm1zQWNjZXB0ZWQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5jb25maXJtYXRpb24/LnRlcm1zQWNjZXB0ZWQsCiAgICAgICAgICAgICAgICBwcml2YWN5UG9saWN5QWNjZXB0ZWQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5jb25maXJtYXRpb24/LnByaXZhY3lQb2xpY3lBY2NlcHRlZCwKICAgICAgICAgICAgICAgIG1hcmtldGluZ0NvbnNlbnQgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5jb25maXJtYXRpb24/Lm1hcmtldGluZ0NvbnNlbnQKICAgICAgICAgICAgfTsKCiAgICAgICAgICAgIGh0dHBUYXNrLlNldEJvZHkocmVxdWVzdEJvZHkpOwoKICAgICAgICAgICAgLy8gU2V0IEhlYWRlcnMKICAgICAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIFsiQ29udGVudC1UeXBlIl0gPSAiYXBwbGljYXRpb24vanNvbiIsCiAgICAgICAgICAgICAgICBbIkF1dGhvcml6YXRpb24iXSA9IGNvbnRleHQuSGVhZGVycz9bImF1dGhvcml6YXRpb24iXSwKICAgICAgICAgICAgICAgIFsiWC1Vc2VyLUlkIl0gPSB1c2VyU2Vzc2lvbj8udXNlcklkPy5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgWyJYLVJlcXVlc3QtSWQiXSA9IGNvbnRleHQuSGVhZGVycz9bIngtcmVxdWVzdC1pZCJdID8/IEd1aWQuTmV3R3VpZCgpLlRvU3RyaW5nKCksCiAgICAgICAgICAgICAgICBbIlgtV29ya2Zsb3ctSW5zdGFuY2UiXSA9IGNvbnRleHQuSW5zdGFuY2U/LklkLlRvU3RyaW5nKCksCiAgICAgICAgICAgICAgICBbIlgtQWNjb3VudC1UeXBlIl0gPSBhY2NvdW50VHlwZT8uYWNjb3VudFR5cGU/LlRvU3RyaW5nKCksCiAgICAgICAgICAgICAgICBbIlgtQ3VycmVuY3kiXSA9IGFjY291bnREZXRhaWxzPy5jdXJyZW5jeT8uVG9TdHJpbmcoKQogICAgICAgICAgICB9OwoKICAgICAgICAgICAgaHR0cFRhc2suU2V0SGVhZGVycyhoZWFkZXJzKTsKCiAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UoKSk7CiAgICAgICAgfQogICAgfQoKICAgIC8vLyA8c3VtbWFyeT4KICAgIC8vLyBQcm9jZXNzIHRoZSBwb2xpY3kgdmFsaWRhdGlvbiByZXN1bHQgYW5kIG1lcmdlIGl0IGludG8gdGhlIHdvcmtmbG93IGluc3RhbmNlCiAgICAvLy8gPC9zdW1tYXJ5PgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBHZXRTdGF0dXNDb2RlRnJvbVJlc3BvbnNlKGNvbnRleHQpOwogICAgICAgICAgICB2YXIgcmVzcG9uc2VEYXRhID0gR2V0UmVzcG9uc2VEYXRhRnJvbUNvbnRleHQoY29udGV4dCk7CgogICAgICAgICAgICAvLyBTdWNjZXNzZnVsIHZhbGlkYXRpb24KICAgICAgICAgICAgaWYgKHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDApCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHZhciBwb2xpY3lWYWxpZGF0aW9uID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgcGFzc2VkID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICB2YWxpZGF0ZWRBdCA9IERhdGVUaW1lLlV0Y05vdywKICAgICAgICAgICAgICAgICAgICB2YWxpZGF0aW9uSWQgPSByZXNwb25zZURhdGE/LnZhbGlkYXRpb25JZCA/PyBHdWlkLk5ld0d1aWQoKS5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIC8vIFBvbGljeSBjaGVjayByZXN1bHRzCiAgICAgICAgICAgICAgICAgICAgY29tcGxpYW5jZUNoZWNrcyA9IHJlc3BvbnNlRGF0YT8uY29tcGxpYW5jZUNoZWNrcyA/PyBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIGt5Y0NvbXBsaWFudCA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgICAgIGFtbENvbXBsaWFudCA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgICAgIHNhbmN0aW9uc0NoZWNrID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICAgICAgcmlza0Fzc2Vzc21lbnQgPSAibG93IgogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gQWNjb3VudCBsaW1pdHMgYW5kIHJlc3RyaWN0aW9ucwogICAgICAgICAgICAgICAgICAgIGFjY291bnRMaW1pdHMgPSByZXNwb25zZURhdGE/LmFjY291bnRMaW1pdHMgPz8gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICBkYWlseVRyYW5zYWN0aW9uTGltaXQgPSA1MDAwMCwKICAgICAgICAgICAgICAgICAgICAgICAgbW9udGhseVRyYW5zYWN0aW9uTGltaXQgPSA1MDAwMDAsCiAgICAgICAgICAgICAgICAgICAgICAgIG1pbmltdW1CYWxhbmNlID0gMCwKICAgICAgICAgICAgICAgICAgICAgICAgbWF4aW11bUJhbGFuY2UgPSAxMDAwMDAwCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBBZGRpdGlvbmFsIHJlcXVpcmVtZW50cwogICAgICAgICAgICAgICAgICAgIGFkZGl0aW9uYWxSZXF1aXJlbWVudHMgPSByZXNwb25zZURhdGE/LmFkZGl0aW9uYWxSZXF1aXJlbWVudHMgPz8gbmV3IHN0cmluZ1tdIHsgfSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBBcHByb3ZhbCBkZXRhaWxzCiAgICAgICAgICAgICAgICAgICAgYXBwcm92ZWRCeSA9IHJlc3BvbnNlRGF0YT8uYXBwcm92ZWRCeSA/PyAic3lzdGVtIiwKICAgICAgICAgICAgICAgICAgICBhcHByb3ZhbExldmVsID0gcmVzcG9uc2VEYXRhPy5hcHByb3ZhbExldmVsID8/ICJhdXRvbWF0ZWQiLAogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIC8vIE1ldGFkYXRhCiAgICAgICAgICAgICAgICAgICAgcG9saWN5VmVyc2lvbiA9IHJlc3BvbnNlRGF0YT8ucG9saWN5VmVyc2lvbiA/PyAiMS4wLjAiLAogICAgICAgICAgICAgICAgICAgIHZhbGlkYXRpb25TY29yZSA9IHJlc3BvbnNlRGF0YT8udmFsaWRhdGlvblNjb3JlID8/IDEwMAogICAgICAgICAgICAgICAgfTsKCiAgICAgICAgICAgICAgICByZXR1cm4gbmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgS2V5ID0gInBvbGljeS12YWxpZGF0aW9uLXN1Y2Nlc3MiLAogICAgICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHBvbGljeVZhbGlkYXRpb24gPSBwb2xpY3lWYWxpZGF0aW9uCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICBUYWdzID0gbmV3W10geyAiYmFua2luZyIsICJwb2xpY3ktdmFsaWRhdGlvbiIsICJjb21wbGlhbmNlIiwgInN1Y2Nlc3MiLCAiYXBwcm92ZWQiIH0KICAgICAgICAgICAgICAgIH07CiAgICAgICAgICAgIH0KICAgICAgICAgICAgLy8gRmFpbGVkIHZhbGlkYXRpb24KICAgICAgICAgICAgZWxzZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICB2YXIgZXJyb3JJbmZvID0gRXh0cmFjdEVycm9ySW5mb3JtYXRpb24oY29udGV4dCwgc3RhdHVzQ29kZSk7CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIHZhciBwb2xpY3lWYWxpZGF0aW9uID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgcGFzc2VkID0gZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgdmFsaWRhdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICAgICAgdmFsaWRhdGlvbklkID0gcmVzcG9uc2VEYXRhPy52YWxpZGF0aW9uSWQgPz8gR3VpZC5OZXdHdWlkKCkuVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBGYWlsdXJlIGRldGFpbHMKICAgICAgICAgICAgICAgICAgICBlcnJvciA9IGVycm9ySW5mby5tZXNzYWdlLAogICAgICAgICAgICAgICAgICAgIGVycm9yQ29kZSA9IGVycm9ySW5mby5jb2RlLAogICAgICAgICAgICAgICAgICAgIGVycm9yRGVzY3JpcHRpb24gPSBlcnJvckluZm8uZGVzY3JpcHRpb24sCiAgICAgICAgICAgICAgICAgICAgc3RhdHVzQ29kZSA9IHN0YXR1c0NvZGUsCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gRmFpbGVkIGNoZWNrcwogICAgICAgICAgICAgICAgICAgIGZhaWxlZENoZWNrcyA9IHJlc3BvbnNlRGF0YT8uZmFpbGVkQ2hlY2tzID8/IG5ld1tdIHsgInVua25vd24iIH0sCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gUmVjb21tZW5kYXRpb25zCiAgICAgICAgICAgICAgICAgICAgcmVjb21tZW5kYXRpb25zID0gcmVzcG9uc2VEYXRhPy5yZWNvbW1lbmRhdGlvbnMgPz8gbmV3W10gCiAgICAgICAgICAgICAgICAgICAgeyAKICAgICAgICAgICAgICAgICAgICAgICAgIlBsZWFzZSByZXZpZXcgeW91ciBhY2NvdW50IGluZm9ybWF0aW9uIGFuZCB0cnkgYWdhaW4iIAogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gUmV0cnkgaW5mb3JtYXRpb24KICAgICAgICAgICAgICAgICAgICBjYW5SZXRyeSA9IHJlc3BvbnNlRGF0YT8uY2FuUmV0cnkgPz8gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICByZXRyeUFmdGVyID0gcmVzcG9uc2VEYXRhPy5yZXRyeUFmdGVyID8/IDAKICAgICAgICAgICAgICAgIH07CgogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJwb2xpY3ktdmFsaWRhdGlvbi1mYWlsdXJlIiwKICAgICAgICAgICAgICAgICAgICBEYXRhID0gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICBwb2xpY3lWYWxpZGF0aW9uID0gcG9saWN5VmFsaWRhdGlvbgogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgImJhbmtpbmciLCAicG9saWN5LXZhbGlkYXRpb24iLCAiY29tcGxpYW5jZSIsICJmYWlsdXJlIiwgInJlamVjdGVkIiB9CiAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICB9CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24gZXgpCiAgICAgICAgewogICAgICAgICAgICByZXR1cm4gbmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIEtleSA9ICJwb2xpY3ktdmFsaWRhdGlvbi1vdXRwdXQtZXJyb3IiLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHBvbGljeVZhbGlkYXRpb24gPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIHBhc3NlZCA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJJbnRlcm5hbCBwcm9jZXNzaW5nIGVycm9yIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInByb2Nlc3NpbmdfZXJyb3IiLAogICAgICAgICAgICAgICAgICAgICAgICBlcnJvckRlc2NyaXB0aW9uID0gZXguTWVzc2FnZSwKICAgICAgICAgICAgICAgICAgICAgICAgdmFsaWRhdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICAgICAgICAgIGNhblJldHJ5ID0gdHJ1ZQogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICBUYWdzID0gbmV3W10geyAiYmFua2luZyIsICJwb2xpY3ktdmFsaWRhdGlvbiIsICJlcnJvciIsICJleGNlcHRpb24iIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICB9CgogICAgI3JlZ2lvbiBIZWxwZXIgTWV0aG9kcwoKICAgIHByaXZhdGUgc3RhdGljIGludCBHZXRTdGF0dXNDb2RlRnJvbVJlc3BvbnNlKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICBpZiAoY29udGV4dC5Cb2R5Py5zdGF0dXNDb2RlICE9IG51bGwpCiAgICAgICAgICAgIHJldHVybiAoaW50KWNvbnRleHQuQm9keS5zdGF0dXNDb2RlOwoKICAgICAgICByZXR1cm4gMjAwOwogICAgfQoKICAgIHByaXZhdGUgc3RhdGljIGR5bmFtaWM/IEdldFJlc3BvbnNlRGF0YUZyb21Db250ZXh0KFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICBpZiAoY29udGV4dC5Cb2R5Py5kYXRhICE9IG51bGwpCiAgICAgICAgICAgIHJldHVybiBjb250ZXh0LkJvZHkuZGF0YTsKCiAgICAgICAgaWYgKGNvbnRleHQuQm9keSAhPSBudWxsICYmIGNvbnRleHQuQm9keS5zdGF0dXNDb2RlID09IG51bGwpCiAgICAgICAgICAgIHJldHVybiBjb250ZXh0LkJvZHk7CgogICAgICAgIHJldHVybiBudWxsOwogICAgfQoKICAgIHByaXZhdGUgc3RhdGljIChzdHJpbmcgbWVzc2FnZSwgc3RyaW5nIGNvZGUsIHN0cmluZyBkZXNjcmlwdGlvbikgRXh0cmFjdEVycm9ySW5mb3JtYXRpb24oU2NyaXB0Q29udGV4dCBjb250ZXh0LCBpbnQgc3RhdHVzQ29kZSkKICAgIHsKICAgICAgICB2YXIgZXJyb3JEYXRhID0gY29udGV4dC5Cb2R5Py5kYXRhPy5lcnJvciA/PyBudWxsOwogICAgICAgIAogICAgICAgIHN0cmluZyBtZXNzYWdlID0gIlBvbGljeSB2YWxpZGF0aW9uIGZhaWxlZCI7CiAgICAgICAgc3RyaW5nIGNvZGUgPSAicG9saWN5X3Zpb2xhdGlvbiI7CiAgICAgICAgc3RyaW5nIGRlc2NyaXB0aW9uID0gIkFjY291bnQgb3BlbmluZyByZXF1ZXN0IGRvZXMgbm90IG1lZXQgcG9saWN5IHJlcXVpcmVtZW50cyI7CgogICAgICAgIGlmIChlcnJvckRhdGEgIT0gbnVsbCkKICAgICAgICB7CiAgICAgICAgICAgIG1lc3NhZ2UgPSBlcnJvckRhdGEubWVzc2FnZSA/PyBtZXNzYWdlOwogICAgICAgICAgICBjb2RlID0gZXJyb3JEYXRhLmNvZGUgPz8gY29kZTsKICAgICAgICAgICAgZGVzY3JpcHRpb24gPSBlcnJvckRhdGEuZGVzY3JpcHRpb24gPz8gZGVzY3JpcHRpb247CiAgICAgICAgfQogICAgICAgIGVsc2UgaWYgKHN0YXR1c0NvZGUgPT0gNDAwKQogICAgICAgIHsKICAgICAgICAgICAgY29kZSA9ICJpbnZhbGlkX3JlcXVlc3QiOwogICAgICAgICAgICBkZXNjcmlwdGlvbiA9ICJJbnZhbGlkIGFjY291bnQgb3BlbmluZyByZXF1ZXN0IjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA9PSA0MDMpCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gImNvbXBsaWFuY2VfdmlvbGF0aW9uIjsKICAgICAgICAgICAgZGVzY3JpcHRpb24gPSAiQWNjb3VudCBvcGVuaW5nIHZpb2xhdGVzIGNvbXBsaWFuY2UgcG9saWNpZXMiOwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwOSkKICAgICAgICB7CiAgICAgICAgICAgIGNvZGUgPSAicG9saWN5X2NvbmZsaWN0IjsKICAgICAgICAgICAgZGVzY3JpcHRpb24gPSAiQWNjb3VudCBvcGVuaW5nIGNvbmZsaWN0cyB3aXRoIGV4aXN0aW5nIHBvbGljaWVzIjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA+PSA1MDApCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gInNlcnZlcl9lcnJvciI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIkludGVybmFsIHNlcnZlciBlcnJvciBkdXJpbmcgcG9saWN5IHZhbGlkYXRpb24iOwogICAgICAgIH0KCiAgICAgICAgcmV0dXJuIChtZXNzYWdlLCBjb2RlLCBkZXNjcmlwdGlvbik7CiAgICB9CgogICAgI2VuZHJlZ2lvbgp9Cg==\"\n            }\n          }\n        ],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"policies-passed\",\n            \"target\": \"account-creation\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Policies Passed\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Politikalar Geçti\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": {\n              \"location\": \"./src/PoliciesPassedRule.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCi8vLyA8c3VtbWFyeT4KLy8vIFBvbGljaWVzIFBhc3NlZCBSdWxlIC0gQ2hlY2tzIGlmIHBvbGljeSB2YWxpZGF0aW9uIHdhcyBzdWNjZXNzZnVsCi8vLyBUaGlzIHJ1bGUgZGV0ZXJtaW5lcyBpZiB0aGUgYWNjb3VudCBvcGVuaW5nIHJlcXVlc3QgcGFzc2VkIGFsbCBwb2xpY3kgdmFsaWRhdGlvbnMuCi8vLyA8L3N1bW1hcnk+CnB1YmxpYyBjbGFzcyBQb2xpY2llc1Bhc3NlZFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICAvLy8gPHN1bW1hcnk+CiAgICAvLy8gQ2hlY2sgaWYgdGhlIHBvbGljeSB2YWxpZGF0aW9uIHdhcyBzdWNjZXNzZnVsCiAgICAvLy8gPC9zdW1tYXJ5PgogICAgcHVibGljIGFzeW5jIFRhc2s8Ym9vbD4gSGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgdHJ5CiAgICAgICAgewogICAgICAgICAgICAvLyBOdWxsIGNoZWNrCiAgICAgICAgICAgIGlmIChjb250ZXh0Py5JbnN0YW5jZT8uRGF0YSA9PSBudWxsKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIC8vIFBvbGljeSB2YWxpZGF0aW9uIGRhdGEKICAgICAgICAgICAgdmFyIHBvbGljeVZhbGlkYXRpb24gPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEucG9saWN5VmFsaWRhdGlvbjsKICAgICAgICAgICAgCiAgICAgICAgICAgIGlmIChwb2xpY3lWYWxpZGF0aW9uID09IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gQ2hlY2sgaWYgdGhlIHBvbGljeSB2YWxpZGF0aW9uIHBhc3NlZAogICAgICAgICAgICB2YXIgcGFzc2VkID0gcG9saWN5VmFsaWRhdGlvbi5wYXNzZWQgPT0gdHJ1ZTsKICAgICAgICAgICAgCiAgICAgICAgICAgIC8vIEFkZGl0aW9uYWwgdmFsaWRhdGlvbiBjaGVja3MKICAgICAgICAgICAgaWYgKHBhc3NlZCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgLy8gRW5zdXJlIGNvbXBsaWFuY2UgY2hlY2tzIGFyZSBwcmVzZW50IGFuZCB2YWxpZAogICAgICAgICAgICAgICAgdmFyIGNvbXBsaWFuY2VDaGVja3MgPSBwb2xpY3lWYWxpZGF0aW9uLmNvbXBsaWFuY2VDaGVja3M7CiAgICAgICAgICAgICAgICBpZiAoY29tcGxpYW5jZUNoZWNrcyAhPSBudWxsKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHZhciBreWNDb21wbGlhbnQgPSBjb21wbGlhbmNlQ2hlY2tzLmt5Y0NvbXBsaWFudCA9PSB0cnVlOwogICAgICAgICAgICAgICAgICAgIHZhciBhbWxDb21wbGlhbnQgPSBjb21wbGlhbmNlQ2hlY2tzLmFtbENvbXBsaWFudCA9PSB0cnVlOwogICAgICAgICAgICAgICAgICAgIHZhciBzYW5jdGlvbnNDaGVjayA9IGNvbXBsaWFuY2VDaGVja3Muc2FuY3Rpb25zQ2hlY2sgPT0gdHJ1ZTsKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBwYXNzZWQgPSBwYXNzZWQgJiYga3ljQ29tcGxpYW50ICYmIGFtbENvbXBsaWFudCAmJiBzYW5jdGlvbnNDaGVjazsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQ2hlY2sgdmFsaWRhdGlvbiBzY29yZSBpZiBhdmFpbGFibGUKICAgICAgICAgICAgICAgIHZhciB2YWxpZGF0aW9uU2NvcmUgPSBwb2xpY3lWYWxpZGF0aW9uLnZhbGlkYXRpb25TY29yZTsKICAgICAgICAgICAgICAgIGlmICh2YWxpZGF0aW9uU2NvcmUgIT0gbnVsbCkKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBwYXNzZWQgPSBwYXNzZWQgJiYgdmFsaWRhdGlvblNjb3JlID49IDcwOyAvLyBNaW5pbXVtIHNjb3JlIHRocmVzaG9sZAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICByZXR1cm4gcGFzc2VkOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgLy8gSWYgYW4gZXhjZXB0aW9uIG9jY3VycywgbG9nIGl0IGFuZCByZXR1cm4gZmFsc2UKICAgICAgICAgICAgaWYgKGNvbnRleHQ/Lk1ldGFEYXRhICE9IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIGNvbnRleHQuTWV0YURhdGFbInBvbGljaWVzX3Bhc3NlZF9ydWxlX2Vycm9yIl0gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBlcnJvciA9IGV4Lk1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgdHlwZSA9IGV4LkdldFR5cGUoKS5OYW1lLAogICAgICAgICAgICAgICAgICAgIHRpbWVzdGFtcCA9IERhdGVUaW1lLlV0Y05vdwogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwogICAgICAgIH0KICAgIH0KfQo=\"\n            },\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          },\n          {\n            \"key\": \"policies-failed\",\n            \"target\": \"account-details-input\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Policies Failed - Retry\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Politikalar Başarısız - Tekrar Dene\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": {\n              \"location\": \"./src/PoliciesFailedRule.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCi8vLyA8c3VtbWFyeT4KLy8vIFBvbGljaWVzIEZhaWxlZCBSdWxlIC0gQ2hlY2tzIGlmIHBvbGljeSB2YWxpZGF0aW9uIGZhaWxlZAovLy8gVGhpcyBydWxlIGRldGVybWluZXMgaWYgdGhlIGFjY291bnQgb3BlbmluZyByZXF1ZXN0IGZhaWxlZCBwb2xpY3kgdmFsaWRhdGlvbnMuCi8vLyA8L3N1bW1hcnk+CnB1YmxpYyBjbGFzcyBQb2xpY2llc0ZhaWxlZFJ1bGUgOiBJQ29uZGl0aW9uTWFwcGluZwp7CiAgICAvLy8gPHN1bW1hcnk+CiAgICAvLy8gQ2hlY2sgaWYgdGhlIHBvbGljeSB2YWxpZGF0aW9uIGZhaWxlZAogICAgLy8vIDwvc3VtbWFyeT4KICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgLy8gTnVsbCBjaGVjawogICAgICAgICAgICBpZiAoY29udGV4dD8uSW5zdGFuY2U/LkRhdGEgPT0gbnVsbCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcmV0dXJuIHRydWU7IC8vIElmIG5vIGRhdGEsIGNvbnNpZGVyIGl0IGZhaWxlZAogICAgICAgICAgICB9CgogICAgICAgICAgICAvLyBQb2xpY3kgdmFsaWRhdGlvbiBkYXRhCiAgICAgICAgICAgIHZhciBwb2xpY3lWYWxpZGF0aW9uID0gY29udGV4dC5JbnN0YW5jZS5EYXRhLnBvbGljeVZhbGlkYXRpb247CiAgICAgICAgICAgIAogICAgICAgICAgICBpZiAocG9saWN5VmFsaWRhdGlvbiA9PSBudWxsKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZTsgLy8gSWYgbm8gcG9saWN5IHZhbGlkYXRpb24gZGF0YSwgY29uc2lkZXIgaXQgZmFpbGVkCiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIC8vIENoZWNrIGlmIHRoZSBwb2xpY3kgdmFsaWRhdGlvbiBmYWlsZWQKICAgICAgICAgICAgdmFyIGZhaWxlZCA9IHBvbGljeVZhbGlkYXRpb24ucGFzc2VkID09IGZhbHNlOwogICAgICAgICAgICAKICAgICAgICAgICAgLy8gQWRkaXRpb25hbCBmYWlsdXJlIGNoZWNrcwogICAgICAgICAgICBpZiAoIWZhaWxlZCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgLy8gQ2hlY2sgY29tcGxpYW5jZSBmYWlsdXJlcwogICAgICAgICAgICAgICAgdmFyIGNvbXBsaWFuY2VDaGVja3MgPSBwb2xpY3lWYWxpZGF0aW9uLmNvbXBsaWFuY2VDaGVja3M7CiAgICAgICAgICAgICAgICBpZiAoY29tcGxpYW5jZUNoZWNrcyAhPSBudWxsKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHZhciBreWNGYWlsZWQgPSBjb21wbGlhbmNlQ2hlY2tzLmt5Y0NvbXBsaWFudCA9PSBmYWxzZTsKICAgICAgICAgICAgICAgICAgICB2YXIgYW1sRmFpbGVkID0gY29tcGxpYW5jZUNoZWNrcy5hbWxDb21wbGlhbnQgPT0gZmFsc2U7CiAgICAgICAgICAgICAgICAgICAgdmFyIHNhbmN0aW9uc0ZhaWxlZCA9IGNvbXBsaWFuY2VDaGVja3Muc2FuY3Rpb25zQ2hlY2sgPT0gZmFsc2U7CiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgZmFpbGVkID0ga3ljRmFpbGVkIHx8IGFtbEZhaWxlZCB8fCBzYW5jdGlvbnNGYWlsZWQ7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIC8vIENoZWNrIHZhbGlkYXRpb24gc2NvcmUgaWYgYXZhaWxhYmxlCiAgICAgICAgICAgICAgICB2YXIgdmFsaWRhdGlvblNjb3JlID0gcG9saWN5VmFsaWRhdGlvbi52YWxpZGF0aW9uU2NvcmU7CiAgICAgICAgICAgICAgICBpZiAodmFsaWRhdGlvblNjb3JlICE9IG51bGwpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgZmFpbGVkID0gZmFpbGVkIHx8IHZhbGlkYXRpb25TY29yZSA8IDcwOyAvLyBCZWxvdyBtaW5pbXVtIHRocmVzaG9sZAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBDaGVjayBmb3Igc3BlY2lmaWMgZXJyb3IgY29kZXMgdGhhdCBpbmRpY2F0ZSBmYWlsdXJlCiAgICAgICAgICAgICAgICB2YXIgZXJyb3JDb2RlID0gcG9saWN5VmFsaWRhdGlvbi5lcnJvckNvZGU7CiAgICAgICAgICAgICAgICBpZiAoIXN0cmluZy5Jc051bGxPckVtcHR5KGVycm9yQ29kZT8uVG9TdHJpbmcoKSkpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgdmFyIGZhaWx1cmVDb2RlcyA9IG5ld1tdIAogICAgICAgICAgICAgICAgICAgIHsgCiAgICAgICAgICAgICAgICAgICAgICAgICJwb2xpY3lfdmlvbGF0aW9uIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICJjb21wbGlhbmNlX3Zpb2xhdGlvbiIsIAogICAgICAgICAgICAgICAgICAgICAgICAicmlza19hc3Nlc3NtZW50X2ZhaWxlZCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJreWNfZmFpbGVkIiwKICAgICAgICAgICAgICAgICAgICAgICAgImFtbF9mYWlsZWQiLAogICAgICAgICAgICAgICAgICAgICAgICAic2FuY3Rpb25zX2NoZWNrX2ZhaWxlZCIKICAgICAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIGZhaWxlZCA9IGZhaWxlZCB8fCBmYWlsdXJlQ29kZXMuQ29udGFpbnMoZXJyb3JDb2RlLlRvU3RyaW5nKCkpOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICByZXR1cm4gZmFpbGVkOwogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgLy8gSWYgYW4gZXhjZXB0aW9uIG9jY3VycywgbG9nIGl0IGFuZCByZXR1cm4gdHJ1ZSAoZmFpbGVkKQogICAgICAgICAgICBpZiAoY29udGV4dD8uTWV0YURhdGEgIT0gbnVsbCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgY29udGV4dC5NZXRhRGF0YVsicG9saWNpZXNfZmFpbGVkX3J1bGVfZXJyb3IiXSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGVycm9yID0gZXguTWVzc2FnZSwKICAgICAgICAgICAgICAgICAgICB0eXBlID0gZXguR2V0VHlwZSgpLk5hbWUsCiAgICAgICAgICAgICAgICAgICAgdGltZXN0YW1wID0gRGF0ZVRpbWUuVXRjTm93CiAgICAgICAgICAgICAgICB9OwogICAgICAgICAgICB9CgogICAgICAgICAgICByZXR1cm4gdHJ1ZTsgLy8gRXhjZXB0aW9uIG1lYW5zIGZhaWx1cmUKICAgICAgICB9CiAgICB9Cn0K\"\n            },\n            \"timer\": null,\n            \"view\": {\n              \"key\": \"policy-failure-popup-view\",\n              \"domain\": \"core\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-views\"\n            },\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"account-creation\",\n        \"stateType\": 2,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Account Creation\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Hesap Oluşturma\"\n          }\n        ],\n        \"view\": null,\n        \"subFlow\": null,\n        \"onEntries\": [\n          {\n            \"order\": 1,\n            \"task\": {\n              \"key\": \"create-bank-account\",\n              \"domain\": \"core\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-tasks\"\n            },\n            \"mapping\": {\n              \"location\": \"./src/CreateBankAccountMapping.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKLy8vIDxzdW1tYXJ5PgovLy8gQ3JlYXRlIEJhbmsgQWNjb3VudCBNYXBwaW5nIC0gQ3JlYXRlcyB0aGUgYWN0dWFsIGJhbmsgYWNjb3VudCBpbiBjb3JlIGJhbmtpbmcgc3lzdGVtCi8vLyBUaGlzIG1hcHBpbmcgY3JlYXRlcyB0aGUgZGVtYW5kIGRlcG9zaXQgYWNjb3VudCBpbiB0aGUgY29yZSBiYW5raW5nIHN5c3RlbS4KLy8vIDwvc3VtbWFyeT4KcHVibGljIGNsYXNzIENyZWF0ZUJhbmtBY2NvdW50TWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIHZhciBodHRwVGFzayA9IHRhc2sgYXMgSHR0cFRhc2s7CiAgICAgICAgICAgIGlmIChodHRwVGFzayA9PSBudWxsKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICB0aHJvdyBuZXcgSW52YWxpZE9wZXJhdGlvbkV4Y2VwdGlvbigiVGFzayBtdXN0IGJlIGFuIEh0dHBUYXNrIGZvciBhY2NvdW50IGNyZWF0aW9uIik7CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIC8vIEdldCBhbGwgcmVxdWlyZWQgZGF0YSBmcm9tIHdvcmtmbG93IGNvbnRleHQKICAgICAgICAgICAgdmFyIHVzZXJTZXNzaW9uID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8udXNlclNlc3Npb247CiAgICAgICAgICAgIHZhciBhY2NvdW50RGV0YWlscyA9IGNvbnRleHQuSW5zdGFuY2U/LkRhdGE/LmFjY291bnREZXRhaWxzOwogICAgICAgICAgICB2YXIgYWNjb3VudFR5cGUgPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5hY2NvdW50VHlwZTsKICAgICAgICAgICAgdmFyIHBvbGljeVZhbGlkYXRpb24gPSBjb250ZXh0Lkluc3RhbmNlPy5EYXRhPy5wb2xpY3lWYWxpZGF0aW9uOwogICAgICAgICAgICB2YXIgY29uZmlybWF0aW9uID0gY29udGV4dC5JbnN0YW5jZT8uRGF0YT8uY29uZmlybWF0aW9uOwoKICAgICAgICAgICAgLy8gUHJlcGFyZSB0aGUgcmVxdWVzdCBib2R5IGZvciBhY2NvdW50IGNyZWF0aW9uCiAgICAgICAgICAgIHZhciByZXF1ZXN0Qm9keSA9IG5ldwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAvLyBBY2NvdW50IGluZm9ybWF0aW9uCiAgICAgICAgICAgICAgICBhY2NvdW50VHlwZSA9IGFjY291bnRUeXBlPy5hY2NvdW50VHlwZSA/PyAiZGVtYW5kLWRlcG9zaXQiLAogICAgICAgICAgICAgICAgYWNjb3VudE5hbWUgPSBhY2NvdW50RGV0YWlscz8uYWNjb3VudE5hbWUsCiAgICAgICAgICAgICAgICBjdXJyZW5jeSA9IGFjY291bnREZXRhaWxzPy5jdXJyZW5jeSwKICAgICAgICAgICAgICAgIGJyYW5jaENvZGUgPSBhY2NvdW50RGV0YWlscz8uYnJhbmNoQ29kZSwKICAgICAgICAgICAgICAgIGluaXRpYWxEZXBvc2l0ID0gYWNjb3VudERldGFpbHM/LmluaXRpYWxEZXBvc2l0ID8/IDAsCiAgICAgICAgICAgICAgICBhY2NvdW50UHVycG9zZSA9IGFjY291bnREZXRhaWxzPy5hY2NvdW50UHVycG9zZSwKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQ3VzdG9tZXIgaW5mb3JtYXRpb24KICAgICAgICAgICAgICAgIGN1c3RvbWVySWQgPSB1c2VyU2Vzc2lvbj8udXNlcklkLAogICAgICAgICAgICAgICAgY3VzdG9tZXJFbWFpbCA9IHVzZXJTZXNzaW9uPy51c2VyRW1haWwsCiAgICAgICAgICAgICAgICBjdXN0b21lclNlZ21lbnQgPSB1c2VyU2Vzc2lvbj8uY3VzdG9tZXJTZWdtZW50LAogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBBY2NvdW50IGxpbWl0cyBmcm9tIHBvbGljeSB2YWxpZGF0aW9uCiAgICAgICAgICAgICAgICBhY2NvdW50TGltaXRzID0gcG9saWN5VmFsaWRhdGlvbj8uYWNjb3VudExpbWl0cyA/PyBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBkYWlseVRyYW5zYWN0aW9uTGltaXQgPSA1MDAwMCwKICAgICAgICAgICAgICAgICAgICBtb250aGx5VHJhbnNhY3Rpb25MaW1pdCA9IDUwMDAwMCwKICAgICAgICAgICAgICAgICAgICBtaW5pbXVtQmFsYW5jZSA9IDAsCiAgICAgICAgICAgICAgICAgICAgbWF4aW11bUJhbGFuY2UgPSAxMDAwMDAwCiAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBOb3RpZmljYXRpb24gcHJlZmVyZW5jZXMKICAgICAgICAgICAgICAgIG5vdGlmaWNhdGlvbnMgPSBhY2NvdW50RGV0YWlscz8ubm90aWZpY2F0aW9ucyA/PyBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzbXNOb3RpZmljYXRpb25zID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBlbWFpbE5vdGlmaWNhdGlvbnMgPSB0cnVlLAogICAgICAgICAgICAgICAgICAgIHB1c2hOb3RpZmljYXRpb25zID0gdHJ1ZQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQ29tcGxpYW5jZSBhbmQgYXVkaXQgaW5mb3JtYXRpb24KICAgICAgICAgICAgICAgIGNvbXBsaWFuY2VJbmZvID0gbmV3CiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgdmFsaWRhdGlvbklkID0gcG9saWN5VmFsaWRhdGlvbj8udmFsaWRhdGlvbklkLAogICAgICAgICAgICAgICAgICAgIHBvbGljeVZlcnNpb24gPSBwb2xpY3lWYWxpZGF0aW9uPy5wb2xpY3lWZXJzaW9uLAogICAgICAgICAgICAgICAgICAgIHRlcm1zQWNjZXB0ZWQgPSBjb25maXJtYXRpb24/LnRlcm1zQWNjZXB0ZWQsCiAgICAgICAgICAgICAgICAgICAgcHJpdmFjeVBvbGljeUFjY2VwdGVkID0gY29uZmlybWF0aW9uPy5wcml2YWN5UG9saWN5QWNjZXB0ZWQsCiAgICAgICAgICAgICAgICAgICAgbWFya2V0aW5nQ29uc2VudCA9IGNvbmZpcm1hdGlvbj8ubWFya2V0aW5nQ29uc2VudCwKICAgICAgICAgICAgICAgICAgICBjb25maXJtZWRBdCA9IGNvbmZpcm1hdGlvbj8uY29uZmlybWVkQXQsCiAgICAgICAgICAgICAgICAgICAgaXBBZGRyZXNzID0gY29uZmlybWF0aW9uPy5pcEFkZHJlc3MsCiAgICAgICAgICAgICAgICAgICAgdXNlckFnZW50ID0gY29uZmlybWF0aW9uPy51c2VyQWdlbnQKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIC8vIFJlcXVlc3QgbWV0YWRhdGEKICAgICAgICAgICAgICAgIHJlcXVlc3RJZCA9IGNvbnRleHQuSGVhZGVycz9bIngtcmVxdWVzdC1pZCJdID8/IEd1aWQuTmV3R3VpZCgpLlRvU3RyaW5nKCksCiAgICAgICAgICAgICAgICB3b3JrZmxvd0luc3RhbmNlSWQgPSBjb250ZXh0Lkluc3RhbmNlPy5JZC5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgcmVxdWVzdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIC8vIEFkZGl0aW9uYWwgY29udGV4dAogICAgICAgICAgICAgICAgY2hhbm5lbCA9ICJkaWdpdGFsLWJhbmtpbmciLAogICAgICAgICAgICAgICAgc291cmNlID0gImFjY291bnQtb3BlbmluZy13b3JrZmxvdyIKICAgICAgICAgICAgfTsKCiAgICAgICAgICAgIGh0dHBUYXNrLlNldEJvZHkocmVxdWVzdEJvZHkpOwoKICAgICAgICAgICAgLy8gU2V0IEhlYWRlcnMKICAgICAgICAgICAgdmFyIGhlYWRlcnMgPSBuZXcgRGljdGlvbmFyeTxzdHJpbmcsIHN0cmluZz8+CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIFsiQ29udGVudC1UeXBlIl0gPSAiYXBwbGljYXRpb24vanNvbiIsCiAgICAgICAgICAgICAgICBbIkF1dGhvcml6YXRpb24iXSA9IGNvbnRleHQuSGVhZGVycz9bImF1dGhvcml6YXRpb24iXSwKICAgICAgICAgICAgICAgIFsiWC1Vc2VyLUlkIl0gPSB1c2VyU2Vzc2lvbj8udXNlcklkPy5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgWyJYLVJlcXVlc3QtSWQiXSA9IHJlcXVlc3RCb2R5LnJlcXVlc3RJZCwKICAgICAgICAgICAgICAgIFsiWC1Xb3JrZmxvdy1JbnN0YW5jZSJdID0gY29udGV4dC5JbnN0YW5jZT8uSWQuVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgIFsiWC1BY2NvdW50LVR5cGUiXSA9IGFjY291bnRUeXBlPy5hY2NvdW50VHlwZT8uVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgIFsiWC1DdXJyZW5jeSJdID0gYWNjb3VudERldGFpbHM/LmN1cnJlbmN5Py5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgWyJYLUJyYW5jaC1Db2RlIl0gPSBhY2NvdW50RGV0YWlscz8uYnJhbmNoQ29kZT8uVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgIFsiWC1WYWxpZGF0aW9uLUlkIl0gPSBwb2xpY3lWYWxpZGF0aW9uPy52YWxpZGF0aW9uSWQ/LlRvU3RyaW5nKCkKICAgICAgICAgICAgfTsKCiAgICAgICAgICAgIGh0dHBUYXNrLlNldEhlYWRlcnMoaGVhZGVycyk7CgogICAgICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgICAgICB9CiAgICAgICAgY2F0Y2ggKEV4Y2VwdGlvbiBleCkKICAgICAgICB7CiAgICAgICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlKCkpOwogICAgICAgIH0KICAgIH0KCiAgICAvLy8gPHN1bW1hcnk+CiAgICAvLy8gUHJvY2VzcyB0aGUgYWNjb3VudCBjcmVhdGlvbiByZXN1bHQgYW5kIG1lcmdlIGl0IGludG8gdGhlIHdvcmtmbG93IGluc3RhbmNlCiAgICAvLy8gPC9zdW1tYXJ5PgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgdmFyIHN0YXR1c0NvZGUgPSBHZXRTdGF0dXNDb2RlRnJvbVJlc3BvbnNlKGNvbnRleHQpOwogICAgICAgICAgICB2YXIgcmVzcG9uc2VEYXRhID0gR2V0UmVzcG9uc2VEYXRhRnJvbUNvbnRleHQoY29udGV4dCk7CgogICAgICAgICAgICAvLyBTdWNjZXNzZnVsIGFjY291bnQgY3JlYXRpb24KICAgICAgICAgICAgaWYgKHN0YXR1c0NvZGUgPj0gMjAwICYmIHN0YXR1c0NvZGUgPCAzMDApCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHZhciBhY2NvdW50Q3JlYXRpb24gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBjcmVhdGVkQXQgPSBEYXRlVGltZS5VdGNOb3csCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gQWNjb3VudCBkZXRhaWxzCiAgICAgICAgICAgICAgICAgICAgYWNjb3VudElkID0gcmVzcG9uc2VEYXRhPy5hY2NvdW50SWQgPz8gR3VpZC5OZXdHdWlkKCkuVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgICAgICBhY2NvdW50TnVtYmVyID0gcmVzcG9uc2VEYXRhPy5hY2NvdW50TnVtYmVyLAogICAgICAgICAgICAgICAgICAgIGliYW4gPSByZXNwb25zZURhdGE/LmliYW4sCiAgICAgICAgICAgICAgICAgICAgYWNjb3VudFR5cGUgPSByZXNwb25zZURhdGE/LmFjY291bnRUeXBlID8/ICJkZW1hbmQtZGVwb3NpdCIsCiAgICAgICAgICAgICAgICAgICAgY3VycmVuY3kgPSByZXNwb25zZURhdGE/LmN1cnJlbmN5LAogICAgICAgICAgICAgICAgICAgIGJyYW5jaENvZGUgPSByZXNwb25zZURhdGE/LmJyYW5jaENvZGUsCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gQWNjb3VudCBzdGF0dXMKICAgICAgICAgICAgICAgICAgICBzdGF0dXMgPSByZXNwb25zZURhdGE/LnN0YXR1cyA/PyAiYWN0aXZlIiwKICAgICAgICAgICAgICAgICAgICBpc0FjdGl2ZSA9IHJlc3BvbnNlRGF0YT8uaXNBY3RpdmUgPz8gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBCYWxhbmNlIGluZm9ybWF0aW9uCiAgICAgICAgICAgICAgICAgICAgY3VycmVudEJhbGFuY2UgPSByZXNwb25zZURhdGE/LmN1cnJlbnRCYWxhbmNlID8/IDAsCiAgICAgICAgICAgICAgICAgICAgYXZhaWxhYmxlQmFsYW5jZSA9IHJlc3BvbnNlRGF0YT8uYXZhaWxhYmxlQmFsYW5jZSA/PyAwLAogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIC8vIEFjY291bnQgbGltaXRzCiAgICAgICAgICAgICAgICAgICAgbGltaXRzID0gcmVzcG9uc2VEYXRhPy5saW1pdHMgPz8gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICBkYWlseVRyYW5zYWN0aW9uTGltaXQgPSA1MDAwMCwKICAgICAgICAgICAgICAgICAgICAgICAgbW9udGhseVRyYW5zYWN0aW9uTGltaXQgPSA1MDAwMDAsCiAgICAgICAgICAgICAgICAgICAgICAgIG1pbmltdW1CYWxhbmNlID0gMCwKICAgICAgICAgICAgICAgICAgICAgICAgbWF4aW11bUJhbGFuY2UgPSAxMDAwMDAwCiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBDYXJkcyBhbmQgc2VydmljZXMKICAgICAgICAgICAgICAgICAgICBkZWJpdENhcmRSZXF1ZXN0ZWQgPSByZXNwb25zZURhdGE/LmRlYml0Q2FyZFJlcXVlc3RlZCA/PyBmYWxzZSwKICAgICAgICAgICAgICAgICAgICBvbmxpbmVCYW5raW5nRW5hYmxlZCA9IHJlc3BvbnNlRGF0YT8ub25saW5lQmFua2luZ0VuYWJsZWQgPz8gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICBtb2JpbGVCYW5raW5nRW5hYmxlZCA9IHJlc3BvbnNlRGF0YT8ubW9iaWxlQmFua2luZ0VuYWJsZWQgPz8gdHJ1ZSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBNZXRhZGF0YQogICAgICAgICAgICAgICAgICAgIGNyZWF0aW9uUmVmZXJlbmNlID0gcmVzcG9uc2VEYXRhPy5jcmVhdGlvblJlZmVyZW5jZSA/PyBHdWlkLk5ld0d1aWQoKS5Ub1N0cmluZygpLAogICAgICAgICAgICAgICAgICAgIGNvcmVCYW5raW5nSWQgPSByZXNwb25zZURhdGE/LmNvcmVCYW5raW5nSWQsCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gQWRkaXRpb25hbCBzZXJ2aWNlcwogICAgICAgICAgICAgICAgICAgIHNlcnZpY2VzID0gcmVzcG9uc2VEYXRhPy5zZXJ2aWNlcyA/PyBuZXdbXQogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgIm9ubGluZS1iYW5raW5nIiwKICAgICAgICAgICAgICAgICAgICAgICAgIm1vYmlsZS1iYW5raW5nIiwKICAgICAgICAgICAgICAgICAgICAgICAgInNtcy1iYW5raW5nIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH07CgogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJhY2NvdW50LWNyZWF0aW9uLXN1Y2Nlc3MiLAogICAgICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIGFjY291bnRDcmVhdGlvbiA9IGFjY291bnRDcmVhdGlvbiwKICAgICAgICAgICAgICAgICAgICAgICAgLy8gSW5jbHVkZSBzdW1tYXJ5IGZvciBzdWNjZXNzIHZpZXcKICAgICAgICAgICAgICAgICAgICAgICAgYWNjb3VudFN1bW1hcnkgPSBuZXcKICAgICAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgYWNjb3VudE51bWJlciA9IGFjY291bnRDcmVhdGlvbi5hY2NvdW50TnVtYmVyLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgaWJhbiA9IGFjY291bnRDcmVhdGlvbi5pYmFuLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgYWNjb3VudFR5cGUgPSBhY2NvdW50Q3JlYXRpb24uYWNjb3VudFR5cGUsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjdXJyZW5jeSA9IGFjY291bnRDcmVhdGlvbi5jdXJyZW5jeSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0YXR1cyA9IGFjY291bnRDcmVhdGlvbi5zdGF0dXMsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjcmVhdGVkQXQgPSBhY2NvdW50Q3JlYXRpb24uY3JlYXRlZEF0CiAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJiYW5raW5nIiwgImFjY291bnQtY3JlYXRpb24iLCAic3VjY2VzcyIsICJhY2NvdW50LW9wZW5lZCIsICJjb3JlLWJhbmtpbmciIH0KICAgICAgICAgICAgICAgIH07CiAgICAgICAgICAgIH0KICAgICAgICAgICAgLy8gRmFpbGVkIGFjY291bnQgY3JlYXRpb24KICAgICAgICAgICAgZWxzZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICB2YXIgZXJyb3JJbmZvID0gRXh0cmFjdEVycm9ySW5mb3JtYXRpb24oY29udGV4dCwgc3RhdHVzQ29kZSk7CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIHZhciBhY2NvdW50Q3JlYXRpb24gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gZmFsc2UsCiAgICAgICAgICAgICAgICAgICAgY3JlYXRlZEF0ID0gRGF0ZVRpbWUuVXRjTm93LAogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIC8vIEVycm9yIGRldGFpbHMKICAgICAgICAgICAgICAgICAgICBlcnJvciA9IGVycm9ySW5mby5tZXNzYWdlLAogICAgICAgICAgICAgICAgICAgIGVycm9yQ29kZSA9IGVycm9ySW5mby5jb2RlLAogICAgICAgICAgICAgICAgICAgIGVycm9yRGVzY3JpcHRpb24gPSBlcnJvckluZm8uZGVzY3JpcHRpb24sCiAgICAgICAgICAgICAgICAgICAgc3RhdHVzQ29kZSA9IHN0YXR1c0NvZGUsCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gRmFpbHVyZSBhbmFseXNpcwogICAgICAgICAgICAgICAgICAgIGZhaWx1cmVSZWFzb24gPSByZXNwb25zZURhdGE/LmZhaWx1cmVSZWFzb24gPz8gInVua25vd24iLAogICAgICAgICAgICAgICAgICAgIGZhaWx1cmVDYXRlZ29yeSA9IHJlc3BvbnNlRGF0YT8uZmFpbHVyZUNhdGVnb3J5ID8/ICJzeXN0ZW1fZXJyb3IiLAogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIC8vIFJldHJ5IGluZm9ybWF0aW9uCiAgICAgICAgICAgICAgICAgICAgY2FuUmV0cnkgPSByZXNwb25zZURhdGE/LmNhblJldHJ5ID8/IHRydWUsCiAgICAgICAgICAgICAgICAgICAgcmV0cnlBZnRlciA9IHJlc3BvbnNlRGF0YT8ucmV0cnlBZnRlciA/PyAzMDAsIC8vIDUgbWludXRlcwogICAgICAgICAgICAgICAgICAgIG1heFJldHJpZXMgPSByZXNwb25zZURhdGE/Lm1heFJldHJpZXMgPz8gMywKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBSZWNvbW1lbmRhdGlvbnMKICAgICAgICAgICAgICAgICAgICByZWNvbW1lbmRhdGlvbnMgPSByZXNwb25zZURhdGE/LnJlY29tbWVuZGF0aW9ucyA/PyBuZXdbXQogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgIlBsZWFzZSBjaGVjayB5b3VyIGFjY291bnQgaW5mb3JtYXRpb24gYW5kIHRyeSBhZ2FpbiIsCiAgICAgICAgICAgICAgICAgICAgICAgICJJZiB0aGUgcHJvYmxlbSBwZXJzaXN0cywgY29udGFjdCBjdXN0b21lciBzdXBwb3J0IgogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgLy8gU3VwcG9ydCBpbmZvcm1hdGlvbgogICAgICAgICAgICAgICAgICAgIHN1cHBvcnRSZWZlcmVuY2UgPSByZXNwb25zZURhdGE/LnN1cHBvcnRSZWZlcmVuY2UgPz8gR3VpZC5OZXdHdWlkKCkuVG9TdHJpbmcoKSwKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAvLyBNZXRhZGF0YQogICAgICAgICAgICAgICAgICAgIHJlcXVlc3RJZCA9IGNvbnRleHQuSGVhZGVycz9bIngtcmVxdWVzdC1pZCJdLAogICAgICAgICAgICAgICAgICAgIHdvcmtmbG93SW5zdGFuY2VJZCA9IGNvbnRleHQuSW5zdGFuY2U/LklkLlRvU3RyaW5nKCkKICAgICAgICAgICAgICAgIH07CgogICAgICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIEtleSA9ICJhY2NvdW50LWNyZWF0aW9uLWZhaWx1cmUiLAogICAgICAgICAgICAgICAgICAgIERhdGEgPSBuZXcKICAgICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgICAgIGFjY291bnRDcmVhdGlvbiA9IGFjY291bnRDcmVhdGlvbgogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgVGFncyA9IG5ld1tdIHsgImJhbmtpbmciLCAiYWNjb3VudC1jcmVhdGlvbiIsICJmYWlsdXJlIiwgImVycm9yIiwgImNvcmUtYmFua2luZy1lcnJvciIgfQogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICBjYXRjaCAoRXhjZXB0aW9uIGV4KQogICAgICAgIHsKICAgICAgICAgICAgcmV0dXJuIG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBLZXkgPSAiYWNjb3VudC1jcmVhdGlvbi1vdXRwdXQtZXJyb3IiLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGFjY291bnRDcmVhdGlvbiA9IG5ldwogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlLAogICAgICAgICAgICAgICAgICAgICAgICBlcnJvciA9ICJJbnRlcm5hbCBwcm9jZXNzaW5nIGVycm9yIiwKICAgICAgICAgICAgICAgICAgICAgICAgZXJyb3JDb2RlID0gInByb2Nlc3NpbmdfZXJyb3IiLAogICAgICAgICAgICAgICAgICAgICAgICBlcnJvckRlc2NyaXB0aW9uID0gZXguTWVzc2FnZSwKICAgICAgICAgICAgICAgICAgICAgICAgY3JlYXRlZEF0ID0gRGF0ZVRpbWUuVXRjTm93LAogICAgICAgICAgICAgICAgICAgICAgICBjYW5SZXRyeSA9IHRydWUsCiAgICAgICAgICAgICAgICAgICAgICAgIHN1cHBvcnRSZWZlcmVuY2UgPSBHdWlkLk5ld0d1aWQoKS5Ub1N0cmluZygpCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIFRhZ3MgPSBuZXdbXSB7ICJiYW5raW5nIiwgImFjY291bnQtY3JlYXRpb24iLCAiZXJyb3IiLCAiZXhjZXB0aW9uIiwgInByb2Nlc3NpbmctZXJyb3IiIH0KICAgICAgICAgICAgfTsKICAgICAgICB9CiAgICB9CgogICAgI3JlZ2lvbiBIZWxwZXIgTWV0aG9kcwoKICAgIHByaXZhdGUgc3RhdGljIGludCBHZXRTdGF0dXNDb2RlRnJvbVJlc3BvbnNlKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICBpZiAoY29udGV4dC5Cb2R5Py5zdGF0dXNDb2RlICE9IG51bGwpCiAgICAgICAgICAgIHJldHVybiAoaW50KWNvbnRleHQuQm9keS5zdGF0dXNDb2RlOwoKICAgICAgICByZXR1cm4gMjAwOwogICAgfQoKICAgIHByaXZhdGUgc3RhdGljIGR5bmFtaWM/IEdldFJlc3BvbnNlRGF0YUZyb21Db250ZXh0KFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICBpZiAoY29udGV4dC5Cb2R5Py5kYXRhICE9IG51bGwpCiAgICAgICAgICAgIHJldHVybiBjb250ZXh0LkJvZHkuZGF0YTsKCiAgICAgICAgaWYgKGNvbnRleHQuQm9keSAhPSBudWxsICYmIGNvbnRleHQuQm9keS5zdGF0dXNDb2RlID09IG51bGwpCiAgICAgICAgICAgIHJldHVybiBjb250ZXh0LkJvZHk7CgogICAgICAgIHJldHVybiBudWxsOwogICAgfQoKICAgIHByaXZhdGUgc3RhdGljIChzdHJpbmcgbWVzc2FnZSwgc3RyaW5nIGNvZGUsIHN0cmluZyBkZXNjcmlwdGlvbikgRXh0cmFjdEVycm9ySW5mb3JtYXRpb24oU2NyaXB0Q29udGV4dCBjb250ZXh0LCBpbnQgc3RhdHVzQ29kZSkKICAgIHsKICAgICAgICB2YXIgZXJyb3JEYXRhID0gY29udGV4dC5Cb2R5Py5kYXRhPy5lcnJvciA/PyBudWxsOwogICAgICAgIAogICAgICAgIHN0cmluZyBtZXNzYWdlID0gIkFjY291bnQgY3JlYXRpb24gZmFpbGVkIjsKICAgICAgICBzdHJpbmcgY29kZSA9ICJhY2NvdW50X2NyZWF0aW9uX2Vycm9yIjsKICAgICAgICBzdHJpbmcgZGVzY3JpcHRpb24gPSAiVW5hYmxlIHRvIGNyZWF0ZSB0aGUgYmFuayBhY2NvdW50IjsKCiAgICAgICAgaWYgKGVycm9yRGF0YSAhPSBudWxsKQogICAgICAgIHsKICAgICAgICAgICAgbWVzc2FnZSA9IGVycm9yRGF0YS5tZXNzYWdlID8/IG1lc3NhZ2U7CiAgICAgICAgICAgIGNvZGUgPSBlcnJvckRhdGEuY29kZSA/PyBjb2RlOwogICAgICAgICAgICBkZXNjcmlwdGlvbiA9IGVycm9yRGF0YS5kZXNjcmlwdGlvbiA/PyBkZXNjcmlwdGlvbjsKICAgICAgICB9CiAgICAgICAgZWxzZSBpZiAoc3RhdHVzQ29kZSA9PSA0MDApCiAgICAgICAgewogICAgICAgICAgICBjb2RlID0gImludmFsaWRfYWNjb3VudF9kYXRhIjsKICAgICAgICAgICAgZGVzY3JpcHRpb24gPSAiSW52YWxpZCBhY2NvdW50IGNyZWF0aW9uIGRhdGEgcHJvdmlkZWQiOwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQwOSkKICAgICAgICB7CiAgICAgICAgICAgIGNvZGUgPSAiYWNjb3VudF9hbHJlYWR5X2V4aXN0cyI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIkFuIGFjY291bnQgd2l0aCBzaW1pbGFyIGRldGFpbHMgYWxyZWFkeSBleGlzdHMiOwogICAgICAgIH0KICAgICAgICBlbHNlIGlmIChzdGF0dXNDb2RlID09IDQyMikKICAgICAgICB7CiAgICAgICAgICAgIGNvZGUgPSAidmFsaWRhdGlvbl9lcnJvciI7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uID0gIkFjY291bnQgZGF0YSB2YWxpZGF0aW9uIGZhaWxlZCI7CiAgICAgICAgfQogICAgICAgIGVsc2UgaWYgKHN0YXR1c0NvZGUgPj0gNTAwKQogICAgICAgIHsKICAgICAgICAgICAgY29kZSA9ICJjb3JlX2JhbmtpbmdfZXJyb3IiOwogICAgICAgICAgICBkZXNjcmlwdGlvbiA9ICJDb3JlIGJhbmtpbmcgc3lzdGVtIGVycm9yIGR1cmluZyBhY2NvdW50IGNyZWF0aW9uIjsKICAgICAgICB9CgogICAgICAgIHJldHVybiAobWVzc2FnZSwgY29kZSwgZGVzY3JpcHRpb24pOwogICAgfQoKICAgICNlbmRyZWdpb24KfQo=\"\n            }\n          }\n        ],\n        \"onExits\": [],\n        \"transitions\": [\n          {\n            \"key\": \"account-created-successfully\",\n            \"target\": \"account-opening-success\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Account Created Successfully\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Hesap Başarıyla Oluşturuldu\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": {\n              \"location\": \"./src/AccountCreatedSuccessfullyRule.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCi8vLyA8c3VtbWFyeT4KLy8vIEFjY291bnQgQ3JlYXRlZCBTdWNjZXNzZnVsbHkgUnVsZSAtIENoZWNrcyBpZiBhY2NvdW50IGNyZWF0aW9uIHdhcyBzdWNjZXNzZnVsCi8vLyBUaGlzIHJ1bGUgZGV0ZXJtaW5lcyBpZiB0aGUgYmFuayBhY2NvdW50IHdhcyBzdWNjZXNzZnVsbHkgY3JlYXRlZCBpbiB0aGUgY29yZSBiYW5raW5nIHN5c3RlbS4KLy8vIDwvc3VtbWFyeT4KcHVibGljIGNsYXNzIEFjY291bnRDcmVhdGVkU3VjY2Vzc2Z1bGx5UnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIC8vLyA8c3VtbWFyeT4KICAgIC8vLyBDaGVjayBpZiB0aGUgYWNjb3VudCBjcmVhdGlvbiB3YXMgc3VjY2Vzc2Z1bAogICAgLy8vIDwvc3VtbWFyeT4KICAgIHB1YmxpYyBhc3luYyBUYXNrPGJvb2w+IEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHRyeQogICAgICAgIHsKICAgICAgICAgICAgLy8gTnVsbCBjaGVjawogICAgICAgICAgICBpZiAoY29udGV4dD8uSW5zdGFuY2U/LkRhdGEgPT0gbnVsbCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwogICAgICAgICAgICB9CgogICAgICAgICAgICAvLyBBY2NvdW50IGNyZWF0aW9uIGRhdGEKICAgICAgICAgICAgdmFyIGFjY291bnRDcmVhdGlvbiA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YS5hY2NvdW50Q3JlYXRpb247CiAgICAgICAgICAgIAogICAgICAgICAgICBpZiAoYWNjb3VudENyZWF0aW9uID09IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gQ2hlY2sgaWYgdGhlIGFjY291bnQgY3JlYXRpb24gd2FzIHN1Y2Nlc3NmdWwKICAgICAgICAgICAgdmFyIHN1Y2Nlc3MgPSBhY2NvdW50Q3JlYXRpb24uc3VjY2VzcyA9PSB0cnVlOwogICAgICAgICAgICAKICAgICAgICAgICAgLy8gQWRkaXRpb25hbCB2YWxpZGF0aW9uIGNoZWNrcyBmb3Igc3VjY2Vzc2Z1bCBjcmVhdGlvbgogICAgICAgICAgICBpZiAoc3VjY2VzcykKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgLy8gRW5zdXJlIGVzc2VudGlhbCBhY2NvdW50IGRldGFpbHMgYXJlIHByZXNlbnQKICAgICAgICAgICAgICAgIHZhciBhY2NvdW50SWQgPSBhY2NvdW50Q3JlYXRpb24uYWNjb3VudElkOwogICAgICAgICAgICAgICAgdmFyIGFjY291bnROdW1iZXIgPSBhY2NvdW50Q3JlYXRpb24uYWNjb3VudE51bWJlcjsKICAgICAgICAgICAgICAgIHZhciBzdGF0dXMgPSBhY2NvdW50Q3JlYXRpb24uc3RhdHVzOwogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBBY2NvdW50IG11c3QgaGF2ZSBJRCBhbmQgbnVtYmVyCiAgICAgICAgICAgICAgICBpZiAoc3RyaW5nLklzTnVsbE9yRW1wdHkoYWNjb3VudElkPy5Ub1N0cmluZygpKSB8fCAKICAgICAgICAgICAgICAgICAgICBzdHJpbmcuSXNOdWxsT3JFbXB0eShhY2NvdW50TnVtYmVyPy5Ub1N0cmluZygpKSkKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBzdWNjZXNzID0gZmFsc2U7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIC8vIEFjY291bnQgc3RhdHVzIHNob3VsZCBiZSBhY3RpdmUKICAgICAgICAgICAgICAgIGlmIChzdGF0dXM/LlRvU3RyaW5nKCkgIT0gImFjdGl2ZSIpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlOwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBDaGVjayBpZiBhY2NvdW50IGlzIG1hcmtlZCBhcyBhY3RpdmUKICAgICAgICAgICAgICAgIHZhciBpc0FjdGl2ZSA9IGFjY291bnRDcmVhdGlvbi5pc0FjdGl2ZTsKICAgICAgICAgICAgICAgIGlmIChpc0FjdGl2ZSAhPSB0cnVlKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHN1Y2Nlc3MgPSBmYWxzZTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gVmVyaWZ5IElCQU4gaXMgcHJlc2VudCBmb3IgY2VydGFpbiBjdXJyZW5jaWVzCiAgICAgICAgICAgICAgICB2YXIgY3VycmVuY3kgPSBhY2NvdW50Q3JlYXRpb24uY3VycmVuY3k/LlRvU3RyaW5nKCk7CiAgICAgICAgICAgICAgICB2YXIgaWJhbiA9IGFjY291bnRDcmVhdGlvbi5pYmFuOwogICAgICAgICAgICAgICAgaWYgKChjdXJyZW5jeSA9PSAiRVVSIiB8fCBjdXJyZW5jeSA9PSAiVVNEIiB8fCBjdXJyZW5jeSA9PSAiR0JQIikgJiYgCiAgICAgICAgICAgICAgICAgICAgc3RyaW5nLklzTnVsbE9yRW1wdHkoaWJhbj8uVG9TdHJpbmcoKSkpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgLy8gSUJBTiBtaWdodCBiZSByZXF1aXJlZCBmb3IgaW50ZXJuYXRpb25hbCBjdXJyZW5jaWVzCiAgICAgICAgICAgICAgICAgICAgLy8gVGhpcyBpcyBjb25maWd1cmFibGUgYmFzZWQgb24gYmFuayBwb2xpY2llcwogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBDaGVjayBjcmVhdGlvbiB0aW1lc3RhbXAgaXMgcmVjZW50ICh3aXRoaW4gbGFzdCBob3VyKQogICAgICAgICAgICAgICAgdmFyIGNyZWF0ZWRBdCA9IGFjY291bnRDcmVhdGlvbi5jcmVhdGVkQXQ7CiAgICAgICAgICAgICAgICBEYXRlVGltZSBjcmVhdGlvblRpbWUgPSBkZWZhdWx0OwogICAgICAgICAgICAgICAgaWYgKGNyZWF0ZWRBdCAhPSBudWxsICYmIERhdGVUaW1lLlRyeVBhcnNlKGNyZWF0ZWRBdC5Ub1N0cmluZygpLCBvdXQgY3JlYXRpb25UaW1lKSkKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICB2YXIgdGltZURpZmYgPSBEYXRlVGltZS5VdGNOb3cgLSBjcmVhdGlvblRpbWU7CiAgICAgICAgICAgICAgICAgICAgaWYgKHRpbWVEaWZmLlRvdGFsSG91cnMgPiAxKQogICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgLy8gQ3JlYXRpb24gdGltZXN0YW1wIGlzIHRvbyBvbGQsIG1pZ2h0IGJlIHN0YWxlIGRhdGEKICAgICAgICAgICAgICAgICAgICAgICAgc3VjY2VzcyA9IGZhbHNlOwogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgcmV0dXJuIHN1Y2Nlc3M7CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24gZXgpCiAgICAgICAgewogICAgICAgICAgICAvLyBJZiBhbiBleGNlcHRpb24gb2NjdXJzLCBsb2cgaXQgYW5kIHJldHVybiBmYWxzZQogICAgICAgICAgICBpZiAoY29udGV4dD8uTWV0YURhdGEgIT0gbnVsbCkKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgY29udGV4dC5NZXRhRGF0YVsiYWNjb3VudF9jcmVhdGVkX3N1Y2Nlc3NmdWxseV9ydWxlX2Vycm9yIl0gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBlcnJvciA9IGV4Lk1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgdHlwZSA9IGV4LkdldFR5cGUoKS5OYW1lLAogICAgICAgICAgICAgICAgICAgIHRpbWVzdGFtcCA9IERhdGVUaW1lLlV0Y05vdwogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcmV0dXJuIGZhbHNlOwogICAgICAgIH0KICAgIH0KfQo=\"\n            },\n            \"timer\": null,\n            \"view\": null,\n            \"onExecutionTasks\": []\n          },\n          {\n            \"key\": \"account-creation-failed\",\n            \"target\": \"account-details-input\",\n            \"triggerType\": 1,\n            \"versionStrategy\": \"Minor\",\n            \"labels\": [\n              {\n                \"language\": \"en-US\",\n                \"label\": \"Account Creation Failed - Retry\"\n              },\n              {\n                \"language\": \"tr-TR\",\n                \"label\": \"Hesap Oluşturma Başarısız - Tekrar Dene\"\n              }\n            ],\n            \"schema\": null,\n            \"rule\": {\n              \"location\": \"./src/AccountCreationFailedRule.csx\",\n              \"code\": \"dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCi8vLyA8c3VtbWFyeT4KLy8vIEFjY291bnQgQ3JlYXRpb24gRmFpbGVkIFJ1bGUgLSBDaGVja3MgaWYgYWNjb3VudCBjcmVhdGlvbiBmYWlsZWQKLy8vIFRoaXMgcnVsZSBkZXRlcm1pbmVzIGlmIHRoZSBiYW5rIGFjY291bnQgY3JlYXRpb24gZmFpbGVkIGluIHRoZSBjb3JlIGJhbmtpbmcgc3lzdGVtLgovLy8gPC9zdW1tYXJ5PgpwdWJsaWMgY2xhc3MgQWNjb3VudENyZWF0aW9uRmFpbGVkUnVsZSA6IElDb25kaXRpb25NYXBwaW5nCnsKICAgIC8vLyA8c3VtbWFyeT4KICAgIC8vLyBDaGVjayBpZiB0aGUgYWNjb3VudCBjcmVhdGlvbiBmYWlsZWQKICAgIC8vLyA8L3N1bW1hcnk+CiAgICBwdWJsaWMgYXN5bmMgVGFzazxib29sPiBIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICB0cnkKICAgICAgICB7CiAgICAgICAgICAgIC8vIE51bGwgY2hlY2sKICAgICAgICAgICAgaWYgKGNvbnRleHQ/Lkluc3RhbmNlPy5EYXRhID09IG51bGwpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIHJldHVybiB0cnVlOyAvLyBJZiBubyBkYXRhLCBjb25zaWRlciBpdCBmYWlsZWQKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gQWNjb3VudCBjcmVhdGlvbiBkYXRhCiAgICAgICAgICAgIHZhciBhY2NvdW50Q3JlYXRpb24gPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEuYWNjb3VudENyZWF0aW9uOwogICAgICAgICAgICAKICAgICAgICAgICAgaWYgKGFjY291bnRDcmVhdGlvbiA9PSBudWxsKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZTsgLy8gSWYgbm8gYWNjb3VudCBjcmVhdGlvbiBkYXRhLCBjb25zaWRlciBpdCBmYWlsZWQKICAgICAgICAgICAgfQoKICAgICAgICAgICAgLy8gQ2hlY2sgaWYgdGhlIGFjY291bnQgY3JlYXRpb24gZmFpbGVkCiAgICAgICAgICAgIHZhciBmYWlsZWQgPSBhY2NvdW50Q3JlYXRpb24uc3VjY2VzcyA9PSBmYWxzZTsKICAgICAgICAgICAgCiAgICAgICAgICAgIC8vIEFkZGl0aW9uYWwgZmFpbHVyZSBjaGVja3MKICAgICAgICAgICAgaWYgKCFmYWlsZWQpCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIC8vIENoZWNrIGZvciBtaXNzaW5nIGVzc2VudGlhbCBkYXRhIGV2ZW4gaWYgbWFya2VkIGFzIHN1Y2Nlc3MKICAgICAgICAgICAgICAgIHZhciBhY2NvdW50SWQgPSBhY2NvdW50Q3JlYXRpb24uYWNjb3VudElkOwogICAgICAgICAgICAgICAgdmFyIGFjY291bnROdW1iZXIgPSBhY2NvdW50Q3JlYXRpb24uYWNjb3VudE51bWJlcjsKICAgICAgICAgICAgICAgIHZhciBzdGF0dXMgPSBhY2NvdW50Q3JlYXRpb24uc3RhdHVzOwogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAvLyBNaXNzaW5nIGVzc2VudGlhbCBhY2NvdW50IGRldGFpbHMgaW5kaWNhdGVzIGZhaWx1cmUKICAgICAgICAgICAgICAgIGlmIChzdHJpbmcuSXNOdWxsT3JFbXB0eShhY2NvdW50SWQ/LlRvU3RyaW5nKCkpIHx8IAogICAgICAgICAgICAgICAgICAgIHN0cmluZy5Jc051bGxPckVtcHR5KGFjY291bnROdW1iZXI/LlRvU3RyaW5nKCkpKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGZhaWxlZCA9IHRydWU7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIC8vIE5vbi1hY3RpdmUgc3RhdHVzIGluZGljYXRlcyBmYWlsdXJlCiAgICAgICAgICAgICAgICBpZiAoc3RhdHVzPy5Ub1N0cmluZygpICE9ICJhY3RpdmUiKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIGZhaWxlZCA9IHRydWU7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIC8vIENoZWNrIGlmIGFjY291bnQgaXMgbWFya2VkIGFzIGluYWN0aXZlCiAgICAgICAgICAgICAgICB2YXIgaXNBY3RpdmUgPSBhY2NvdW50Q3JlYXRpb24uaXNBY3RpdmU7CiAgICAgICAgICAgICAgICBpZiAoaXNBY3RpdmUgPT0gZmFsc2UpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgZmFpbGVkID0gdHJ1ZTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQ2hlY2sgZm9yIHNwZWNpZmljIGVycm9yIGluZGljYXRvcnMKICAgICAgICAgICAgICAgIHZhciBlcnJvckNvZGUgPSBhY2NvdW50Q3JlYXRpb24uZXJyb3JDb2RlOwogICAgICAgICAgICAgICAgaWYgKCFzdHJpbmcuSXNOdWxsT3JFbXB0eShlcnJvckNvZGU/LlRvU3RyaW5nKCkpKQogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHZhciBmYWlsdXJlQ29kZXMgPSBuZXdbXSAKICAgICAgICAgICAgICAgICAgICB7IAogICAgICAgICAgICAgICAgICAgICAgICAiYWNjb3VudF9jcmVhdGlvbl9lcnJvciIsIAogICAgICAgICAgICAgICAgICAgICAgICAiY29yZV9iYW5raW5nX2Vycm9yIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICJpbnZhbGlkX2FjY291bnRfZGF0YSIsCiAgICAgICAgICAgICAgICAgICAgICAgICJhY2NvdW50X2FscmVhZHlfZXhpc3RzIiwKICAgICAgICAgICAgICAgICAgICAgICAgInZhbGlkYXRpb25fZXJyb3IiLAogICAgICAgICAgICAgICAgICAgICAgICAic3lzdGVtX2Vycm9yIiwKICAgICAgICAgICAgICAgICAgICAgICAgInByb2Nlc3NpbmdfZXJyb3IiCiAgICAgICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBmYWlsZWQgPSBmYWlsZWQgfHwgZmFpbHVyZUNvZGVzLkNvbnRhaW5zKGVycm9yQ29kZS5Ub1N0cmluZygpKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgLy8gQ2hlY2sgZmFpbHVyZSBjYXRlZ29yeQogICAgICAgICAgICAgICAgdmFyIGZhaWx1cmVDYXRlZ29yeSA9IGFjY291bnRDcmVhdGlvbi5mYWlsdXJlQ2F0ZWdvcnk7CiAgICAgICAgICAgICAgICBpZiAoIXN0cmluZy5Jc051bGxPckVtcHR5KGZhaWx1cmVDYXRlZ29yeT8uVG9TdHJpbmcoKSkpCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgdmFyIGNyaXRpY2FsQ2F0ZWdvcmllcyA9IG5ld1tdIAogICAgICAgICAgICAgICAgICAgIHsgCiAgICAgICAgICAgICAgICAgICAgICAgICJzeXN0ZW1fZXJyb3IiLCAKICAgICAgICAgICAgICAgICAgICAgICAgInZhbGlkYXRpb25fZXJyb3IiLCAKICAgICAgICAgICAgICAgICAgICAgICAgImJ1c2luZXNzX3J1bGVfdmlvbGF0aW9uIiwKICAgICAgICAgICAgICAgICAgICAgICAgImNvcmVfYmFua2luZ19mYWlsdXJlIgogICAgICAgICAgICAgICAgICAgIH07CiAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgZmFpbGVkID0gZmFpbGVkIHx8IGNyaXRpY2FsQ2F0ZWdvcmllcy5Db250YWlucyhmYWlsdXJlQ2F0ZWdvcnkuVG9TdHJpbmcoKSk7CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIHJldHVybiBmYWlsZWQ7CiAgICAgICAgfQogICAgICAgIGNhdGNoIChFeGNlcHRpb24gZXgpCiAgICAgICAgewogICAgICAgICAgICAvLyBJZiBhbiBleGNlcHRpb24gb2NjdXJzLCBsb2cgaXQgYW5kIHJldHVybiB0cnVlIChmYWlsZWQpCiAgICAgICAgICAgIGlmIChjb250ZXh0Py5NZXRhRGF0YSAhPSBudWxsKQogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBjb250ZXh0Lk1ldGFEYXRhWyJhY2NvdW50X2NyZWF0aW9uX2ZhaWxlZF9ydWxlX2Vycm9yIl0gPSBuZXcKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICBlcnJvciA9IGV4Lk1lc3NhZ2UsCiAgICAgICAgICAgICAgICAgICAgdHlwZSA9IGV4LkdldFR5cGUoKS5OYW1lLAogICAgICAgICAgICAgICAgICAgIHRpbWVzdGFtcCA9IERhdGVUaW1lLlV0Y05vdwogICAgICAgICAgICAgICAgfTsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgcmV0dXJuIHRydWU7IC8vIEV4Y2VwdGlvbiBtZWFucyBmYWlsdXJlCiAgICAgICAgfQogICAgfQp9Cg==\"\n            },\n            \"timer\": null,\n            \"view\": {\n              \"key\": \"account-creation-failure-popup-view\",\n              \"domain\": \"core\",\n              \"version\": \"1.0.0\",\n              \"flow\": \"sys-views\"\n            },\n            \"onExecutionTasks\": []\n          }\n        ]\n      },\n      {\n        \"key\": \"account-opening-success\",\n        \"stateType\": 3,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Account Opening Successful\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Hesap Açılışı Başarılı\"\n          }\n        ],\n        \"view\": {\n          \"key\": \"account-opening-success-view\",\n          \"domain\": \"core\",\n          \"version\": \"1.0.0\",\n          \"flow\": \"sys-views\"\n        },\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": []\n      },\n      {\n        \"key\": \"cancelled\",\n        \"stateType\": 3,\n        \"versionStrategy\": \"Minor\",\n        \"labels\": [\n          {\n            \"language\": \"en-US\",\n            \"label\": \"Account Opening Cancelled\"\n          },\n          {\n            \"language\": \"tr-TR\",\n            \"label\": \"Hesap Açılışı İptal Edildi\"\n          }\n        ],\n        \"view\": {\n          \"key\": \"account-opening-cancelled-view\",\n          \"domain\": \"core\",\n          \"version\": \"1.0.0\",\n          \"flow\": \"sys-views\"\n        },\n        \"subFlow\": null,\n        \"onEntries\": [],\n        \"onExits\": []\n      }\n    ]\n  }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-flows"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Opening Flow",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-flows"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Tasks",
+							"item": [
+								{
+									"name": "1 - Start - Create Bank Account",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"create-bank-account\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-creation\",\n    \"demand-deposit\",\n    \"core-banking\",\n    \"account-opening\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/banking/accounts/create\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 20,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-tasks"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Create Bank Account",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-tasks"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Validate Account Policies",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"validate-account-policies\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"policy-validation\",\n    \"compliance\",\n    \"risk-assessment\",\n    \"account-opening\"\n  ],\n  \"attributes\": {\n    \"type\": \"6\",\n    \"config\": {\n      \"url\": \"{{mockoonApi}}/api/banking/policies/validate-account-opening\",\n      \"method\": \"POST\",\n      \"headers\": {\n        \"Content-Type\": \"application/json\"\n      },\n      \"body\": {},\n      \"timeoutSeconds\": 15,\n      \"validateSsl\": true\n    }\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-tasks"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Validate Account Policies",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-tasks"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - User Session",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"user-session\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-tasks\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-creation\",\n    \"demand-deposit\",\n    \"core-banking\",\n    \"account-opening\"\n  ],\n  \"attributes\": {\n    \"type\": \"7\",\n    \"config\": {}\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-tasks"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - User Session",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-tasks"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Views",
+							"item": [
+								{
+									"name": "1 - Start - Account Confirmation View",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-confirmation-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-confirmation\",\n    \"approval\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Confirmation View",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Creation Failure Popup",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-creation-failure-popup-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-creation-failure\",\n    \"popup\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Creation Failure Popup",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Details Input",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-details-input-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-details\",\n    \"input\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Details Input",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Opening Cancelled",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-opening-cancelled-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-opening\",\n    \"cancelled\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Opening Cancelled",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Opening Success",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-opening-success-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-opening\",\n    \"success\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Opening Success",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Type Selection",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"account-type-selection-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"account-type\",\n    \"selection\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Type Selection",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Policy Failure Popup",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"key\": \"policy-failure-popup-view\",\n  \"version\": \"1.0.0\",\n  \"domain\": \"core\",\n  \"flow\": \"sys-views\",\n  \"flowVersion\": \"1.0.0\",\n  \"tags\": [\n    \"banking\",\n    \"policy-failure\",\n    \"popup\",\n    \"ui-view\"\n  ],\n  \"attributes\": {\n    \"type\": 1,\n    \"target\": 1,\n    \"content\": \"{}\"\n  }\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Policy Failure Popup",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-views"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Schemas",
+							"item": [
+								{
+									"name": "1 - Start - Account Type Selection",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept-Language",
+												"value": "tr-TR",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"key\": \"account-type-selection\",\n    \"version\": \"1.0.0\",\n    \"domain\": \"core\",\n    \"flow\": \"sys-schemas\",\n    \"flowVersion\": \"1.0.0\",\n    \"tags\": [\n        \"banking\",\n        \"account-type\",\n        \"selection\",\n        \"input-schema\"\n    ],\n    \"attributes\": {\n        \"type\": \"workflow\",\n        \"$id\": \"https://schemas.vnext.com/banking/account-type-selection.json\",\n        \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n        \"title\": \"Account Type Selection Schema\",\n        \"description\": \"Schema for account type selection input\",\n        \"schema\": {\n            \"$id\": \"https://schemas.vnext.com/banking/account-type-selection.json\",\n            \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n            \"title\": \"Account Type Selection Schema\",\n            \"description\": \"Schema for account type selection input\",\n            \"type\": \"object\",\n            \"required\": [\n                \"accountType\"\n            ],\n            \"properties\": {\n                \"accountType\": {\n                    \"type\": \"string\",\n                    \"title\": \"Account Type\",\n                    \"description\": \"Type of account to be opened\",\n                    \"oneOf\": [\n                        {\n                            \"const\": \"demand-deposit\",\n                            \"description\": \"Vadesiz Hesap - Demand Deposit Account\"\n                        },\n                        {\n                            \"const\": \"time-deposit\",\n                            \"description\": \"Vadeli Hesap - Time Deposit Account\"\n                        },\n                        {\n                            \"const\": \"investment-account\",\n                            \"description\": \"Fonlu Hesap - Investment Account\"\n                        },\n                        {\n                            \"const\": \"savings-account\",\n                            \"description\": \"Tasarruf Hesabı - Savings Account\"\n                        }\n                    ]\n                }\n            },\n            \"additionalProperties\": false\n        }\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-schemas"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Type Selection",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-schemas"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Details Input",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"key\": \"account-details-input\",\n    \"version\": \"1.0.0\",\n    \"domain\": \"core\",\n    \"flow\": \"sys-schemas\",\n    \"flowVersion\": \"1.0.0\",\n    \"tags\": [\n        \"banking\",\n        \"account-details\",\n        \"input-schema\",\n        \"demand-deposit\"\n    ],\n    \"attributes\": {\n        \"type\": \"workflow\",\n        \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n        \"$id\": \"https://schemas.vnext.com/banking/account-details-input.json\",\n        \"title\": \"Account Details Input Schema\",\n        \"description\": \"Schema for account details input during account opening\",\n        \"schema\": {\n            \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n            \"$id\": \"https://schemas.vnext.com/banking/account-details-input.json\",\n            \"title\": \"Account Details Input Schema\",\n            \"description\": \"Schema for account details input during account opening\",\n            \"type\": \"object\",\n            \"required\": [\n                \"accountName\",\n                \"currency\",\n                \"branchCode\"\n            ],\n            \"properties\": {\n                \"accountName\": {\n                    \"type\": \"string\",\n                    \"title\": \"Account Name\",\n                    \"description\": \"Name/alias for the account\",\n                    \"minLength\": 1,\n                    \"maxLength\": 50,\n                    \"pattern\": \"^[a-zA-ZğüşıöçĞÜŞİÖÇ0-9\\\\s\\\\-_]+$\"\n                },\n                \"currency\": {\n                    \"type\": \"string\",\n                    \"title\": \"Currency\",\n                    \"description\": \"Account currency\",\n                    \"oneOf\": [\n                        {\n                            \"const\": \"TRY\",\n                            \"description\": \"Turkish Lira\"\n                        },\n                        {\n                            \"const\": \"USD\",\n                            \"description\": \"US Dollar\"\n                        },\n                        {\n                            \"const\": \"EUR\",\n                            \"description\": \"Euro\"\n                        },\n                        {\n                            \"const\": \"GBP\",\n                            \"description\": \"British Pound\"\n                        }\n                    ]\n                },\n                \"branchCode\": {\n                    \"type\": \"string\",\n                    \"title\": \"Branch Code\",\n                    \"description\": \"Branch code where account will be opened\",\n                    \"pattern\": \"^[0-9]{4}$\"\n                },\n                \"initialDeposit\": {\n                    \"type\": \"number\",\n                    \"title\": \"Initial Deposit\",\n                    \"description\": \"Initial deposit amount (optional)\",\n                    \"minimum\": 0,\n                    \"maximum\": 1000000\n                },\n                \"accountPurpose\": {\n                    \"type\": \"string\",\n                    \"title\": \"Account Purpose\",\n                    \"description\": \"Purpose of the account\",\n                    \"oneOf\": [\n                        {\n                            \"const\": \"personal-banking\",\n                            \"description\": \"Kişisel Bankacılık - Personal Banking\"\n                        },\n                        {\n                            \"const\": \"salary-account\",\n                            \"description\": \"Maaş Hesabı - Salary Account\"\n                        },\n                        {\n                            \"const\": \"savings\",\n                            \"description\": \"Tasarruf - Savings\"\n                        },\n                        {\n                            \"const\": \"business-expenses\",\n                            \"description\": \"İş Giderleri - Business Expenses\"\n                        }\n                    ]\n                },\n                \"notifications\": {\n                    \"type\": \"object\",\n                    \"title\": \"Notification Preferences\",\n                    \"description\": \"Notification settings for the account\",\n                    \"properties\": {\n                        \"smsNotifications\": {\n                            \"type\": \"boolean\",\n                            \"title\": \"SMS Notifications\",\n                            \"description\": \"Enable SMS notifications\",\n                            \"default\": true\n                        },\n                        \"emailNotifications\": {\n                            \"type\": \"boolean\",\n                            \"title\": \"Email Notifications\",\n                            \"description\": \"Enable email notifications\",\n                            \"default\": true\n                        },\n                        \"pushNotifications\": {\n                            \"type\": \"boolean\",\n                            \"title\": \"Push Notifications\",\n                            \"description\": \"Enable push notifications\",\n                            \"default\": true\n                        }\n                    },\n                    \"additionalProperties\": false\n                }\n            },\n            \"additionalProperties\": false\n        }\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-schemas"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Details Input",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-schemas"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "1 - Start - Account Confirmation",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"if (pm.response.code === 200 || pm.response.code === 201) {",
+													"    var jsonData = pm.response.json();",
+													"    pm.collectionVariables.set('instanceId', jsonData.id);",
+													"}"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"key\": \"account-confirmation\",\n    \"version\": \"1.0.0\",\n    \"domain\": \"core\",\n    \"flow\": \"sys-schemas\",\n    \"flowVersion\": \"1.0.0\",\n    \"tags\": [\n        \"banking\",\n        \"account-confirmation\",\n        \"input-schema\",\n        \"approval\"\n    ],\n    \"attributes\": {\n        \"type\": \"workflow\",\n        \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n        \"$id\": \"https://schemas.vnext.com/banking/account-confirmation.json\",\n        \"title\": \"Account Confirmation Schema\",\n        \"description\": \"Schema for account opening confirmation\",\n        \"schema\": {\n            \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n            \"$id\": \"https://schemas.vnext.com/banking/account-confirmation.json\",\n            \"title\": \"Account Confirmation Schema\",\n            \"description\": \"Schema for account opening confirmation\",\n            \"type\": \"object\",\n            \"required\": [\n                \"confirmed\",\n                \"termsAccepted\"\n            ],\n            \"properties\": {\n                \"confirmed\": {\n                    \"type\": \"boolean\",\n                    \"title\": \"Confirmation\",\n                    \"description\": \"User confirms the account opening\",\n                    \"const\": true\n                },\n                \"termsAccepted\": {\n                    \"type\": \"boolean\",\n                    \"title\": \"Terms and Conditions Accepted\",\n                    \"description\": \"User accepts terms and conditions\",\n                    \"const\": true\n                },\n                \"privacyPolicyAccepted\": {\n                    \"type\": \"boolean\",\n                    \"title\": \"Privacy Policy Accepted\",\n                    \"description\": \"User accepts privacy policy\",\n                    \"const\": true\n                }\n            },\n            \"additionalProperties\": false\n        }\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												"start"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-schemas"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2 - Activate - Account Confirmation",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												":domain",
+												"workflows",
+												":flow",
+												"instances",
+												":instanceId",
+												"transitions",
+												"activate"
+											],
+											"query": [
+												{
+													"key": "sync",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "domain",
+													"value": "{{domain}}"
+												},
+												{
+													"key": "flow",
+													"value": "sys-schemas"
+												},
+												{
+													"key": "instanceId",
+													"value": "{{instanceId}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Instance Execute",
+					"item": [
+						{
+							"name": "Get Instance Data",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										":domain",
+										"workflows",
+										":flow",
+										"instances",
+										":instance"
+									],
+									"variable": [
+										{
+											"key": "domain",
+											"value": "{{domain}}"
+										},
+										{
+											"key": "flow",
+											"value": "account-opening"
+										},
+										{
+											"key": "instance",
+											"value": "{{instanceId}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 1: Start Instance",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 200 || pm.response.code === 201) {",
+											"    var jsonData = pm.response.json();",
+											"    pm.collectionVariables.set('instanceId', jsonData.id);",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var uuid = require('uuid');",
+											"pm.collectionVariables.set(\"requestId\",uuid.v4());"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "tr-TR",
+										"type": "text"
+									},
+									{
+										"key": "X-Request-Id",
+										"value": "{{requestId}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Device-Id",
+										"value": "{{requestId}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Token-Id",
+										"value": "{{requestId}}",
+										"type": "text"
+									},
+									{
+										"key": "X-Device-Info",
+										"value": "IOS 16",
+										"type": "text"
+									},
+									{
+										"key": "X-Forwarded-For",
+										"value": "192.168.2.1",
+										"type": "text"
+									},
+									{
+										"key": "user_reference",
+										"value": "34987491018",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"key\": \"34987491023\",\n    \"tags\": [\n        \"test\",\n        \"banking\",\n        \"account-openning\"\n    ],\n    \"attributes\": {\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/start?sync=true",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										":domain",
+										"workflows",
+										":flow",
+										"instances",
+										"start"
+									],
+									"query": [
+										{
+											"key": "sync",
+											"value": "true"
+										}
+									],
+									"variable": [
+										{
+											"key": "domain",
+											"value": "{{domain}}"
+										},
+										{
+											"key": "flow",
+											"value": "account-opening"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2: Select Account Type",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"accountType\": \"demand-deposit\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/:transition?sync=true",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										":domain",
+										"workflows",
+										":flow",
+										"instances",
+										":instance",
+										"transitions",
+										":transition"
+									],
+									"query": [
+										{
+											"key": "sync",
+											"value": "true"
+										}
+									],
+									"variable": [
+										{
+											"key": "domain",
+											"value": "{{domain}}"
+										},
+										{
+											"key": "flow",
+											"value": "account-opening"
+										},
+										{
+											"key": "instance",
+											"value": "{{instanceId}}"
+										},
+										{
+											"key": "transition",
+											"value": "select-demand-deposit"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2: Submit Account Details",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"accountName\": \"demand-deposit\",\n    \"currency\": \"TRY\",\n    \"branchCode\": \"5436\",\n    \"initialDeposit\": 100,\n    \"accountPurpose\": \"personal-banking\",\n    \"notifications\": {\n        \"smsNotifications\": true,\n        \"emailNotifications\": true,\n        \"pushNotifications\": true\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/:transition?sync=true",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										":domain",
+										"workflows",
+										":flow",
+										"instances",
+										":instance",
+										"transitions",
+										":transition"
+									],
+									"query": [
+										{
+											"key": "sync",
+											"value": "true"
+										}
+									],
+									"variable": [
+										{
+											"key": "domain",
+											"value": "{{domain}}"
+										},
+										{
+											"key": "flow",
+											"value": "account-opening"
+										},
+										{
+											"key": "instance",
+											"value": "{{instanceId}}"
+										},
+										{
+											"key": "transition",
+											"value": "submit-account-details"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Step 2: Confirm Account",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"confirmed\": true,\n    \"termsAccepted\": true,\n    \"privacyPolicyAccepted\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/:domain/workflows/:flow/instances/:instance/transitions/:transition?sync=true",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										":domain",
+										"workflows",
+										":flow",
+										"instances",
+										":instance",
+										"transitions",
+										":transition"
+									],
+									"query": [
+										{
+											"key": "sync",
+											"value": "true"
+										}
+									],
+									"variable": [
+										{
+											"key": "domain",
+											"value": "{{domain}}"
+										},
+										{
+											"key": "flow",
+											"value": "account-opening"
+										},
+										{
+											"key": "instance",
+											"value": "{{instanceId}}"
+										},
+										{
+											"key": "transition",
+											"value": "confirm-account-opening"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
 		}
 	],
 	"event": [
@@ -4603,6 +5797,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -4613,6 +5808,7 @@
 			"script": {
 				"type": "text/javascript",
 				"packages": {},
+				"requests": {},
 				"exec": [
 					""
 				]

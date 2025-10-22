@@ -1,0 +1,18 @@
+{
+  "key": "account-details-input-view",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-views",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "account-details",
+    "input",
+    "ui-view"
+  ],
+  "attributes": {
+    "type": 1,
+    "target": 1,
+    "content": "{}"
+  }
+}

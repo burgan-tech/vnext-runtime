@@ -1,0 +1,28 @@
+{
+  "nodePos": {
+    "check-notification": {
+      "x": 100,
+      "y": 100
+    },
+    "parse-phone": {
+      "x": 302,
+      "y": 521
+    },
+    "send-sms-notification": {
+      "x": 881.5,
+      "y": 533
+    },
+    "send-push-notification": {
+      "x": 769,
+      "y": -99
+    },
+    "completed": {
+      "x": 1600,
+      "y": 381
+    },
+    "__start__": {
+      "x": -296,
+      "y": 100
+    }
+  }
+}
