@@ -94,6 +94,20 @@
           "uuid": "26d4f313-c36c-408b-b532-67f51fe0d118"
         }
       ]
+    },
+    {
+      "uuid": "4b345806-3c85-4752-98bd-15b973301107",
+      "name": "account-opening",
+      "children": [
+        {
+          "type": "route",
+          "uuid": "7579d9f9-d6ab-487b-b22c-9a04b7e3498d"
+        },
+        {
+          "type": "route",
+          "uuid": "33139996-5a0a-4514-b461-adb9d8c42e0c"
+        }
+      ]
     }
   ],
   "routes": [
@@ -693,7 +707,7 @@
       "responses": [
         {
           "uuid": "e884dba5-3969-4a04-8ecd-0d0e5fb0927d",
-          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{faker 'string.uuid'}}\",\n  \"userId\": \"{{body 'userId'}}\",\n  \"amount\": {{body 'amount'}},\n  \"currency\": \"{{body 'currency'}}\",\n  \"frequency\": \"{{body 'frequency'}}\",\n  \"startDate\": \"{{body 'startDate'}}\",\n  \"endDate\": \"{{body 'endDate'}}\",\n  \"paymentMethodId\": \"{{body 'paymentMethodId'}}\",\n  \"description\": \"{{body 'description'}}\",\n  \"recipientId\": \"{{body 'recipientId'}}\",\n  \"isAutoRetry\": {{body 'isAutoRetry'}},\n  \"maxRetries\": {{body 'maxRetries'}},\n  \"status\": \"inactive\",\n  \"nextPaymentDate\": \"{{dateTimeAdd (now) 1 'days'}}\",\n  \"createdAt\": \"{{now}}\",\n  \"maxPayments\": 12\n}",
+          "body": "{\n  \"success\": true,\n  \"scheduleId\": \"{{faker 'string.uuid'}}\",\n  \"userId\": \"{{body 'userId'}}\",\n  \"amount\": {{body 'amount'}},\n  \"currency\": \"{{body 'currency'}}\",\n  \"frequency\": \"{{body 'frequency'}}\",\n  \"startDate\": \"{{body 'startDate'}}\",\n  \"endDate\": \"{{body 'endDate'}}\",\n  \"paymentMethodId\": \"{{body 'paymentMethodId'}}\",\n  \"description\": \"{{body 'description'}}\",\n  \"recipientId\": \"{{body 'recipientId'}}\",\n  \"isAutoRetry\": {{body 'isAutoRetry'}},\n  \"maxRetries\": {{body 'maxRetries'}},\n  \"status\": \"inactive\",\n  \"nextPaymentDate\": \"{{dateTimeAdd (now) 1 'days'}}\",\n  \"createdAt\": \"{{now}}\",\n  \"maxPayments\": 4\n}",
           "latency": 200,
           "statusCode": 201,
           "label": "Ödeme Yapılandırması Kaydedildi",
@@ -1199,6 +1213,142 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "7579d9f9-d6ab-487b-b22c-9a04b7e3498d",
+      "type": "http",
+      "documentation": "Validates account opening against bank policies",
+      "method": "post",
+      "endpoint": "api/banking/policies/validate-account-opening",
+      "responses": [
+        {
+          "uuid": "5b154c2e-31e6-42be-8238-8623488b9f11",
+          "body": "{\n    \"validationId\": \"{{faker 'string.uuid'}}\",\n    \"complianceChecks\": {\n      \"kycCompliant\": true,\n      \"amlCompliant\": true,\n      \"sanctionsCheck\": true,\n      \"riskAssessment\": \"low\"\n    },\n    \"accountLimits\": {\n      \"dailyTransactionLimit\": 50000,\n      \"monthlyTransactionLimit\": 500000,\n      \"minimumBalance\": 0,\n      \"maximumBalance\": 1000000\n    },\n    \"additionalRequirements\": [],\n    \"approvedBy\": \"system\",\n    \"approvalLevel\": \"automated\",\n    \"policyVersion\": \"1.0.0\",\n    \"validationScore\": {{faker 'number.int' min=85 max=100}}\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Policy Validation Passed",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "currency",
+              "value": "TRY|USD|EUR|GBP",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "bb862b01-f62e-437a-9e8d-c7cf2a38d0d3",
+          "body": "{\n  \"validationId\": \"{{faker 'string.uuid'}}\",\n  \"error\": {\n    \"message\": \"Policy validation failed\",\n    \"code\": \"policy_violation\",\n    \"description\": \"Account opening request does not meet policy requirements\"\n  },\n  \"failedChecks\": [\n    \"risk_assessment\"\n  ],\n  \"recommendations\": [\n    \"Please review your account information\",\n    \"Contact customer support for assistance\"\n  ],\n  \"canRetry\": true,\n  \"retryAfter\": 300\n}",
+          "latency": 0,
+          "statusCode": 403,
+          "label": "Policy Validation Failed",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "33139996-5a0a-4514-b461-adb9d8c42e0c",
+      "type": "http",
+      "documentation": "Creates a new bank account in core banking system",
+      "method": "post",
+      "endpoint": "api/banking/accounts/create",
+      "responses": [
+        {
+          "uuid": "308fd823-ef23-4833-95be-0d5c520a1dea",
+          "body": "{\n    \"accountId\": \"{{faker 'string.uuid'}}\",\n    \"accountNumber\": \"{{faker 'finance.accountNumber'}}\",\n    \"iban\": \"TR{{faker 'string.numeric' 24}}\",\n    \"accountType\": \"demand-deposit\",\n    \"currency\": \"{{body 'currency'}}\",\n    \"branchCode\": \"{{body 'branchCode'}}\",\n    \"status\": \"active\",\n    \"isActive\": true,\n    \"currentBalance\": {{body 'initialDeposit' 0}},\n    \"availableBalance\": {{body 'initialDeposit' 0}},\n    \"limits\": {\n      \"dailyTransactionLimit\": 50000,\n      \"monthlyTransactionLimit\": 500000,\n      \"minimumBalance\": 0,\n      \"maximumBalance\": 1000000\n    },\n    \"debitCardRequested\": false,\n    \"onlineBankingEnabled\": true,\n    \"mobileBankingEnabled\": true,\n    \"creationReference\": \"{{faker 'string.uuid'}}\",\n    \"coreBankingId\": \"CB{{faker 'string.numeric' 10}}\",\n    \"services\": [\n      \"online-banking\",\n      \"mobile-banking\",\n      \"sms-banking\"\n    ]\n}",
+          "latency": 0,
+          "statusCode": 201,
+          "label": "Account Created Successfully",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "accountName",
+              "value": ".+",
+              "invert": false,
+              "operator": "regex"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "6b220657-625b-43ef-8bac-80a265d9c3ba",
+          "body": "{\n  \"error\": {\n    \"message\": \"Account creation failed\",\n    \"code\": \"validation_error\",\n    \"description\": \"Account data validation failed\"\n  },\n  \"failureReason\": \"invalid_account_name\",\n  \"failureCategory\": \"validation_error\",\n  \"canRetry\": true,\n  \"retryAfter\": 300,\n  \"maxRetries\": 3,\n  \"recommendations\": [\n    \"Please check your account information and try again\",\n    \"Account name must be between 1-50 characters\"\n  ],\n  \"supportReference\": \"{{faker 'string.uuid'}}\"\n}",
+          "latency": 0,
+          "statusCode": 422,
+          "label": "Account Creation Failed",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -1213,6 +1363,10 @@
     {
       "type": "folder",
       "uuid": "b3a79260-52ee-40db-b9f5-057764d77ceb"
+    },
+    {
+      "type": "folder",
+      "uuid": "4b345806-3c85-4752-98bd-15b973301107"
     }
   ],
   "proxyMode": false,

@@ -1,0 +1,52 @@
+{
+  "key": "account-confirmation",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-schemas",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "account-confirmation",
+    "input-schema",
+    "approval"
+  ],
+  "attributes": {
+    "type": "workflow",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://schemas.vnext.com/banking/account-confirmation.json",
+    "title": "Account Confirmation Schema",
+    "description": "Schema for account opening confirmation",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://schemas.vnext.com/banking/account-confirmation.json",
+      "title": "Account Confirmation Schema",
+      "description": "Schema for account opening confirmation",
+      "type": "object",
+      "required": [
+        "confirmed",
+        "termsAccepted"
+      ],
+      "properties": {
+        "confirmed": {
+          "type": "boolean",
+          "title": "Confirmation",
+          "description": "User confirms the account opening",
+          "const": true
+        },
+        "termsAccepted": {
+          "type": "boolean",
+          "title": "Terms and Conditions Accepted",
+          "description": "User accepts terms and conditions",
+          "const": true
+        },
+        "privacyPolicyAccepted": {
+          "type": "boolean",
+          "title": "Privacy Policy Accepted",
+          "description": "User accepts privacy policy",
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

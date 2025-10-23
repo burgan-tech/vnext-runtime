@@ -1,0 +1,27 @@
+{
+  "key": "create-bank-account",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "account-creation",
+    "demand-deposit",
+    "core-banking",
+    "account-opening"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "http://mockoon:3001/api/banking/accounts/create",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 20,
+      "validateSsl": true
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "key": "validate-account-policies",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-tasks",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "policy-validation",
+    "compliance",
+    "risk-assessment",
+    "account-opening"
+  ],
+  "attributes": {
+    "type": "6",
+    "config": {
+      "url": "http://mockoon:3001/api/banking/policies/validate-account-opening",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {},
+      "timeoutSeconds": 15,
+      "validateSsl": true
+    }
+  }
+}
