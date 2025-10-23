@@ -14,7 +14,7 @@
   "attributes": {
     "type": "6",
     "config": {
-      "url": "http://localhost:3001/api/banking/policies/validate-account-opening",
+      "url": "http://mockoon:3001/api/banking/policies/validate-account-opening",
       "method": "POST",
       "headers": {
         "Content-Type": "application/json"
