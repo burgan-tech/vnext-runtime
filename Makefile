@@ -240,6 +240,8 @@ health: ## Check health of services
 	@echo "$(YELLOW)VNext Orchestration:$(NC)"
 	@curl -s http://localhost:4201/health || echo "$(RED)❌ Orchestration service not healthy$(NC)"
 	@echo ""
+	@echo "$(YELLOW)Waiting 3 seconds before checking VNext Execution...$(NC)"
+	@sleep 3
 	@echo "$(YELLOW)VNext Execution:$(NC)"
 	@curl -s http://localhost:4202/health || echo "$(RED)❌ Execution service not healthy$(NC)"
 	@echo ""
@@ -379,6 +381,8 @@ info: ## Show project information
 	@echo ""
 	@echo "$(BLUE)Services:$(NC)"
 	@echo "• VNext Orchestration: http://localhost:4201"
+	@echo "$(YELLOW)Waiting 3 seconds before checking VNext Execution...$(NC)"
+	@sleep 3
 	@echo "• VNext Execution: http://localhost:4202"
 	@echo ""
 	@echo "$(BLUE)Management Interfaces:$(NC)"

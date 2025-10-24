@@ -5,8 +5,10 @@ services:
     image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
     env_file:
       - .env.orchestration
+    volumes:
+      - ./appsettings.Development.json:/app/appsettings.Development.json:ro
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health" ]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-app:5000/health" ]
       interval: 10s
       retries: 5
       start_period: 35s
@@ -23,15 +25,13 @@ services:
   # VNext Core Runtime Initializer - vnext-app loads system components after it is healthy
   vnext-core-init:
     container_name: vnext-core-init
-    build:
-      context: .
-      dockerfile: Dockerfile.vnext-core-init
-      args:
-        VNEXT_CORE_RUNTIME_VERSION: "${VNEXT_CORE_RUNTIME_VERSION:-latest}"
+    image: "ghcr.io/burgan-tech/vnext/init:${VNEXT_INIT_VERSION:-latest}"
     environment:
+      VNEXT_CORE_RUNTIME_VERSION: "${VNEXT_CORE_RUNTIME_VERSION:-latest}"
       VNEXT_APP_URL: "http://vnext-app:5000"
       APP_DOMAIN: "${APP_DOMAIN:-core}"
     volumes:
+      - npm-cache:/app/.npm-cache
       # Custom components volume - users can mount their components here
       - "${CUSTOM_COMPONENTS_PATH:-./custom-components}:/app/custom-components"
     networks:
@@ -46,8 +46,10 @@ services:
     image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
     env_file:
       - .env.execution
+    volumes:
+      - ./appsettings.Execution.Development.json:/app/appsettings.Development.json:ro
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health" ]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-execution-app:5000/health" ]
       interval: 10s
       retries: 5
       start_period: 35s
@@ -396,3 +398,4 @@ volumes:
   grafana:
   metabase:
   clickhouse:
+  npm-cache: {}
