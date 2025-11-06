@@ -68,19 +68,6 @@ public class AccountCreatedSuccessfullyRule : IConditionMapping
                     // IBAN might be required for international currencies
                     // This is configurable based on bank policies
                 }
-                
-                // Check creation timestamp is recent (within last hour)
-                var createdAt = accountCreation.createdAt;
-                DateTime creationTime = default;
-                if (createdAt != null && DateTime.TryParse(createdAt.ToString(), out creationTime))
-                {
-                    var timeDiff = DateTime.UtcNow - creationTime;
-                    if (timeDiff.TotalHours > 1)
-                    {
-                        // Creation timestamp is too old, might be stale data
-                        success = false;
-                    }
-                }
             }
 
             return success;

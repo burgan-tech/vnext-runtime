@@ -50,10 +50,6 @@
           "label": "Push MFA Başlat"
         }
       ],
-      "schema": null,
-      "rule": null,
-      "timer": null,
-      "view": null,
       "onExecutionTasks": []
     },
     "states": [

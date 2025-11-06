@@ -12,7 +12,17 @@
   ],
   "attributes": {
     "type": 1,
-    "target": 1,
-    "content": "{}"
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Account Opening Successful"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Hesap Açılışı Başarılı"
+      }
+    ],
+    "display": "bottom-sheet",
+    "content": "{\"type\":\"success-celebration\",\"animation\":\"confetti\",\"title\":{\"en-US\":\"🎉 Congratulations!\",\"tr-TR\":\"🎉 Tebrikler!\"},\"subtitle\":{\"en-US\":\"Your account has been successfully created\",\"tr-TR\":\"Hesabınız başarıyla oluşturuldu\"},\"message\":{\"en-US\":\"Welcome to our digital banking family! Your new account is ready to use.\",\"tr-TR\":\"Dijital bankacılık ailemize hoş geldiniz! Yeni hesabınız kullanıma hazır.\"},\"accountSummary\":{\"title\":{\"en-US\":\"Account Details\",\"tr-TR\":\"Hesap Detayları\"},\"fields\":[{\"key\":\"accountNumber\",\"label\":{\"en-US\":\"Account Number\",\"tr-TR\":\"Hesap Numarası\"},\"value\":\"{{accountCreation.accountNumber}}\",\"copyable\":true,\"highlight\":true},{\"key\":\"iban\",\"label\":{\"en-US\":\"IBAN\",\"tr-TR\":\"IBAN\"},\"value\":\"{{accountCreation.iban}}\",\"copyable\":true},{\"key\":\"accountType\",\"label\":{\"en-US\":\"Account Type\",\"tr-TR\":\"Hesap Türü\"},\"value\":\"{{accountCreation.accountType}}\",\"displayValue\":{\"demand-deposit\":{\"en-US\":\"Demand Deposit Account\",\"tr-TR\":\"Vadesiz Mevduat Hesabı\"}}},{\"key\":\"currency\",\"label\":{\"en-US\":\"Currency\",\"tr-TR\":\"Para Birimi\"},\"value\":\"{{accountCreation.currency}}\"},{\"key\":\"status\",\"label\":{\"en-US\":\"Status\",\"tr-TR\":\"Durum\"},\"value\":\"{{accountCreation.status}}\",\"displayValue\":{\"active\":{\"en-US\":\"Active ✅\",\"tr-TR\":\"Aktif ✅\"}},\"statusColor\":\"success\"}]},\"nextSteps\":{\"title\":{\"en-US\":\"What's Next?\",\"tr-TR\":\"Sırada Ne Var?\"},\"items\":[{\"icon\":\"credit-card\",\"title\":{\"en-US\":\"Order Your Debit Card\",\"tr-TR\":\"Banka Kartınızı Sipariş Edin\"},\"description\":{\"en-US\":\"Get instant access to your funds\",\"tr-TR\":\"Paranıza anında erişim sağlayın\"},\"action\":\"order-card\"},{\"icon\":\"mobile-app\",\"title\":{\"en-US\":\"Download Mobile App\",\"tr-TR\":\"Mobil Uygulamayı İndirin\"},\"description\":{\"en-US\":\"Manage your account on the go\",\"tr-TR\":\"Hesabınızı her yerden yönetin\"},\"action\":\"download-app\"},{\"icon\":\"money-transfer\",\"title\":{\"en-US\":\"Make Your First Deposit\",\"tr-TR\":\"İlk Yatırımınızı Yapın\"},\"description\":{\"en-US\":\"Start using your new account\",\"tr-TR\":\"Yeni hesabınızı kullanmaya başlayın\"},\"action\":\"make-deposit\"}]},\"buttons\":[{\"key\":\"continue-banking\",\"label\":{\"en-US\":\"Continue to Banking\",\"tr-TR\":\"Bankacılığa Devam Et\"},\"style\":\"primary\",\"action\":\"navigate\",\"destination\":\"/dashboard\",\"icon\":\"arrow-right\"},{\"key\":\"download-summary\",\"label\":{\"en-US\":\"Download Summary\",\"tr-TR\":\"Özet İndir\"},\"style\":\"secondary\",\"action\":\"download\",\"fileType\":\"pdf\",\"icon\":\"download\"},{\"key\":\"share-success\",\"label\":{\"en-US\":\"Share\",\"tr-TR\":\"Paylaş\"},\"style\":\"tertiary\",\"action\":\"share\",\"icon\":\"share\"}],\"footer\":{\"message\":{\"en-US\":\"Need help? Contact our 24/7 customer support\",\"tr-TR\":\"Yardıma mı ihtiyacınız var? 7/24 müşteri desteğimizle iletişime geçin\"},\"supportAction\":{\"label\":{\"en-US\":\"Get Support\",\"tr-TR\":\"Destek Al\"},\"action\":\"contact-support\"}}}"
   }
 }

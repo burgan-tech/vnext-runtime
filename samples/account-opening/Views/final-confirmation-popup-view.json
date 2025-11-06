@@ -1,0 +1,29 @@
+{
+  "key": "final-confirmation-popup-view",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-views",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "final-confirmation",
+    "terms",
+    "popup",
+    "ui-view"
+  ],
+  "attributes": {
+    "type": 1,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Final Confirmation"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Son Onay"
+      }
+    ],
+    "display": "popup",
+    "content": "{\"type\":\"terms-confirmation-dialog\",\"title\":{\"en-US\":\"Final Account Opening Confirmation\",\"tr-TR\":\"Son Hesap Açılış Onayı\"},\"message\":{\"en-US\":\"By proceeding, you confirm that all information provided is accurate and you agree to our terms and conditions.\",\"tr-TR\":\"Devam ederek, verilen tüm bilgilerin doğru olduğunu onaylıyor ve şartlar ve koşullarımızı kabul ettiğinizi beyan ediyorsunuz.\"},\"icon\":\"document-check\",\"showFullAccountSummary\":true,\"termsAndConditions\":{\"required\":true,\"links\":[{\"key\":\"terms\",\"label\":{\"en-US\":\"Terms and Conditions\",\"tr-TR\":\"Şartlar ve Koşullar\"},\"url\":\"/terms-and-conditions\"},{\"key\":\"privacy\",\"label\":{\"en-US\":\"Privacy Policy\",\"tr-TR\":\"Gizlilik Politikası\"},\"url\":\"/privacy-policy\"}]},\"checkboxes\":[{\"key\":\"terms-accepted\",\"label\":{\"en-US\":\"I accept the Terms and Conditions\",\"tr-TR\":\"Şartlar ve Koşulları kabul ediyorum\"},\"required\":true},{\"key\":\"privacy-accepted\",\"label\":{\"en-US\":\"I accept the Privacy Policy\",\"tr-TR\":\"Gizlilik Politikasını kabul ediyorum\"},\"required\":true},{\"key\":\"marketing-consent\",\"label\":{\"en-US\":\"I consent to receive marketing communications (optional)\",\"tr-TR\":\"Pazarlama iletişimi almayı kabul ediyorum (isteğe bağlı)\"},\"required\":false}],\"buttons\":[{\"key\":\"confirm\",\"label\":{\"en-US\":\"Open Account\",\"tr-TR\":\"Hesap Aç\"},\"style\":\"primary\",\"action\":\"submit\",\"requiresAllMandatoryCheckboxes\":true},{\"key\":\"cancel\",\"label\":{\"en-US\":\"Cancel\",\"tr-TR\":\"İptal\"},\"style\":\"secondary\",\"action\":\"cancel\"}]}"
+  }
+}

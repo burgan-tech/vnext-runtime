@@ -1,0 +1,28 @@
+{
+  "key": "policy-validation-view",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-views",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "policy-validation",
+    "loading",
+    "ui-view"
+  ],
+  "attributes": {
+    "type": 1,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Policy Validation"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Politika Doğrulama"
+      }
+    ],
+    "display": "full-page",
+    "content": "{\"type\":\"loading-screen\",\"title\":{\"en-US\":\"Validating Your Information\",\"tr-TR\":\"Bilgileriniz Doğrulanıyor\"},\"description\":{\"en-US\":\"We are checking your account opening request against our policies. This may take a few moments.\",\"tr-TR\":\"Hesap açılış talebinizi politikalarımıza göre kontrol ediyoruz. Bu birkaç dakika sürebilir.\"},\"loadingIndicator\":true,\"showProgress\":true,\"steps\":[{\"key\":\"compliance-check\",\"label\":{\"en-US\":\"Compliance Check\",\"tr-TR\":\"Uyumluluk Kontrolü\"}},{\"key\":\"risk-assessment\",\"label\":{\"en-US\":\"Risk Assessment\",\"tr-TR\":\"Risk Değerlendirmesi\"}},{\"key\":\"policy-validation\",\"label\":{\"en-US\":\"Policy Validation\",\"tr-TR\":\"Politika Doğrulama\"}}]}"
+  }
+}

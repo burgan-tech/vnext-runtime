@@ -42,10 +42,6 @@
           "label": "Kimlik Doğrulama Başlat"
         }
       ],
-      "schema": null,
-      "rule": null,
-      "timer": null,
-      "view": null,
       "onExecutionTasks": []
     },
     "states": [
@@ -495,7 +491,7 @@
           },
           "mapping": {
             "location": "./src/PushNotificationMfaSubflowMapping.csx",
-            "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQdXNoTm90aWZpY2F0aW9uTWZhU3ViZmxvd01hcHBpbmcgOiBJU3ViRmxvd01hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEsCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9CgogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gY29udGV4dC5Cb2R5LAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQ=="
+            "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBQdXNoTm90aWZpY2F0aW9uTWZhU3ViZmxvd01hcHBpbmcgOiBJU3ViRmxvd01hcHBpbmcKewogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IElucHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBjb250ZXh0Lkluc3RhbmNlLkRhdGEsCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9CgogICAgcHVibGljIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBUYXNrLkZyb21SZXN1bHQobmV3IFNjcmlwdFJlc3BvbnNlCiAgICAgICAgewogICAgICAgICAgICBEYXRhID0gY29udGV4dC5Cb2R5LAogICAgICAgICAgICBIZWFkZXJzID0gbnVsbAogICAgICAgIH0pOwogICAgfQp9"
           }
         },
         "onEntries": [],
@@ -576,7 +572,7 @@
           },
           "mapping": {
             "location": "./src/OtpMfaSubflowMapping.csx",
-            "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBPdHBNZmFTdWJmbG93TWFwcGluZyA6IElTdWJGbG93TWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgIHsKICAgICAgICAgICAgRGF0YSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YSwKICAgICAgICAgICAgSGVhZGVycyA9IG51bGwKICAgICAgICB9KTsKICAgIH0KCiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBjb250ZXh0LkJvZHksCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9"
+            "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKCnB1YmxpYyBjbGFzcyBPdHBNZmFTdWJmbG93TWFwcGluZyA6IElTdWJGbG93TWFwcGluZwp7CiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gSW5wdXRIYW5kbGVyKFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZQogICAgICAgIHsKICAgICAgICAgICAgRGF0YSA9IGNvbnRleHQuSW5zdGFuY2UuRGF0YSwKICAgICAgICAgICAgSGVhZGVycyA9IG51bGwKICAgICAgICB9KTsKICAgIH0KCiAgICBwdWJsaWMgVGFzazxTY3JpcHRSZXNwb25zZT4gT3V0cHV0SGFuZGxlcihTY3JpcHRDb250ZXh0IGNvbnRleHQpCiAgICB7CiAgICAgICAgcmV0dXJuIFRhc2suRnJvbVJlc3VsdChuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICB7CiAgICAgICAgICAgIERhdGEgPSBjb250ZXh0LkJvZHksCiAgICAgICAgICAgIEhlYWRlcnMgPSBudWxsCiAgICAgICAgfSk7CiAgICB9Cn0="
           }
         },
         "onEntries": [],
