@@ -11,7 +11,7 @@
         "start-transition"
     ],
     "attributes": {
-        "type": "workflow",
+        "type": "object",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "$id": "https://schemas.vnext.com/payments/start-transition.json",
         "title": "Payment Start Transition Schema",

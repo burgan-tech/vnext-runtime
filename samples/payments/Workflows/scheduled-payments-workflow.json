@@ -42,15 +42,6 @@
           "label": "Ödeme Kurulum Başlat"
         }
       ],
-      "schema": {
-        "key": "payment-start-validation",
-        "domain": "core",
-        "version": "1.0.0",
-        "flow": "sys-schemas"
-      },
-      "rule": null,
-      "timer": null,
-      "view": null,
       "onExecutionTasks": []
     },
     "states": [

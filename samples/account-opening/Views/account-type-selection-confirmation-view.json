@@ -1,0 +1,29 @@
+{
+  "key": "account-type-selection-confirmation-view",
+  "version": "1.0.0",
+  "domain": "core",
+  "flow": "sys-views",
+  "flowVersion": "1.0.0",
+  "tags": [
+    "banking",
+    "account-type",
+    "confirmation",
+    "popup",
+    "ui-view"
+  ],
+  "attributes": {
+    "type": 1,
+    "labels": [
+      {
+        "language": "en-US",
+        "label": "Confirm Account Type Selection"
+      },
+      {
+        "language": "tr-TR",
+        "label": "Hesap Türü Seçimini Onayla"
+      }
+    ],
+    "display": "popup",
+    "content": "{\"type\":\"confirmation-dialog\",\"title\":{\"en-US\":\"Confirm Account Type\",\"tr-TR\":\"Hesap Türünü Onayla\"},\"message\":{\"en-US\":\"You have selected a Demand Deposit Account. This account type allows you to deposit and withdraw money at any time. Do you want to proceed?\",\"tr-TR\":\"Vadesiz Mevduat Hesabı seçtiniz. Bu hesap türü istediğiniz zaman para yatırıp çekmenize olanak sağlar. Devam etmek istiyor musunuz?\"},\"icon\":\"info\",\"buttons\":[{\"key\":\"confirm\",\"label\":{\"en-US\":\"Yes, Continue\",\"tr-TR\":\"Evet, Devam Et\"},\"style\":\"primary\",\"action\":\"submit\"},{\"key\":\"cancel\",\"label\":{\"en-US\":\"Go Back\",\"tr-TR\":\"Geri Dön\"},\"style\":\"secondary\",\"action\":\"cancel\"}]}"
+  }
+}
