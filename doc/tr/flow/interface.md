@@ -120,3 +120,36 @@ Task<bool> Handler(ScriptContext context);
 
 **Metod Açıklaması:**
 - `Handler`: Verilen context'e göre boolean değer döner (true: geçişe izin ver, false: geçişi engelle)
+
+### ITransitionMapping
+Transition payload'larını instance data'ya maplemek için kullanılır. Transition request verilerinin workflow instance'a merge edilmeden önce özel dönüştürülmesine olanak sağlar.
+
+> **Kaynak**: [`../src/ITransitionMapping.cs`](../src/ITransitionMapping.cs)
+
+**Kullanım Alanları:**
+- Instance data'ya kaydedilmeden önce özel payload dönüşümü
+- Transition sırasında veri validasyonu ve temizleme
+- Transition verisini ek context ile zenginleştirme
+- Gelen verinin filtrelenmesi veya yeniden yapılandırılması
+- Varsayılan davranış: Mapping tanımı yoksa, payload olduğu gibi instance data'ya yazılır
+
+**Metod:**
+```csharp
+Task<dynamic> Handler(ScriptContext context);
+```
+
+**Metod Açıklaması:**
+- `Handler`: Transition payload'ını dönüştürür ve workflow instance data'sına merge edilecek veriyi döner
+
+**Mapping ile Transition Şeması:**
+```json
+{
+  "key": "transition-name",
+  "source": "source-state",
+  "target": "target-state",
+  "mapping": {
+    "code": "BASE64_ENCODED_CSX_CONTENT",
+    "location": "./src/TransitionMappingFile.csx"
+  }
+}
+```

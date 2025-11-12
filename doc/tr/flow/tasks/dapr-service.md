@@ -36,8 +36,11 @@ Dapr Service Task, Dapr service invocation özelliği kullanarak mikroservislere
       "appId": "user-service",
       "methodName": "GetUserProfile", 
       "httpVerb": "GET",
-      "data": {
+      "body": {
         "userId": "{{data.userId}}"
+      },
+      "headers": {
+        "Content-Type": "application/json"
       },
       "queryString": "version=v1&include=profile",
       "timeoutSeconds": 30
@@ -55,7 +58,8 @@ DAPR Service Task'ın config bölümünde aşağıdaki alanlar tanımlanır:
 | `appId` | string | - | Hedef service app ID (Zorunlu) |
 | `methodName` | string | - | Çağrılacak method/endpoint (Zorunlu) |
 | `httpVerb` | string | - | HTTP metodu (Zorunlu) |
-| `data` | object | null | Request data |
+| `body` | object | null | Request data |
+| `headers` | object | null | HTTP header'ları |
 | `queryString` | string | null | Query string parametreleri |
 | `timeoutSeconds` | number | 30 | İstek timeout süresi |
 
@@ -66,7 +70,8 @@ DaprServiceTask sınıfında property'ler read-only olarak tanımlanmıştır. B
 - **AppId**: `SetAppId(string appId)` metoduyla değiştirilir
 - **MethodName**: `SetMethodName(string methodName)` metoduyla değiştirilir
 - **QueryString**: `SetQueryString(string? queryString)` metoduyla değiştirilir
-- **Data**: `SetData(dynamic data)` metoduyla değiştirilir
+- **Headers**: `SetHeaders(Dictionary<string, string?> headers)` metoduyla değiştirilir  
+- **Body**: `SetBody(dynamic body)` metoduyla değiştirilir
 - **HttpVerb**: Read-only (tanım dosyasında ayarlanır)
 - **TimeoutSeconds**: Read-only (tanım dosyasında ayarlanır)
 
@@ -120,7 +125,7 @@ public async Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext 
         correlationId = context.Instance.Data.correlationId
     };
     
-    serviceTask.SetData(requestData);
+    serviceTask.SetBody(requestData);
     
     return new ScriptResponse();
 }
@@ -259,10 +264,10 @@ var requestData = new
     userId = context.Instance.Data.userId,
     timestamp = DateTime.UtcNow
 };
-serviceTask.SetData(requestData);
+serviceTask.SetBody(requestData);
 
 // ❌ Yanlış - String serialize etme
-serviceTask.SetData(JsonSerializer.Serialize(data));
+serviceTask.SetBody(JsonSerializer.Serialize(data));
 ```
 
 ### 3. Query String Handling

@@ -624,19 +624,13 @@ Error: Transition target 'invalid-state' not found
 ```
 **Solution**: Ensure target state is defined in states array
 
-### 3. Circular Transitions
-```
-Error: Circular transition detected
-```
-**Solution**: Ensure transitions don't target the same state
-
-### 4. Missing Start Transition
+### 3. Missing Start Transition
 ```
 Error: Workflow must have startTransition
 ```
 **Solution**: Define `startTransition` component
 
-### 5. Invalid JSON Schema
+### 4. Invalid JSON Schema
 ```
 Error: JSON schema validation failed
 ```

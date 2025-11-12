@@ -604,9 +604,6 @@ public class AutoApprovalRule : IConditionMapping
 }
 ```
 
-### Karmaşık E-Ticaret Süreci
-Gerçek e-ticaret örneği için: `samples/ecommerce/Workflows/ecommerce-workflow.json`
-
 ### OAuth Kimlik Doğrulama
 Gerçek OAuth örneği için: `samples/oauth/Workflows/oauth-authentication-workflow.json`
 
@@ -627,19 +624,13 @@ Error: Transition target 'invalid-state' not found
 ```
 **Çözüm**: Target state'in states array'inde tanımlı olduğundan emin olun
 
-### 3. Circular Transitions
-```
-Error: Circular transition detected
-```
-**Çözüm**: Transition'ların aynı state'i target almamasına dikkat edin
-
-### 4. Missing Start Transition
+### 3. Missing Start Transition
 ```
 Error: Workflow must have startTransition
 ```
 **Çözüm**: `startTransition` bileşenini tanımlayın
 
-### 5. Invalid JSON Schema
+### 4. Invalid JSON Schema
 ```
 Error: JSON schema validation failed
 ```

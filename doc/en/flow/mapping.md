@@ -406,4 +406,426 @@ public class SafePropertyAccessMapping : ScriptBase, IMapping
 }
 ```
 
+### Logging Functions
+
+ScriptBase provides comprehensive logging functions with automatic caller information capture. All logging methods use `CallerFilePath`, `CallerMemberName`, and `CallerLineNumber` attributes to automatically include source location in logs.
+
+**Available Log Levels:**
+
+```csharp
+public abstract class ScriptBase
+{
+    // Trace level - very detailed diagnostic information
+    protected static void LogTrace(object message, 
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Debug level - internal system events
+    protected static void LogDebug(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Information level - general informational messages
+    protected static void LogInformation(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Warning level - abnormal or unexpected events
+    protected static void LogWarning(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Error level - error events
+    protected static void LogError(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Critical level - critical failures
+    protected static void LogCritical(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+}
+```
+
+**Usage Examples:**
+
+```csharp
+public class PaymentProcessingMapping : ScriptBase, IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        LogInformation("Starting payment processing for user {0}", context.Instance.Data.userId);
+        
+        try
+        {
+            var amount = context.Body?.amount;
+            if (amount == null || amount <= 0)
+            {
+                LogWarning("Invalid payment amount received: {0}", amount);
+                return Task.FromResult(new ScriptResponse
+                {
+                    Data = new { error = "Invalid amount" }
+                });
+            }
+            
+            LogDebug("Processing payment amount: {0}", amount);
+            
+            // Process payment...
+            
+            LogInformation("Payment processed successfully");
+            return Task.FromResult(new ScriptResponse { Data = new { success = true } });
+        }
+        catch (Exception ex)
+        {
+            LogError("Payment processing failed: {0}", ex.Message);
+            throw;
+        }
+    }
+
+    public Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        LogTrace("OutputHandler called with status code: {0}", context.Body?.statusCode);
+        return Task.FromResult(new ScriptResponse());
+    }
+}
+```
+
+### Configuration Functions
+
+ScriptBase provides methods to access application configuration values and connection strings. These methods support hierarchical configuration keys using the `:` separator.
+
+**Available Configuration Methods:**
+
+```csharp
+public abstract class ScriptBase
+{
+    // Get configuration value as string (returns null if not found)
+    protected static string? GetConfigValue(string key);
+    
+    // Get configuration value with default fallback
+    protected static string GetConfigValue(string key, string defaultValue);
+    
+    // Get configuration value as specific type
+    protected static T? GetConfigValue<T>(string key);
+    
+    // Get configuration value as specific type with default
+    protected static T GetConfigValue<T>(string key, T defaultValue);
+    
+    // Get connection string by name
+    protected static string? GetConnectionString(string name);
+    
+    // Check if configuration key exists
+    protected static bool ConfigExists(string key);
+}
+```
+
+**Usage Examples:**
+
+```csharp
+public class ConfigAwareMapping : ScriptBase, IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        // Get simple configuration value
+        var apiUrl = GetConfigValue("ExternalApi:BaseUrl");
+        
+        // Get with default value
+        var timeout = GetConfigValue("ExternalApi:Timeout", "30");
+        
+        // Get typed configuration
+        var maxRetries = GetConfigValue<int>("ExternalApi:MaxRetries", 3);
+        var enableLogging = GetConfigValue<bool>("Features:EnableDetailedLogging", false);
+        
+        // Check if configuration exists
+        if (ConfigExists("ExternalApi:SecondaryUrl"))
+        {
+            var secondaryUrl = GetConfigValue("ExternalApi:SecondaryUrl");
+            LogInformation("Secondary URL configured: {0}", secondaryUrl);
+        }
+        
+        // Get connection string
+        var dbConnection = GetConnectionString("DefaultConnection");
+        
+        if (enableLogging)
+        {
+            LogDebug("API URL: {0}, Timeout: {1}, Max Retries: {2}", 
+                apiUrl, timeout, maxRetries);
+        }
+        
+        var httpTask = task as HttpTask;
+        httpTask.SetUrl(apiUrl);
+        httpTask.SetTimeout(int.Parse(timeout));
+        
+        return Task.FromResult(new ScriptResponse());
+    }
+
+    public Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        return Task.FromResult(new ScriptResponse());
+    }
+}
+```
+
+**Configuration Key Examples:**
+
+```json
+{
+  "ExternalApi": {
+    "BaseUrl": "https://api.example.com",
+    "Timeout": "30",
+    "MaxRetries": 3,
+    "SecondaryUrl": "https://backup-api.example.com"
+  },
+  "Features": {
+    "EnableDetailedLogging": true
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=mydb;User=sa;Password=xxx"
+  }
+}
+```
+
+Access nested keys using `:` separator: `ExternalApi:BaseUrl`, `Features:EnableDetailedLogging`
+
+## ITransitionMapping Implementation
+
+### Overview
+
+`ITransitionMapping` is a specialized interface for transforming transition payloads before they are merged into workflow instance data. This provides fine-grained control over how transition request data is processed and stored.
+
+> **Source**: [`../../src/ITransitionMapping.cs`](../../src/ITransitionMapping.cs)
+
+### Interface Definition
+
+```csharp
+public interface ITransitionMapping 
+{
+    Task<dynamic> Handler(ScriptContext context);
+}
+```
+
+### Key Concepts
+
+**Default Behavior (No Mapping):**
+- When no mapping is defined, the transition payload is merged directly into instance data as-is
+- All properties from the request body are added to `Instance.Data`
+
+**With Mapping:**
+- Custom transformation logic is applied to the payload
+- You control exactly what gets merged into instance data
+- Enables validation, filtering, enrichment, and restructuring
+
+### Usage Examples
+
+#### 1. Basic Payload Transformation
+
+```csharp
+public class OrderApprovalTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        LogInformation("Processing order approval transition");
+        
+        // Transform payload structure
+        return new
+        {
+            approval = new
+            {
+                approvedBy = context.Body?.userId,
+                approvedAt = DateTime.UtcNow,
+                comments = context.Body?.comments ?? "No comments",
+                status = "approved"
+            }
+        };
+    }
+}
+```
+
+#### 2. Data Validation and Filtering
+
+```csharp
+public class PaymentTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        // Validate required fields
+        var amount = context.Body?.amount;
+        var currency = context.Body?.currency;
+        
+        if (amount == null || amount <= 0)
+        {
+            LogWarning("Invalid payment amount: {0}", amount);
+            throw new ArgumentException("Valid amount is required");
+        }
+        
+        if (string.IsNullOrEmpty(currency))
+        {
+            currency = "USD"; // Default currency
+            LogDebug("Currency not provided, defaulting to USD");
+        }
+        
+        // Return sanitized and validated data
+        return new
+        {
+            payment = new
+            {
+                amount = decimal.Parse(amount.ToString()),
+                currency = currency.ToString().ToUpper(),
+                requestedAt = DateTime.UtcNow,
+                status = "pending"
+            }
+        };
+    }
+}
+```
+
+#### 3. Data Enrichment
+
+```csharp
+public class UserActionTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        // Get configuration for enrichment
+        var environment = GetConfigValue("Environment", "production");
+        var region = GetConfigValue("Deployment:Region", "us-east-1");
+        
+        // Enrich payload with additional context
+        return new
+        {
+            userAction = new
+            {
+                action = context.Body?.action,
+                userId = context.Body?.userId,
+                timestamp = DateTime.UtcNow,
+                metadata = new
+                {
+                    environment = environment,
+                    region = region,
+                    requestId = context.Headers?.["x-request-id"],
+                    userAgent = context.Headers?.["user-agent"]
+                }
+            }
+        };
+    }
+}
+```
+
+#### 4. Conditional Processing
+
+```csharp
+public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        var actionType = context.Body?.actionType?.ToString();
+        
+        LogDebug("Processing action type: {0}", actionType);
+        
+        return actionType switch
+        {
+            "approve" => new
+            {
+                status = "approved",
+                approvedBy = context.Body?.userId,
+                approvedAt = DateTime.UtcNow
+            },
+            "reject" => new
+            {
+                status = "rejected",
+                rejectedBy = context.Body?.userId,
+                rejectedAt = DateTime.UtcNow,
+                reason = context.Body?.reason
+            },
+            "defer" => new
+            {
+                status = "deferred",
+                deferredBy = context.Body?.userId,
+                deferredUntil = context.Body?.deferUntil ?? DateTime.UtcNow.AddDays(1)
+            },
+            _ => new
+            {
+                status = "pending",
+                message = "Unknown action type"
+            }
+        };
+    }
+}
+```
+
+### Transition Definition with Mapping
+
+```json
+{
+  "key": "approve-order",
+  "source": "pending-approval",
+  "target": "approved",
+  "triggerType": 0,
+  "labels": [
+    {
+      "language": "en-US",
+      "label": "Approve Order"
+    }
+  ],
+  "mapping": {
+    "location": "./src/OrderApprovalTransitionMapping.csx",
+    "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmc..."
+  }
+}
+```
+
+### Best Practices
+
+1. **Always Validate Input**: Check for null values and validate data types
+2. **Use Logging**: Log important operations and errors for debugging
+3. **Handle Exceptions**: Wrap risky operations in try-catch blocks
+4. **Return camelCase Properties**: Maintain consistency with platform conventions
+5. **Keep It Simple**: Don't perform heavy operations; focus on data transformation
+6. **Document Expected Payload**: Add comments describing expected input structure
+
+### Common Patterns
+
+**Merge with Existing Data:**
+```csharp
+public async Task<dynamic> Handler(ScriptContext context)
+{
+    // Preserve existing data and add new fields
+    var existingData = context.Instance.Data;
+    
+    return new
+    {
+        preservedField = existingData?.preservedField,
+        newField = context.Body?.newField,
+        updatedAt = DateTime.UtcNow
+    };
+}
+```
+
+**Array Handling:**
+```csharp
+public async Task<dynamic> Handler(ScriptContext context)
+{
+    var items = context.Body?.items ?? new List<object>();
+    
+    return new
+    {
+        items = items,
+        itemCount = items.Count,
+        processedAt = DateTime.UtcNow
+    };
+}
+```
+
 This comprehensive guide provides detailed information on how to use mapping interfaces and how to consume ScriptContext and ScriptResponse classes. The examples are taken from real usage scenarios and also provide guidance on best practices and error management.

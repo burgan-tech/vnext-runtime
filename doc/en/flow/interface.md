@@ -120,3 +120,36 @@ Task<bool> Handler(ScriptContext context);
 
 **Method Description:**
 - `Handler`: Returns boolean value according to the given context (true: allow transition, false: block transition)
+
+### ITransitionMapping
+Used for mapping transition payloads to instance data. Allows custom transformation of transition request data before merging into workflow instance.
+
+> **Source**: [`../src/ITransitionMapping.cs`](../src/ITransitionMapping.cs)
+
+**Usage Areas:**
+- Custom payload transformation before saving to instance data
+- Data validation and sanitization during transitions
+- Enriching transition data with additional context
+- Filtering or restructuring incoming data
+- Default behavior: If no mapping is defined, payload is written as-is to instance data
+
+**Method:**
+```csharp
+Task<dynamic> Handler(ScriptContext context);
+```
+
+**Method Description:**
+- `Handler`: Transforms transition payload and returns the data to be merged into workflow instance data
+
+**Transition Schema with Mapping:**
+```json
+{
+  "key": "transition-name",
+  "source": "source-state",
+  "target": "target-state",
+  "mapping": {
+    "code": "BASE64_ENCODED_CSX_CONTENT",
+    "location": "./src/TransitionMappingFile.csx"
+  }
+}
+```

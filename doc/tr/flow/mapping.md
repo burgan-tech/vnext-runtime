@@ -406,6 +406,428 @@ public class SafePropertyAccessMapping : ScriptBase, IMapping
 }
 ```
 
+### Loglama Fonksiyonları
+
+ScriptBase, otomatik çağıran bilgisi yakalama ile kapsamlı loglama fonksiyonları sağlar. Tüm loglama metodları `CallerFilePath`, `CallerMemberName` ve `CallerLineNumber` attribute'larını kullanarak log'lara otomatik olarak kaynak konum bilgisini ekler.
+
+**Mevcut Log Seviyeleri:**
+
+```csharp
+public abstract class ScriptBase
+{
+    // Trace seviyesi - çok detaylı tanı bilgileri
+    protected static void LogTrace(object message, 
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Debug seviyesi - dahili sistem olayları
+    protected static void LogDebug(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Information seviyesi - genel bilgilendirme mesajları
+    protected static void LogInformation(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Warning seviyesi - anormal veya beklenmeyen olaylar
+    protected static void LogWarning(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Error seviyesi - hata olayları
+    protected static void LogError(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+
+    // Critical seviyesi - kritik hatalar
+    protected static void LogCritical(object message,
+        [CallerFilePath] string? file = null,
+        [CallerMemberName] string? method = null,
+        [CallerLineNumber] int line = 0,
+        params object[] args);
+}
+```
+
+**Kullanım Örnekleri:**
+
+```csharp
+public class PaymentProcessingMapping : ScriptBase, IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        LogInformation("Kullanıcı için ödeme işlemi başlatılıyor: {0}", context.Instance.Data.userId);
+        
+        try
+        {
+            var amount = context.Body?.amount;
+            if (amount == null || amount <= 0)
+            {
+                LogWarning("Geçersiz ödeme tutarı alındı: {0}", amount);
+                return Task.FromResult(new ScriptResponse
+                {
+                    Data = new { error = "Geçersiz tutar" }
+                });
+            }
+            
+            LogDebug("Ödeme tutarı işleniyor: {0}", amount);
+            
+            // Ödeme işlemi...
+            
+            LogInformation("Ödeme başarıyla işlendi");
+            return Task.FromResult(new ScriptResponse { Data = new { success = true } });
+        }
+        catch (Exception ex)
+        {
+            LogError("Ödeme işlemi başarısız oldu: {0}", ex.Message);
+            throw;
+        }
+    }
+
+    public Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        LogTrace("OutputHandler çağrıldı, durum kodu: {0}", context.Body?.statusCode);
+        return Task.FromResult(new ScriptResponse());
+    }
+}
+```
+
+### Konfigürasyon Fonksiyonları
+
+ScriptBase, uygulama konfigürasyon değerlerine ve connection string'lere erişim için metodlar sağlar. Bu metodlar `:` ayırıcısı kullanarak hiyerarşik konfigürasyon key'lerini destekler.
+
+**Mevcut Konfigürasyon Metodları:**
+
+```csharp
+public abstract class ScriptBase
+{
+    // String olarak konfigürasyon değeri al (bulunamazsa null döner)
+    protected static string? GetConfigValue(string key);
+    
+    // Varsayılan değer ile konfigürasyon değeri al
+    protected static string GetConfigValue(string key, string defaultValue);
+    
+    // Belirli tip olarak konfigürasyon değeri al
+    protected static T? GetConfigValue<T>(string key);
+    
+    // Varsayılan değer ile belirli tip olarak konfigürasyon değeri al
+    protected static T GetConfigValue<T>(string key, T defaultValue);
+    
+    // İsme göre connection string al
+    protected static string? GetConnectionString(string name);
+    
+    // Konfigürasyon key'inin var olup olmadığını kontrol et
+    protected static bool ConfigExists(string key);
+}
+```
+
+**Kullanım Örnekleri:**
+
+```csharp
+public class ConfigAwareMapping : ScriptBase, IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        // Basit konfigürasyon değeri alma
+        var apiUrl = GetConfigValue("ExternalApi:BaseUrl");
+        
+        // Varsayılan değer ile alma
+        var timeout = GetConfigValue("ExternalApi:Timeout", "30");
+        
+        // Tipli konfigürasyon alma
+        var maxRetries = GetConfigValue<int>("ExternalApi:MaxRetries", 3);
+        var enableLogging = GetConfigValue<bool>("Features:EnableDetailedLogging", false);
+        
+        // Konfigürasyonun var olup olmadığını kontrol et
+        if (ConfigExists("ExternalApi:SecondaryUrl"))
+        {
+            var secondaryUrl = GetConfigValue("ExternalApi:SecondaryUrl");
+            LogInformation("Secondary URL yapılandırıldı: {0}", secondaryUrl);
+        }
+        
+        // Connection string al
+        var dbConnection = GetConnectionString("DefaultConnection");
+        
+        if (enableLogging)
+        {
+            LogDebug("API URL: {0}, Timeout: {1}, Max Retries: {2}", 
+                apiUrl, timeout, maxRetries);
+        }
+        
+        var httpTask = task as HttpTask;
+        httpTask.SetUrl(apiUrl);
+        httpTask.SetTimeout(int.Parse(timeout));
+        
+        return Task.FromResult(new ScriptResponse());
+    }
+
+    public Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        return Task.FromResult(new ScriptResponse());
+    }
+}
+```
+
+**Konfigürasyon Key Örnekleri:**
+
+```json
+{
+  "ExternalApi": {
+    "BaseUrl": "https://api.example.com",
+    "Timeout": "30",
+    "MaxRetries": 3,
+    "SecondaryUrl": "https://backup-api.example.com"
+  },
+  "Features": {
+    "EnableDetailedLogging": true
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=mydb;User=sa;Password=xxx"
+  }
+}
+```
+
+İç içe key'lere `:` ayırıcısı ile erişin: `ExternalApi:BaseUrl`, `Features:EnableDetailedLogging`
+
+## ITransitionMapping Implementasyonu
+
+### Genel Bakış
+
+`ITransitionMapping`, transition payload'larının workflow instance data'sına merge edilmeden önce dönüştürülmesi için özelleştirilmiş bir interface'dir. Bu, transition request verilerinin nasıl işlenip saklanacağı üzerinde hassas kontrol sağlar.
+
+> **Kaynak**: [`../../src/ITransitionMapping.cs`](../../src/ITransitionMapping.cs)
+
+### Interface Tanımı
+
+```csharp
+public interface ITransitionMapping 
+{
+    Task<dynamic> Handler(ScriptContext context);
+}
+```
+
+### Temel Kavramlar
+
+**Varsayılan Davranış (Mapping Yok):**
+- Mapping tanımı olmadığında, transition payload doğrudan instance data'ya olduğu gibi merge edilir
+- Request body'deki tüm property'ler `Instance.Data`'ya eklenir
+
+**Mapping ile:**
+- Payload'a özel dönüştürme mantığı uygulanır
+- Instance data'ya neyin merge edileceğini tam olarak kontrol edersiniz
+- Validasyon, filtreleme, zenginleştirme ve yeniden yapılandırma sağlar
+
+### Kullanım Örnekleri
+
+#### 1. Temel Payload Dönüşümü
+
+```csharp
+public class OrderApprovalTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        LogInformation("Sipariş onay transition'ı işleniyor");
+        
+        // Payload yapısını dönüştür
+        return new
+        {
+            approval = new
+            {
+                approvedBy = context.Body?.userId,
+                approvedAt = DateTime.UtcNow,
+                comments = context.Body?.comments ?? "Yorum yok",
+                status = "approved"
+            }
+        };
+    }
+}
+```
+
+#### 2. Veri Validasyonu ve Filtreleme
+
+```csharp
+public class PaymentTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        // Zorunlu alanları doğrula
+        var amount = context.Body?.amount;
+        var currency = context.Body?.currency;
+        
+        if (amount == null || amount <= 0)
+        {
+            LogWarning("Geçersiz ödeme tutarı: {0}", amount);
+            throw new ArgumentException("Geçerli tutar gereklidir");
+        }
+        
+        if (string.IsNullOrEmpty(currency))
+        {
+            currency = "TRY"; // Varsayılan para birimi
+            LogDebug("Para birimi belirtilmedi, TRY varsayılan olarak ayarlandı");
+        }
+        
+        // Temizlenmiş ve doğrulanmış veriyi döndür
+        return new
+        {
+            payment = new
+            {
+                amount = decimal.Parse(amount.ToString()),
+                currency = currency.ToString().ToUpper(),
+                requestedAt = DateTime.UtcNow,
+                status = "pending"
+            }
+        };
+    }
+}
+```
+
+#### 3. Veri Zenginleştirme
+
+```csharp
+public class UserActionTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        // Zenginleştirme için konfigürasyon al
+        var environment = GetConfigValue("Environment", "production");
+        var region = GetConfigValue("Deployment:Region", "eu-west-1");
+        
+        // Payload'ı ek context ile zenginleştir
+        return new
+        {
+            userAction = new
+            {
+                action = context.Body?.action,
+                userId = context.Body?.userId,
+                timestamp = DateTime.UtcNow,
+                metadata = new
+                {
+                    environment = environment,
+                    region = region,
+                    requestId = context.Headers?.["x-request-id"],
+                    userAgent = context.Headers?.["user-agent"]
+                }
+            }
+        };
+    }
+}
+```
+
+#### 4. Koşullu İşleme
+
+```csharp
+public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        var actionType = context.Body?.actionType?.ToString();
+        
+        LogDebug("İşlem tipi işleniyor: {0}", actionType);
+        
+        return actionType switch
+        {
+            "approve" => new
+            {
+                status = "approved",
+                approvedBy = context.Body?.userId,
+                approvedAt = DateTime.UtcNow
+            },
+            "reject" => new
+            {
+                status = "rejected",
+                rejectedBy = context.Body?.userId,
+                rejectedAt = DateTime.UtcNow,
+                reason = context.Body?.reason
+            },
+            "defer" => new
+            {
+                status = "deferred",
+                deferredBy = context.Body?.userId,
+                deferredUntil = context.Body?.deferUntil ?? DateTime.UtcNow.AddDays(1)
+            },
+            _ => new
+            {
+                status = "pending",
+                message = "Bilinmeyen işlem tipi"
+            }
+        };
+    }
+}
+```
+
+### Mapping ile Transition Tanımı
+
+```json
+{
+  "key": "approve-order",
+  "source": "pending-approval",
+  "target": "approved",
+  "triggerType": 0,
+  "labels": [
+    {
+      "language": "tr-TR",
+      "label": "Siparişi Onayla"
+    }
+  ],
+  "mapping": {
+    "location": "./src/OrderApprovalTransitionMapping.csx",
+    "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmc..."
+  }
+}
+```
+
+### En İyi Uygulamalar
+
+1. **Her Zaman Input'u Doğrulayın**: Null değerleri kontrol edin ve veri tiplerini doğrulayın
+2. **Loglama Kullanın**: Debug için önemli işlemleri ve hataları loglayın
+3. **Exception'ları Yönetin**: Riskli işlemleri try-catch bloklarına sarın
+4. **camelCase Property'ler Döndürün**: Platform konvansiyonları ile tutarlılığı koruyun
+5. **Basit Tutun**: Ağır işlemler yapmayın; veri dönüşümüne odaklanın
+6. **Beklenen Payload'ı Dokümante Edin**: Beklenen input yapısını açıklayan yorumlar ekleyin
+
+### Yaygın Kalıplar
+
+**Mevcut Veri ile Merge:**
+```csharp
+public async Task<dynamic> Handler(ScriptContext context)
+{
+    // Mevcut veriyi koru ve yeni alanlar ekle
+    var existingData = context.Instance.Data;
+    
+    return new
+    {
+        preservedField = existingData?.preservedField,
+        newField = context.Body?.newField,
+        updatedAt = DateTime.UtcNow
+    };
+}
+```
+
+**Dizi İşleme:**
+```csharp
+public async Task<dynamic> Handler(ScriptContext context)
+{
+    var items = context.Body?.items ?? new List<object>();
+    
+    return new
+    {
+        items = items,
+        itemCount = items.Count,
+        processedAt = DateTime.UtcNow
+    };
+}
+```
+
 ## Implementasyon Örnekleri
 
 ### 1. HTTP Task Mapping Örneği
