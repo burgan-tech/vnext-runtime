@@ -81,7 +81,7 @@
             "flow": "sys-views"
           },
           "loadData": true,
-          "extensions": []
+          "extensions":["extension-user-session"]
         },
         "subFlow": null,
         "onEntries": [],
