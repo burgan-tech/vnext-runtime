@@ -1,0 +1,27 @@
+{
+    "key": "extension-user-session",
+    "domain": "amorphie",
+    "tags": [
+        "system",
+        "core",
+        "sys-extensions",
+        "components"
+    ],
+    "attributes": {
+        "type": 2,
+        "scope": 1,
+        "task": {
+            "order": 1,
+            "task": {
+                "key": "user-session",
+                "domain": "core",
+                "version": "1.0.0",
+                "flow": "sys-tasks"
+            },
+            "mapping": {
+                "location": "./src/UserSessionMapping.csx",
+                "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmcgQkJULldvcmtmbG93LlNjcmlwdGluZzsKdXNpbmcgQkJULldvcmtmbG93LkRlZmluaXRpb25zOwoKcHVibGljIGNsYXNzIFVzZXJTZXNzaW9uTWFwcGluZyA6IElNYXBwaW5nCnsKICAgIHB1YmxpYyBUYXNrPFNjcmlwdFJlc3BvbnNlPiBJbnB1dEhhbmRsZXIoV29ya2Zsb3dUYXNrIHRhc2ssIFNjcmlwdENvbnRleHQgY29udGV4dCkKICAgIHsKICAgICAgICByZXR1cm4gVGFzay5Gcm9tUmVzdWx0KG5ldyBTY3JpcHRSZXNwb25zZSgpKTsKICAgIH0KCiAgICAvLy8gPHN1bW1hcnk+CiAgICAvLy8gUG9wdWxhdGUgdGhlIHVzZXIgc2Vzc2lvbiBkYXRhIGludG8gdGhlIHdvcmtmbG93IGluc3RhbmNlCiAgICAvLy8gPC9zdW1tYXJ5PgogICAgcHVibGljIGFzeW5jIFRhc2s8U2NyaXB0UmVzcG9uc2U+IE91dHB1dEhhbmRsZXIoU2NyaXB0Q29udGV4dCBjb250ZXh0KQogICAgewogICAgICAgIHJldHVybiBuZXcgU2NyaXB0UmVzcG9uc2UKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgS2V5ID0gInVzZXItc2Vzc2lvbi1vdXRwdXQiLAogICAgICAgICAgICAgICAgRGF0YSA9IG5ldwogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgIHVzZXJTZXNzaW9uID0gbmV3CiAgICAgICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICAgICB1c2VySWQgPSBjb250ZXh0LkhlYWRlcnM/WyJ1c2VyX3JlZmVyZW5jZSJdLAogICAgICAgICAgICAgICAgICAgICAgICBkZXZpY2VJZCA9IGNvbnRleHQuSGVhZGVycz9bIngtZGV2aWNlLWlkIl0sCiAgICAgICAgICAgICAgICAgICAgICAgIHVzZXJBZ2VudCA9IGNvbnRleHQuSGVhZGVycz9bInVzZXItYWdlbnQiXSwKICAgICAgICAgICAgICAgICAgICAgICAgaXBBZGRyZXNzID0gY29udGV4dC5IZWFkZXJzP1sieC1mb3J3YXJkZWQtZm9yIl0gPz8gY29udGV4dC5IZWFkZXJzP1sieC1yZWFsLWlwIl0KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH07CiAgICB9Cn0K"
+            }
+        }
+    }
+}
