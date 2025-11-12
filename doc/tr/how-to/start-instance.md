@@ -69,37 +69,6 @@ Content-Type: application/json
 }
 ```
 
-### 3. Instance Durumu Sorgulama
-
-Instance'ın mevcut durumu ve verilerini sorgulamak için GET endpoint'i kullanılır. Bu endpoint ETag pattern'i ile çalışır.
-
-**Endpoint:**
-```
-GET /:domain/workflows/:flow/instances/:instanceId
-```
-
-**Örnek İstek:**
-```http
-GET /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113
-If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
-```
-
-**Örnek Response:**
-```json
-{
-  "id": "18075ad5-e5b2-4437-b884-21d733339113",
-  "key": "99999999999",
-  "flow": "scheduled-payments",
-  "domain": "core",
-  "flowVersion": "1.0.1",
-  "eTag": "18075ad5-e5b2-4437-b884-21d733339113",
-  "tags": [],
-  "attributes": {},
-  "extensions": {},
-  "sortValue": ""
-}
-```
-
 ## Sistem Bileşenleri ve Register İşlemi
 
 ### Bileşen Türleri

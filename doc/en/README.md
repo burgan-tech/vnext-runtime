@@ -79,6 +79,8 @@ Independent components that perform specific operations within the workflow:
 | **State Management** | [`flow/state.md`](./flow/state.md) | State types and lifecycle |
 | **Task Definitions** | [`flow/task.md`](./flow/task.md) | Task types and usage areas |
 | **Transition Management** | [`flow/transition.md`](./flow/transition.md) | Transition types and trigger mechanisms |
+| **View Management** | [`flow/view.md`](./flow/view.md) | View definitions, display strategies, and platform overrides |
+| **Function APIs** | [`flow/function.md`](./flow/function.md) | System function APIs (State, Data, View) |
 
 ### 📋 Task Details
 | Task Type | File | Usage Area |
@@ -89,6 +91,7 @@ Independent components that perform specific operations within the workflow:
 | **DaprPubSub Task** | [`flow/tasks/dapr-pubsub.md`](./flow/tasks/dapr-pubsub.md) | Asynchronous messaging |
 | **Condition Task** | [`flow/tasks/condition-task.md`](./flow/tasks/condition-task.md) | Condition checking and decision mechanisms |
 | **Timer Task** | [`flow/tasks/timer-task.md`](./flow/tasks/timer-task.md) | Scheduling and periodic operations |
+| **Notification Task** | [`flow/tasks/notification-task.md`](./flow/tasks/notification-task.md) | Real-time state notifications via socket/hub |
 
 ### 🛠️ How-To
 | Topic | File | Description |
@@ -218,6 +221,27 @@ public class AuthSuccessRule : IConditionMapping
     public async Task<bool> Handler(ScriptContext context)
     {
         return context.Instance.Data.authentication?.success == true;
+    }
+}
+```
+
+### ITransitionMapping - Transition Payload Mapping
+```csharp
+public class ApprovalTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        LogInformation("Processing approval transition");
+        
+        return new
+        {
+            approval = new
+            {
+                approvedBy = context.Body?.userId,
+                approvedAt = DateTime.UtcNow,
+                status = "approved"
+            }
+        };
     }
 }
 ```

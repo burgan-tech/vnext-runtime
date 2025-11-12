@@ -1,0 +1,11 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: notificationbinding
+spec:
+  type: bindings.http
+  version: v1
+  metadata:
+    - name: url
+      value: https://{HubUrl}/sendMessage/public
+    

@@ -79,6 +79,8 @@ State'ler arasındaki geçişleri yöneten bileşen. Dört farklı tetikleme tü
 | **State Yönetimi** | [`flow/state.md`](./flow/state.md) | State türleri ve yaşam döngüsü |
 | **Task Tanımları** | [`flow/task.md`](./flow/task.md) | Görev türleri ve kullanım alanları |
 | **Transition Yönetimi** | [`flow/transition.md`](./flow/transition.md) | Geçiş türleri ve tetikleme mekanizmaları |
+| **View Yönetimi** | [`flow/view.md`](./flow/view.md) | View tanımları, gösterim stratejileri ve platform override'ları |
+| **Function API'leri** | [`flow/function.md`](./flow/function.md) | Sistem function API'leri (State, Data, View) |
 
 ### 📋 Görev (Task) Detayları
 | Görev Türü | Dosya | Kullanım Alanı |
@@ -89,6 +91,7 @@ State'ler arasındaki geçişleri yöneten bileşen. Dört farklı tetikleme tü
 | **DaprPubSub Task** | [`flow/tasks/dapr-pubsub.md`](./flow/tasks/dapr-pubsub.md) | Asenkron mesajlaşma |
 | **Condition Task** | [`flow/tasks/condition-task.md`](./flow/tasks/condition-task.md) | Koşul kontrolü ve karar mekanizmaları |
 | **Timer Task** | [`flow/tasks/timer-task.md`](./flow/tasks/timer-task.md) | Zamanlama ve periyodik işlemler |
+| **Notification Task** | [`flow/tasks/notification-task.md`](./flow/tasks/notification-task.md) | Socket/hub üzerinden gerçek zamanlı durum bildirimleri |
 
 ### 🛠️ Nasıl Yapılır (How-To)
 | Konu | Dosya | Açıklama |
@@ -218,6 +221,27 @@ public class AuthSuccessRule : IConditionMapping
     public async Task<bool> Handler(ScriptContext context)
     {
         return context.Instance.Data.authentication?.success == true;
+    }
+}
+```
+
+### ITransitionMapping - Transition Payload Mapleme
+```csharp
+public class ApprovalTransitionMapping : ScriptBase, ITransitionMapping
+{
+    public async Task<dynamic> Handler(ScriptContext context)
+    {
+        LogInformation("Onay transition'ı işleniyor");
+        
+        return new
+        {
+            approval = new
+            {
+                approvedBy = context.Body?.userId,
+                approvedAt = DateTime.UtcNow,
+                status = "approved"
+            }
+        };
     }
 }
 ```
