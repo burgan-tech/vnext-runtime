@@ -66,6 +66,8 @@ State'ler arasındaki geçişleri yöneten bileşen. Dört farklı tetikleme tü
 | Konu | Dosya | Açıklama |
 |------|-------|----------|
 | **Platform Temelleri** | [`fundamentals/readme.md`](./fundamentals/readme.md) | Platform yapısı ve temel prensipler |
+| **Domain Topolojisi** | [`fundamentals/domain-topology.md`](./fundamentals/domain-topology.md) | Domain kavramı, izolasyon ve çoklu-domain mimarisi |
+| **Veritabanı Mimarisi** | [`fundamentals/database-architecture.md`](./fundamentals/database-architecture.md) | Multi-schema yapısı, migration sistemi ve DB izolasyonu |
 | **Persistance** | [`principles/persistance.md`](./principles/persistance.md) | Veri saklama ve Dual-Write Pattern |
 | **Referans Şeması** | [`principles/reference.md`](./principles/reference.md) | Bileşenler arası referans yönetimi |
 | **Versiyon Yönetimi** | [`principles/versioning.md`](./principles/versioning.md) | Semantic versioning ve ETag kullanımı |

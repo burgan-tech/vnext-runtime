@@ -9,7 +9,7 @@ Her bir etki alanı dağıtımında `tasks` adında bir iş akışı oluşur. Do
 
 ## Görev Türleri
 
-Sistem şu anda 9 farklı görev türünü desteklemektedir:
+Sistem şu anda 10 farklı görev türünü desteklemektedir:
 
 | Görev Türü | Açıklama | Detay Belge |
 |-------------|----------|-------------|
@@ -19,6 +19,7 @@ Sistem şu anda 9 farklı görev türünü desteklemektedir:
 | **Script** | C# Roslyn script çalıştırma | [📄 Script README](./tasks/script-task.md) |
 | **Condition** | Koşul kontrolü (sadece sistem) | [📄 Condition README](./tasks/condition-task.md) |
 | **Timer** | Zamanlayıcı görevleri (sadece sistem) | [📄 Timer README](./tasks/timer-task.md) |
+| **Trigger** | İş akışı instance yönetimi ve orkestrasyon | [📄 Trigger README](./tasks/trigger-task.md) |
 
 ## Görev Kullanımı
 

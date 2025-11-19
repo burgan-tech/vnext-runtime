@@ -6,6 +6,13 @@ Platform, yatayda büyüyen bir servis kümesine sahiptir ve bu servislerle yön
 
 ## Platform Yapısı
 
+### Mimari ve Topoloji
+
+Platform mimarisi ve domain topolojisi için şu dökümanları inceleyebilirsiniz:
+
+- **[Domain Topolojisi](./domain-topology.md)** - Domain kavramı, izolasyon ve çoklu-domain mimarisi
+- **[Veritabanı Mimarisi](./database-architecture.md)** - Multi-schema yapısı, migration sistemi ve DB izolasyonu
+
 ### Temel Prensipler
 
 Temel prensipler için **Principles** dizin içeriğine bakmanız önerilir:

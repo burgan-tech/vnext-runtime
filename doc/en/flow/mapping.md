@@ -356,10 +356,13 @@ public abstract class ScriptBase
     // Property check functions (newly added)
     protected static bool HasProperty(object obj, string propertyName);
     protected static object? GetPropertyValue(object obj, string propertyName);
+    
+    // Typed property value retrieval (newly added)
+    protected T? GetPropertyValue<T>(object obj, string propertyName);
 }
 ```
 
-> **Newly Added Methods**: `HasProperty` and `GetPropertyValue` methods have been added to ScriptBase. These methods provide safe property access on dynamic objects.
+> **Newly Added Methods**: `HasProperty`, `GetPropertyValue`, and generic `GetPropertyValue<T>` methods have been added to ScriptBase. These methods provide safe property access and type conversion on dynamic objects.
 
 ### Usage Example
 
@@ -399,6 +402,17 @@ public class SafePropertyAccessMapping : ScriptBase, IMapping
                 var productsData = GetPropertyValue(cardData, "products");
                 // Process with products
             }
+        }
+        
+        // Safe access with generic type conversion
+        var userId = GetPropertyValue<int>(context.Instance.Data, "userId");
+        var amount = GetPropertyValue<decimal>(context.Body, "amount");
+        var isActive = GetPropertyValue<bool>(context.Instance.Data, "isActive");
+        
+        if (userId.HasValue && amount.HasValue)
+        {
+            LogInformation("Processing transaction for user {0} with amount {1}", 
+                args: new object?[] { userId.Value, amount.Value });
         }
         
         return Task.FromResult(new ScriptResponse());
@@ -461,26 +475,28 @@ public abstract class ScriptBase
 
 **Usage Examples:**
 
+> **Important Note**: Use the `args` parameter for parameterized messages in log methods. Example: `LogInformation("Message: {0}", args: new object?[] { value })`
+
 ```csharp
 public class PaymentProcessingMapping : ScriptBase, IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        LogInformation("Starting payment processing for user {0}", context.Instance.Data.userId);
+        LogInformation("Starting payment processing for user {0}", args: new object?[] { context.Instance.Data.userId });
         
         try
         {
             var amount = context.Body?.amount;
             if (amount == null || amount <= 0)
             {
-                LogWarning("Invalid payment amount received: {0}", amount);
+                LogWarning("Invalid payment amount received: {0}", args: new object?[] { amount });
                 return Task.FromResult(new ScriptResponse
                 {
                     Data = new { error = "Invalid amount" }
                 });
             }
             
-            LogDebug("Processing payment amount: {0}", amount);
+            LogDebug("Processing payment amount: {0}", args: new object?[] { amount });
             
             // Process payment...
             
@@ -489,14 +505,14 @@ public class PaymentProcessingMapping : ScriptBase, IMapping
         }
         catch (Exception ex)
         {
-            LogError("Payment processing failed: {0}", ex.Message);
+            LogError("Payment processing failed: {0}", args: new object?[] { ex.Message });
             throw;
         }
     }
 
     public Task<ScriptResponse> OutputHandler(ScriptContext context)
     {
-        LogTrace("OutputHandler called with status code: {0}", context.Body?.statusCode);
+        LogTrace("OutputHandler called with status code: {0}", args: new object?[] { context.Body?.statusCode });
         return Task.FromResult(new ScriptResponse());
     }
 }
@@ -552,7 +568,7 @@ public class ConfigAwareMapping : ScriptBase, IMapping
         if (ConfigExists("ExternalApi:SecondaryUrl"))
         {
             var secondaryUrl = GetConfigValue("ExternalApi:SecondaryUrl");
-            LogInformation("Secondary URL configured: {0}", secondaryUrl);
+            LogInformation("Secondary URL configured: {0}", args: new object?[] { secondaryUrl });
         }
         
         // Get connection string
@@ -561,7 +577,7 @@ public class ConfigAwareMapping : ScriptBase, IMapping
         if (enableLogging)
         {
             LogDebug("API URL: {0}, Timeout: {1}, Max Retries: {2}", 
-                apiUrl, timeout, maxRetries);
+                args: new object?[] { apiUrl, timeout, maxRetries });
         }
         
         var httpTask = task as HttpTask;
@@ -666,7 +682,7 @@ public class PaymentTransitionMapping : ScriptBase, ITransitionMapping
         
         if (amount == null || amount <= 0)
         {
-            LogWarning("Invalid payment amount: {0}", amount);
+            LogWarning("Invalid payment amount: {0}", args: new object?[] { amount });
             throw new ArgumentException("Valid amount is required");
         }
         
@@ -732,7 +748,7 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
     {
         var actionType = context.Body?.actionType?.ToString();
         
-        LogDebug("Processing action type: {0}", actionType);
+        LogDebug("Processing action type: {0}", args: new object?[] { actionType });
         
         return actionType switch
         {
