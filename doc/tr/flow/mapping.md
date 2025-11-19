@@ -356,10 +356,13 @@ public abstract class ScriptBase
     // Property kontrol fonksiyonları (yeni eklenen)
     protected static bool HasProperty(object obj, string propertyName);
     protected static object? GetPropertyValue(object obj, string propertyName);
+    
+    // Tipli property değeri alma (yeni eklenen)
+    protected T? GetPropertyValue<T>(object obj, string propertyName);
 }
 ```
 
-> **Yeni Eklenen Metodlar**: `HasProperty` ve `GetPropertyValue` metodları ScriptBase'e eklenmiştir. Bu metodlar dynamic objeler üzerinde güvenli property erişimi sağlar.
+> **Yeni Eklenen Metodlar**: `HasProperty`, `GetPropertyValue` ve generic `GetPropertyValue<T>` metodları ScriptBase'e eklenmiştir. Bu metodlar dynamic objeler üzerinde güvenli property erişimi ve tip dönüşümü sağlar.
 
 ### Kullanım Örneği
 
@@ -399,6 +402,17 @@ public class SafePropertyAccessMapping : ScriptBase, IMapping
                 var productsData = GetPropertyValue(cardData, "products");
                 // Products ile işlem yap
             }
+        }
+        
+        // Generic tip dönüşümü ile güvenli erişim
+        var userId = GetPropertyValue<int>(context.Instance.Data, "userId");
+        var amount = GetPropertyValue<decimal>(context.Body, "amount");
+        var isActive = GetPropertyValue<bool>(context.Instance.Data, "isActive");
+        
+        if (userId.HasValue && amount.HasValue)
+        {
+            LogInformation("Kullanıcı {0} için {1} tutarında işlem", 
+                args: new object?[] { userId.Value, amount.Value });
         }
         
         return Task.FromResult(new ScriptResponse());
@@ -461,26 +475,28 @@ public abstract class ScriptBase
 
 **Kullanım Örnekleri:**
 
+> **Önemli Not**: Log metodlarında parametreli mesajlar için `args` parametresini kullanın. Örnek: `LogInformation("Mesaj: {0}", args: new object?[] { değer })`
+
 ```csharp
 public class PaymentProcessingMapping : ScriptBase, IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        LogInformation("Kullanıcı için ödeme işlemi başlatılıyor: {0}", context.Instance.Data.userId);
+        LogInformation("Kullanıcı için ödeme işlemi başlatılıyor: {0}", args: new object?[] { context.Instance.Data.userId });
         
         try
         {
             var amount = context.Body?.amount;
             if (amount == null || amount <= 0)
             {
-                LogWarning("Geçersiz ödeme tutarı alındı: {0}", amount);
+                LogWarning("Geçersiz ödeme tutarı alındı: {0}", args: new object?[] { amount });
                 return Task.FromResult(new ScriptResponse
                 {
                     Data = new { error = "Geçersiz tutar" }
                 });
             }
             
-            LogDebug("Ödeme tutarı işleniyor: {0}", amount);
+            LogDebug("Ödeme tutarı işleniyor: {0}", args: new object?[] { amount });
             
             // Ödeme işlemi...
             
@@ -489,14 +505,14 @@ public class PaymentProcessingMapping : ScriptBase, IMapping
         }
         catch (Exception ex)
         {
-            LogError("Ödeme işlemi başarısız oldu: {0}", ex.Message);
+            LogError("Ödeme işlemi başarısız oldu: {0}", args: new object?[] { ex.Message });
             throw;
         }
     }
 
     public Task<ScriptResponse> OutputHandler(ScriptContext context)
     {
-        LogTrace("OutputHandler çağrıldı, durum kodu: {0}", context.Body?.statusCode);
+        LogTrace("OutputHandler çağrıldı, durum kodu: {0}", args: new object?[] { context.Body?.statusCode });
         return Task.FromResult(new ScriptResponse());
     }
 }
@@ -552,7 +568,7 @@ public class ConfigAwareMapping : ScriptBase, IMapping
         if (ConfigExists("ExternalApi:SecondaryUrl"))
         {
             var secondaryUrl = GetConfigValue("ExternalApi:SecondaryUrl");
-            LogInformation("Secondary URL yapılandırıldı: {0}", secondaryUrl);
+            LogInformation("Secondary URL yapılandırıldı: {0}", args: new object?[] { secondaryUrl });
         }
         
         // Connection string al
@@ -561,7 +577,7 @@ public class ConfigAwareMapping : ScriptBase, IMapping
         if (enableLogging)
         {
             LogDebug("API URL: {0}, Timeout: {1}, Max Retries: {2}", 
-                apiUrl, timeout, maxRetries);
+                args: new object?[] { apiUrl, timeout, maxRetries });
         }
         
         var httpTask = task as HttpTask;
@@ -666,7 +682,7 @@ public class PaymentTransitionMapping : ScriptBase, ITransitionMapping
         
         if (amount == null || amount <= 0)
         {
-            LogWarning("Geçersiz ödeme tutarı: {0}", amount);
+            LogWarning("Geçersiz ödeme tutarı: {0}", args: new object?[] { amount });
             throw new ArgumentException("Geçerli tutar gereklidir");
         }
         
@@ -732,7 +748,7 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
     {
         var actionType = context.Body?.actionType?.ToString();
         
-        LogDebug("İşlem tipi işleniyor: {0}", actionType);
+        LogDebug("İşlem tipi işleniyor: {0}", args: new object?[] { actionType });
         
         return actionType switch
         {

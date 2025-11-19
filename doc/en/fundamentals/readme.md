@@ -6,6 +6,13 @@ The platform has a horizontally scalable service cluster and can perform all kin
 
 ## Platform Architecture
 
+### Architecture and Topology
+
+For platform architecture and domain topology, you can review the following documentation:
+
+- **[Domain Topology](./domain-topology.md)** - Domain concept, isolation, and multi-domain architecture
+- **[Database Architecture](./database-architecture.md)** - Multi-schema structure, migration system, and DB isolation
+
 ### Core Principles
 
 For core principles, it is recommended to refer to the **Principles** directory contents:

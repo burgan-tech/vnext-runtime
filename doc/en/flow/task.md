@@ -9,7 +9,7 @@ A workflow named `tasks` is created in each domain deployment. All tasks used wi
 
 ## Task Types
 
-The system currently supports 9 different task types:
+The system currently supports 10 different task types:
 
 | Task Type | Description | Detail Document |
 |-----------|-------------|-----------------|
@@ -19,6 +19,7 @@ The system currently supports 9 different task types:
 | **Script** | C# Roslyn script execution | [📄 Script README](./tasks/script-task.md) |
 | **Condition** | Condition checking (system only) | [📄 Condition README](./tasks/condition-task.md) |
 | **Timer** | Timer tasks (system only) | [📄 Timer README](./tasks/timer-task.md) |
+| **Trigger** | Workflow instance management and orchestration | [📄 Trigger README](./tasks/trigger-task.md) |
 
 ## Task Usage
 

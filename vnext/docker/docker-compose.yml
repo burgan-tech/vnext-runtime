@@ -383,6 +383,29 @@ services:
       start_period: 10s
     networks:
       - vnext-development
+
+
+  mockoon-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: mockoon-dapr
+    command:
+      [
+        "./daprd",
+        "--app-id", "mockoon",
+        "--app-port", "3000",
+        "--resources-path", "./components",
+        "--dapr-grpc-port", "3501",
+        "--dapr-http-port", "3500",
+        "--scheduler-host-address", "dapr-scheduler:50007",
+        "--placement-host-address", "dapr-placement:50005"
+      ]
+    volumes:
+      - "../mockoon/dapr/components:/components"
+    network_mode: "service:mockoon"
+    depends_on:
+      - mockoon
+      - dapr-placement
+      - dapr-scheduler
       
 networks:
   vnext-development:

@@ -66,6 +66,8 @@ Independent components that perform specific operations within the workflow:
 | Topic | File | Description |
 |-------|------|-------------|
 | **Platform Fundamentals** | [`fundamentals/readme.md`](./fundamentals/readme.md) | Platform structure and core principles |
+| **Domain Topology** | [`fundamentals/domain-topology.md`](./fundamentals/domain-topology.md) | Domain concept, isolation, and multi-domain architecture |
+| **Database Architecture** | [`fundamentals/database-architecture.md`](./fundamentals/database-architecture.md) | Multi-schema structure, migration system, and DB isolation |
 | **Persistence** | [`principles/persistance.md`](./principles/persistance.md) | Data storage and Dual-Write Pattern |
 | **Reference Schema** | [`principles/reference.md`](./principles/reference.md) | Inter-component reference management |
 | **Version Management** | [`principles/versioning.md`](./principles/versioning.md) | Semantic versioning and ETag usage |

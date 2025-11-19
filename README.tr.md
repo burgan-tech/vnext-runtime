@@ -4,187 +4,108 @@
 
 Bu proje, geliştiricilerin lokal ortamlarında VNext Runtime sistemini ayağa kaldırıp development yapmalarına olanak sağlamak için oluşturulmuştur. Docker tabanlı bu kurulum, tüm bağımlılıkları içerir ve hızlı bir şekilde geliştirme ortamını hazır hale getirir.
 
+> **⚠️ Önemli Not:** Deploy versiyon yöntemi netleşene kadar her versiyon geçişinde, sistem bileşenleri lokalde varsa sıfırlanarak yeniden kurulmalıdır.
+
 > **Languages:** This README is available in [English](README.en.md) | [Türkçe](README.md)
 
-## Gerekli Dosyalar
+## Environment Konfigürasyonu
 
-Sistemi çalıştırmak için aşağıdaki environment dosyalarını oluşturmanız gerekmektedir:
+Repo, `vnext/docker/` dizininde hazır environment dosyaları (`.env`, `.env.orchestration`, `.env.execution`) içerir. Bu dosyalar sistem versiyonlarını, veritabanı bağlantılarını, Redis konfigürasyonunu, telemetry ayarlarını ve diğer runtime parametrelerini kontrol eder.
 
-### .env (Ana Environment Variables)
+**Amaç:** Bu environment dosyalarını altyapınıza ve geliştirme ihtiyaçlarınıza göre özelleştirebilirsiniz. Tüm kullanılabilir environment variable'ları ve varsayılan değerlerini repository içindeki ilgili dosyalardan inceleyebilirsiniz.
+
+## 🎯 Domain Konfigürasyonu (Önemli!)
+
+**Domain konfigürasyonu, vNext Runtime'da kritik bir kavramdır.** Her geliştiricinin platform ile çalışabilmesi için kendi domain'ini yapılandırması gerekir. Domain'inizi ayarlamak için aşağıdaki dosyalardaki `APP_DOMAIN` değerini güncellemelisiniz:
+
+1. **`vnext/docker/.env`** - Runtime domain konfigürasyonu
+2. **`vnext/docker/.env.orchestration`** - Orchestration servis domain'i
+3. **`vnext/docker/.env.execution`** - Execution servis domain'i
+4. **`vnext.config.json`** - Proje domain konfigürasyonu (kendi workflow repository'nizde)
+
 ```bash
-# VNext Core Runtime Version
-VNEXT_CORE_VERSION=latest
-
-# Uygulama Domain'i (YENİ!)
-# Bu domain değeri JSON dosyalarındaki tüm "domain" property'lerini değiştirir
-# Her geliştiricinin kendi domain'inde lokal ortamda çalışmasını sağlar
-# Varsayılan: core
-APP_DOMAIN=core
-
-# Custom Components Path (isteğe bağlı)
-CUSTOM_COMPONENTS_PATH=./vnext/docker/custom-components
-
-# Docker Image Versions (isteğe bağlı - varsayılan değerlerini override edebilirsiniz)
-VNEXT_ORCHESTRATOR_VERSION=0.0.6
-VNEXT_EXECUTION_VERSION=0.0.6
-DAPR_RUNTIME_VERSION=latest
+# Örnek: Varsayılan "core" değerini kendi domain'inize değiştirin
+APP_DOMAIN=sirketim
 ```
 
-### .env.orchestration
+Bu, tüm workflow bileşenlerinin, görevlerin ve sistem kaynaklarının doğru şekilde kendi domain namespace'inize atanmasını sağlar.
+
+## 🚀 vNext Geliştirmeye Başlangıç
+
+vNext Runtime için workflow ve bileşenler geliştirmek amacıyla aşağıdaki araçlara ihtiyacınız olacak:
+
+### 1. vNext CLI
+
+**Repository:** https://github.com/burgan-tech/vnext-cli
+
+vNext CLI, vNext workflow projelerini oluşturmak, doğrulamak ve build etmek için kullanılan komut satırı aracıdır.
+
+**Kurulum & Kullanım:**
+
 ```bash
-# VNext Orchestration Environment Variables
-# Bu değerler vnext-app servisinin AppSettings yapılandırmasını override eder
+# CLI'ı kurun
+npm install -g @burgan-tech/vnext-cli
 
-# Application Settings
-ApplicationName=vnext
-APP_PORT=4201
-APP_HOST=0.0.0.0
+# Kendi domain'iniz ile yeni bir vNext projesi oluşturun
+vnext create DOMAIN_ADINIZ
 
-# Database Configuration (ConnectionStrings:Default)
-ConnectionStrings__Default=Host=vnext-postgres;Port=5432;Database=Aether_WorkflowDb;Username=postgres;Password=postgres;
+# Workflow'larınızı doğrulayın
+vnext validate
 
-# Redis Configuration
-Redis__Standalone__EndPoints__0=vnext-redis:6379
-Redis__InstanceName=workflow-api
-Redis__ConnectionTimeout=5000
-Redis__DefaultDatabase=0
-Redis__Password=
-Redis__Ssl=false
-
-# vNext API Configuration
-vNextApi__BaseUrl=http://localhost:4201
-vNextApi__ApiVersion=1
-vNextApi__TimeoutSeconds=30
-vNextApi__MaxRetryAttempts=3
-vNextApi__RetryDelayMilliseconds=1000
-
-# Telemetry Configuration
-Telemetry__ServiceName=vNext-orchestration
-Telemetry__ServiceVersion=1.0.0
-Telemetry__Environment=Development
-Telemetry__Otlp__Endpoint=http://otel-collector:4318
-
-# Logging
-Logging__LogLevel__Default=Information
-Logging__LogLevel__Microsoft.AspNetCore=Warning
-Telemetry__Logging__MinimumLevel=Information
-
-# Execution Service
-ExecutionService__AppId=vnext-execution-app
-
-# Vault Configuration
-Vault__Enabled=false
-
-# Dapr Configuration
-DAPR_HTTP_PORT=42110
-DAPR_GRPC_PORT=42111
+# Workflow paketinizi build edin
+vnext build
 ```
 
-### .env.execution
-```bash
-# VNext Execution Environment Variables
-# Not: Şu anda docker-compose.yml'de comment'li durumdadır
+CLI, workflow geliştirme yaşam döngünüzü yönetmenize yardımcı olacak çeşitli komutlar sağlar. Detaylı dokümantasyon için [vnext-cli repository'sini](https://github.com/burgan-tech/vnext-cli) ziyaret edin.
 
-# Application Settings
-ApplicationName=vnext-execution
-APP_PORT=5000
-APP_HOST=0.0.0.0
+### 2. vNext Flow Studio
 
-# Database Configuration
-ConnectionStrings__Default=Host=vnext-postgres;Port=5432;Database=Aether_ExecutionDb;Username=postgres;Password=postgres;
+**Repository:** https://github.com/burgan-tech/vnext-flow-studio
 
-# Redis Configuration
-Redis__Standalone__EndPoints__0=vnext-redis:6379
-Redis__InstanceName=execution-api
-Redis__ConnectionTimeout=5000
-Redis__DefaultDatabase=1
+Görsel workflow tasarımı ve yönetimi için güçlü bir Visual Studio Code uzantısı.
 
-# Telemetry Configuration
-Telemetry__ServiceName=vNext-execution
-Telemetry__ServiceVersion=1.0.0
-Telemetry__Environment=Development
-Telemetry__Otlp__Endpoint=http://otel-collector:4318
+**Özellikler:**
+- 🎨 Görsel workflow tasarım arayüzü
+- 📦 Workflow'ları ve bileşenleri görsel olarak yönetin
+- 🚀 VS Code'dan doğrudan deploy edin
+- 🔍 IntelliSense ve doğrulama desteği
 
-# Dapr Configuration
-DAPR_HTTP_PORT=43110
-DAPR_GRPC_PORT=43111
-```
+**Kurulum:**
+1. VS Code'u açın
+2. Extensions'da "vNext Flow Studio" araması yapın
+3. Kurun ve workflow'larınızı görsel olarak tasarlamaya başlayın
 
-## Desteklenen Environment Variables
+Detaylı kullanım talimatları için [vnext-flow-studio repository'sini](https://github.com/burgan-tech/vnext-flow-studio) ziyaret edin.
 
-Aşağıdaki tablo, AppSettings yapılandırmasından türetilen ve `.env.orchestration` / `.env.execution` dosyalarında kullanabileceğiniz environment variable'ları göstermektedir:
+### 3. vNext Schema
 
-### Temel Uygulama Ayarları
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `ApplicationName` | Uygulama adı | `vnext` |
-| `APP_HOST` | Uygulamanın dinleyeceği host | `0.0.0.0` |
-| `APP_PORT` | Uygulamanın dinleyeceği port | `4201` |
+**Repository:** https://github.com/burgan-tech/vnext-schema
 
-### Veritabanı Yapılandırması
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `ConnectionStrings__Default` | PostgreSQL bağlantı string'i | `Host=localhost;Port=5432;Database=Aether_WorkflowDb;Username=postgres;Password=postgres;` |
+Tüm desteklenen vNext bileşenleri (workflow'lar, görevler, fonksiyonlar, vb.) için JSON şemalarını içerir.
 
-### Redis Yapılandırması
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `Redis__Standalone__EndPoints__0` | Redis endpoint | `localhost:6379` |
-| `Redis__InstanceName` | Redis instance adı | `workflow-api` |
-| `Redis__ConnectionTimeout` | Bağlantı timeout (ms) | `5000` |
-| `Redis__DefaultDatabase` | Varsayılan database index | `0` |
-| `Redis__Password` | Redis şifresi | `` |
-| `Redis__Ssl` | SSL kullanımı | `false` |
+**Amaç:**
+- 📚 Mevcut bileşenler ve özellikleri hakkında bilgi edinin
+- 🤖 Şema doğrulama için AI araçları ile entegre edin
+- ✅ Workflow'larınızın platform standartlarına uygun olduğundan emin olun
 
-### vNext API Yapılandırması
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `vNextApi__BaseUrl` | API base URL | `http://localhost:4201` |
-| `vNextApi__ApiVersion` | API versiyonu | `1` |
-| `vNextApi__TimeoutSeconds` | İstek timeout | `30` |
-| `vNextApi__MaxRetryAttempts` | Maksimum retry sayısı | `3` |
-| `vNextApi__RetryDelayMilliseconds` | Retry gecikmesi | `1000` |
+Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema repository'sine](https://github.com/burgan-tech/vnext-schema) başvurun.
 
-### Telemetry ve Logging
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `Telemetry__ServiceName` | Telemetry servis adı | `vNext-orchestration` |
-| `Telemetry__ServiceVersion` | Servis versiyonu | `1.0.0` |
-| `Telemetry__Environment` | Ortam adı | `Development` |
-| `Telemetry__Otlp__Endpoint` | OpenTelemetry endpoint | `http://localhost:4318` |
-| `Logging__LogLevel__Default` | Varsayılan log seviyesi | `Information` |
-| `Logging__LogLevel__Microsoft.AspNetCore` | ASP.NET Core log seviyesi | `Warning` |
-| `Telemetry__Logging__MinimumLevel` | Minimum telemetry log seviyesi | `Information` |
-
-### Task Factory
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `TaskFactory__UseObjectPooling` | Object pooling kullanımı | `false` |
-| `TaskFactory__MaxPoolSize` | Maksimum pool boyutu | `50` |
-| `TaskFactory__InitialPoolSize` | Başlangıç pool boyutu | `5` |
-| `TaskFactory__EnableMetrics` | Metrics aktifleştirme | `true` |
-
-### Diğer Servisler
-| Environment Variable | Açıklama | Varsayılan Değer |
-|---------------------|----------|------------------|
-| `ExecutionService__AppId` | Execution servis app ID | `vnext-execution-app` |
-| `Vault__Enabled` | Vault kullanımı | `false` |
-| `ResponseCompression__Enable` | Response compression | `true` |
+---
 
 ## Hızlı Başlangıç
 
 ### Makefile ile Kolay Kurulum (Önerilen)
 
-Projede bulunan Makefile, geliştiriciler için en konforlu çalıştırma ortamını sağlar. Tüm karmaşık işlemleri tek komutla halledebilirsiniz:
+Projede bulunan Makefile, geliştiriciler için en konforlu çalıştırma ortamını sağlar. Sistem environment dosyalarını kontrol eder ve development ortamını tek komutla başlatır:
 
 ```bash
-# Development ortamını tek komutla kurup başlat
+# Environment dosyalarını kontrol et ve development ortamını başlat
 make dev
 
 # Yardım menüsünü görüntüle
 make help
 
-# Sadece environment dosyalarını oluştur
+# Network kurulumu ve environment kontrolü
 make setup
 ```
 
@@ -192,9 +113,9 @@ make setup
 
 Eğer Makefile kullanmak istemiyorsanız, manual olarak kurabilirsiniz:
 
-#### 1. Gerekli Dosyaları Oluşturun
+#### 1. Environment Dosyalarını Kontrol Edin
 
-Yukarıda belirtilen `.env`, `.env.orchestration` ve `.env.execution` dosyalarını `vnext/docker/` dizininde oluşturun.
+`.env`, `.env.orchestration` ve `.env.execution` dosyalarının `vnext/docker/` dizininde mevcut olduğundan emin olun ve gerektiğinde özelleştirin.
 
 #### 2. Docker Network Oluşturun
 
@@ -280,24 +201,6 @@ Bu şekilde vnext-app uygulaması hem sistem hem de custom component'lerle hazı
 - **JSON Schema**: Her component, core component'lerle aynı JSON schema formatını takip etmelidir
 
 Detaylı dokümantasyon ve örnekler için `vnext/docker/custom-components/README.md` dosyasına bakın.
-
-### Örnek: E-Commerce Workflow
-
-VNext Runtime sisteminin tüm yeteneklerini gösteren kapsamlı bir e-ticaret workflow örneği sunuyoruz:
-
-- **HTTP Test Dosyası**: `samples/ecommerce/ecommerce-workflow.http` - Test için hazır HTTP istekleri
-- **Dokümantasyon**: 
-  - 🇺🇸 [İngilizce Rehber](samples/ecommerce/README-ecommerce-workflow-en.md)
-  - 🇹🇷 [Türkçe Rehber](samples/ecommerce/README-ecommerce-workflow-tr.md)
-- **Gösterilen Özellikler**:
-  - State tabanlı workflow yönetimi
-  - Kimlik doğrulama akışı
-  - Ürün browsing ve seçimi
-  - Sepet yönetimi
-  - Sipariş işleme
-  - Hata yönetimi ve retry mekanizmaları
-
-Bu örnek, VNext Runtime kullanarak karmaşık iş akışlarının nasıl implement edileceğini anlamak için pratik bir başlangıç noktası sağlar.
 
 ## Instance Filtreleme
 
@@ -487,16 +390,15 @@ make help
 |-------|----------|----------|
 | `make help` | Tüm kullanılabilir komutları listeler | `make help` |
 | `make dev` | Development ortamını kurar ve başlatır | `make dev` |
-| `make setup` | Environment dosyalarını ve network'ü oluşturur | `make setup` |
+| `make setup` | Environment dosyalarını kontrol eder ve network'ü oluşturur | `make setup` |
 | `make info` | Proje bilgilerini ve erişim URL'lerini gösterir | `make info` |
 
 ### Environment Setup
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
-| `make create-env-files` | Environment dosyalarını oluşturur | `make create-env-files` |
-| `make create-network` | Docker network'ünü oluşturur | `make create-network` |
 | `make check-env` | Environment dosyalarının varlığını kontrol eder | `make check-env` |
+| `make create-network` | Docker network'ünü oluşturur | `make create-network` |
 
 ### Docker Operations
 
@@ -635,13 +537,13 @@ make grafana-reset-password    # Grafana şifresini resetle
 
 ### Environment Variable'ları Customize Etme
 
-Environment dosyalarını oluşturmak için:
+Environment dosyalarını özelleştirmek için:
 
 ```bash
-# Makefile ile otomatik oluşturma (önerilen)
-make create-env-files
+# Mevcut environment dosyalarını kontrol et
+make check-env
 
-# Manuel olarak vnext/docker/ dizininde .env dosyalarını oluşturun
+# vnext/docker/ dizinindeki .env dosyalarını gerektiğinde düzenleyin
 ```
 
 Önemli konfigürasyonlar:
@@ -725,8 +627,7 @@ docker-compose ps
    ```bash
    # Environment kontrolü
    make check-env
-   # Dosyaları oluştur
-   make create-env-files
+   # Dosyaların vnext/docker/ dizininde mevcut olduğundan emin olun
    ```
 
 ### Performance Tuning

@@ -4,187 +4,108 @@
 
 This project is designed to enable developers to set up and run the VNext Runtime system in their local environments for development purposes. This Docker-based setup includes all dependencies and quickly prepares the development environment.
 
+> **⚠️ Important Note:** Until the deployment versioning method is finalized, system components should be reset and reinstalled locally with each version transition.
+
 > **Languages:** This README is available in [English](README.en.md) | [Türkçe](README.md)
 
-## Required Files
+## Environment Configuration
 
-To run the system, you need to create the following environment files:
+The repository includes ready-made environment files (`.env`, `.env.orchestration`, `.env.execution`) in the `vnext/docker/` directory. These files control system versions, database connections, Redis configuration, telemetry settings, and other runtime parameters.
 
-### .env (Main Environment Variables)
+**Purpose:** You can customize these environment files to match your infrastructure and development needs. All available environment variables and their default values can be found in the respective files within the repository.
+
+## 🎯 Domain Configuration (Important!)
+
+**Domain configuration is a critical concept** in vNext Runtime. Each developer must configure their own domain to work with the platform. To set up your domain, update the `APP_DOMAIN` value in the following files:
+
+1. **`vnext/docker/.env`** - Runtime domain configuration
+2. **`vnext/docker/.env.orchestration`** - Orchestration service domain
+3. **`vnext/docker/.env.execution`** - Execution service domain
+4. **`vnext.config.json`** - Project domain configuration (in your own workflow repository)
+
 ```bash
-# VNext Core Runtime Version
-VNEXT_CORE_VERSION=latest
-
-# Application Domain (NEW!)
-# This domain value will replace all "domain" properties in JSON files
-# Allows each developer to work with their own domain locally
-# Default: core
-APP_DOMAIN=core
-
-# Custom Components Path (optional)
-CUSTOM_COMPONENTS_PATH=./vnext/docker/custom-components
-
-# Docker Image Versions (optional - you can override default values)
-VNEXT_ORCHESTRATOR_VERSION=0.0.6
-VNEXT_EXECUTION_VERSION=0.0.6
-DAPR_RUNTIME_VERSION=latest
+# Example: Change from default "core" to your domain
+APP_DOMAIN=my-company
 ```
 
-### .env.orchestration
+This ensures all workflow components, tasks, and system resources are properly scoped to your domain namespace.
+
+## 🚀 Getting Started with vNext Development
+
+To develop workflows and components for vNext Runtime, you'll need the following tools:
+
+### 1. vNext CLI
+
+**Repository:** https://github.com/burgan-tech/vnext-cli
+
+The vNext CLI is a command-line tool for creating, validating, and building vNext workflow projects.
+
+**Installation & Usage:**
+
 ```bash
-# VNext Orchestration Environment Variables
-# These values override the AppSettings configuration of vnext-app service
+# Install the CLI
+npm install -g @burgan-tech/vnext-cli
 
-# Application Settings
-ApplicationName=vnext
-APP_PORT=4201
-APP_HOST=0.0.0.0
+# Create a new vNext project with your domain
+vnext create YOUR_DOMAIN_NAME
 
-# Database Configuration (ConnectionStrings:Default)
-ConnectionStrings__Default=Host=vnext-postgres;Port=5432;Database=Aether_WorkflowDb;Username=postgres;Password=postgres;
+# Validate your workflows
+vnext validate
 
-# Redis Configuration
-Redis__Standalone__EndPoints__0=vnext-redis:6379
-Redis__InstanceName=workflow-api
-Redis__ConnectionTimeout=5000
-Redis__DefaultDatabase=0
-Redis__Password=
-Redis__Ssl=false
-
-# vNext API Configuration
-vNextApi__BaseUrl=http://localhost:4201
-vNextApi__ApiVersion=1
-vNextApi__TimeoutSeconds=30
-vNextApi__MaxRetryAttempts=3
-vNextApi__RetryDelayMilliseconds=1000
-
-# Telemetry Configuration
-Telemetry__ServiceName=vNext-orchestration
-Telemetry__ServiceVersion=1.0.0
-Telemetry__Environment=Development
-Telemetry__Otlp__Endpoint=http://otel-collector:4318
-
-# Logging
-Logging__LogLevel__Default=Information
-Logging__LogLevel__Microsoft.AspNetCore=Warning
-Telemetry__Logging__MinimumLevel=Information
-
-# Execution Service
-ExecutionService__AppId=vnext-execution-app
-
-# Vault Configuration
-Vault__Enabled=false
-
-# Dapr Configuration
-DAPR_HTTP_PORT=42110
-DAPR_GRPC_PORT=42111
+# Build your workflow package
+vnext build
 ```
 
-### .env.execution
-```bash
-# VNext Execution Environment Variables
-# Note: Currently commented out in docker-compose.yml
+The CLI provides various commands to help you manage your workflow development lifecycle. For detailed documentation, visit the [vnext-cli repository](https://github.com/burgan-tech/vnext-cli).
 
-# Application Settings
-ApplicationName=vnext-execution
-APP_PORT=5000
-APP_HOST=0.0.0.0
+### 2. vNext Flow Studio
 
-# Database Configuration
-ConnectionStrings__Default=Host=vnext-postgres;Port=5432;Database=Aether_ExecutionDb;Username=postgres;Password=postgres;
+**Repository:** https://github.com/burgan-tech/vnext-flow-studio
 
-# Redis Configuration
-Redis__Standalone__EndPoints__0=vnext-redis:6379
-Redis__InstanceName=execution-api
-Redis__ConnectionTimeout=5000
-Redis__DefaultDatabase=1
+A powerful Visual Studio Code extension for visual workflow design and management.
 
-# Telemetry Configuration
-Telemetry__ServiceName=vNext-execution
-Telemetry__ServiceVersion=1.0.0
-Telemetry__Environment=Development
-Telemetry__Otlp__Endpoint=http://otel-collector:4318
+**Features:**
+- 🎨 Visual workflow design interface
+- 📦 Manage workflows and components visually
+- 🚀 Deploy workflows directly from VS Code
+- 🔍 IntelliSense and validation support
 
-# Dapr Configuration
-DAPR_HTTP_PORT=43110
-DAPR_GRPC_PORT=43111
-```
+**Installation:**
+1. Open VS Code
+2. Search for "vNext Flow Studio" in Extensions
+3. Install and start designing your workflows visually
 
-## Supported Environment Variables
+For detailed usage instructions, visit the [vnext-flow-studio repository](https://github.com/burgan-tech/vnext-flow-studio).
 
-The following table shows environment variables derived from AppSettings configuration that you can use in `.env.orchestration` / `.env.execution` files:
+### 3. vNext Schema
 
-### Basic Application Settings
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `ApplicationName` | Application name | `vnext` |
-| `APP_HOST` | Host for the application to listen on | `0.0.0.0` |
-| `APP_PORT` | Port for the application to listen on | `4201` |
+**Repository:** https://github.com/burgan-tech/vnext-schema
 
-### Database Configuration
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `ConnectionStrings__Default` | PostgreSQL connection string | `Host=localhost;Port=5432;Database=Aether_WorkflowDb;Username=postgres;Password=postgres;` |
+Contains JSON schemas for all supported vNext components (workflows, tasks, functions, etc.).
 
-### Redis Configuration
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `Redis__Standalone__EndPoints__0` | Redis endpoint | `localhost:6379` |
-| `Redis__InstanceName` | Redis instance name | `workflow-api` |
-| `Redis__ConnectionTimeout` | Connection timeout (ms) | `5000` |
-| `Redis__DefaultDatabase` | Default database index | `0` |
-| `Redis__Password` | Redis password | `` |
-| `Redis__Ssl` | SSL usage | `false` |
+**Purpose:**
+- 📚 Learn about available components and their properties
+- 🤖 Integrate with AI tools for schema validation
+- ✅ Ensure your workflows conform to platform standards
 
-### vNext API Configuration
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `vNextApi__BaseUrl` | API base URL | `http://localhost:4201` |
-| `vNextApi__ApiVersion` | API version | `1` |
-| `vNextApi__TimeoutSeconds` | Request timeout | `30` |
-| `vNextApi__MaxRetryAttempts` | Maximum retry attempts | `3` |
-| `vNextApi__RetryDelayMilliseconds` | Retry delay | `1000` |
+Reference the [vnext-schema repository](https://github.com/burgan-tech/vnext-schema) to understand component structures and validation rules.
 
-### Telemetry and Logging
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `Telemetry__ServiceName` | Telemetry service name | `vNext-orchestration` |
-| `Telemetry__ServiceVersion` | Service version | `1.0.0` |
-| `Telemetry__Environment` | Environment name | `Development` |
-| `Telemetry__Otlp__Endpoint` | OpenTelemetry endpoint | `http://localhost:4318` |
-| `Logging__LogLevel__Default` | Default log level | `Information` |
-| `Logging__LogLevel__Microsoft.AspNetCore` | ASP.NET Core log level | `Warning` |
-| `Telemetry__Logging__MinimumLevel` | Minimum telemetry log level | `Information` |
-
-### Task Factory
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `TaskFactory__UseObjectPooling` | Object pooling usage | `false` |
-| `TaskFactory__MaxPoolSize` | Maximum pool size | `50` |
-| `TaskFactory__InitialPoolSize` | Initial pool size | `5` |
-| `TaskFactory__EnableMetrics` | Enable metrics | `true` |
-
-### Other Services
-| Environment Variable | Description | Default Value |
-|---------------------|-------------|---------------|
-| `ExecutionService__AppId` | Execution service app ID | `vnext-execution-app` |
-| `Vault__Enabled` | Vault usage | `false` |
-| `ResponseCompression__Enable` | Response compression | `true` |
+---
 
 ## Quick Start
 
 ### Easy Setup with Makefile (Recommended)
 
-The Makefile in the project provides the most comfortable running environment for developers. You can handle all complex operations with a single command:
+The Makefile in the project provides the most comfortable running environment for developers. The system checks environment files and starts the development environment with a single command:
 
 ```bash
-# Set up and start development environment with one command
+# Check environment files and start development environment
 make dev
 
 # Display help menu
 make help
 
-# Create only environment files
+# Setup network and check environment
 make setup
 ```
 
@@ -192,9 +113,9 @@ make setup
 
 If you don't want to use Makefile, you can set up manually:
 
-#### 1. Create Required Files
+#### 1. Check Environment Files
 
-Create the `.env`, `.env.orchestration`, and `.env.execution` files mentioned above in the `vnext/docker/` directory.
+Ensure the `.env`, `.env.orchestration`, and `.env.execution` files exist in the `vnext/docker/` directory and customize them as needed.
 
 #### 2. Create Docker Network
 
@@ -280,24 +201,6 @@ You can add your own custom components by mounting a volume to the `vnext-core-i
 - **JSON Schema**: Each component must follow the same JSON schema format as core components
 
 See `vnext/docker/custom-components/README.md` for detailed documentation and examples.
-
-### Example: E-Commerce Workflow
-
-We provide a complete e-commerce workflow example that demonstrates the full capabilities of the VNext Runtime system:
-
-- **HTTP Test File**: `samples/ecommerce/ecommerce-workflow.http` - Ready-to-use HTTP requests for testing
-- **Documentation**: 
-  - 🇺🇸 [English Guide](samples/ecommerce/README-ecommerce-workflow-en.md)
-  - 🇹🇷 [Turkish Guide](samples/ecommerce/README-ecommerce-workflow-tr.md)
-- **Features Demonstrated**:
-  - State-based workflow management
-  - Authentication flow
-  - Product browsing and selection
-  - Cart management
-  - Order processing
-  - Error handling and retry mechanisms
-
-This example provides a practical starting point for understanding how to implement complex business workflows using VNext Runtime.
 
 ## Instance Filtering
 
@@ -487,16 +390,15 @@ make help
 |---------|-------------|-------|
 | `make help` | Lists all available commands | `make help` |
 | `make dev` | Sets up and starts development environment | `make dev` |
-| `make setup` | Creates environment files and network | `make setup` |
+| `make setup` | Checks environment files and creates network | `make setup` |
 | `make info` | Shows project information and access URLs | `make info` |
 
 ### Environment Setup
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `make create-env-files` | Creates environment files | `make create-env-files` |
-| `make create-network` | Creates Docker network | `make create-network` |
 | `make check-env` | Checks existence of environment files | `make check-env` |
+| `make create-network` | Creates Docker network | `make create-network` |
 
 ### Docker Operations
 
@@ -635,13 +537,13 @@ make grafana-reset-password    # Reset Grafana password
 
 ### Customizing Environment Variables
 
-To create environment files:
+To customize environment files:
 
 ```bash
-# Automatic creation with Makefile (recommended)
-make create-env-files
+# Check existing environment files
+make check-env
 
-# Manually create .env files in vnext/docker/ directory
+# Edit .env files in vnext/docker/ directory as needed
 ```
 
 Important configurations:
@@ -725,8 +627,7 @@ docker-compose ps
    ```bash
    # Environment check
    make check-env
-   # Create files
-   make create-env-files
+   # Ensure files exist in vnext/docker/ directory
    ```
 
 ### Performance Tuning
