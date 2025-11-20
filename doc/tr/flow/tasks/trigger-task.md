@@ -110,6 +110,7 @@ Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Di�
       "type": "Trigger",
       "domain": "approvals",
       "flow": "approval-flow",
+      "instanceId": "550e8400-e29b-41d4-a716-446655440000",
       "transitionName": "approve"
     }
   }
@@ -176,6 +177,7 @@ Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili ver
       "type": "GetInstanceData",
       "domain": "users",
       "flow": "user-profile",
+      "instanceId": "660e8400-e29b-41d4-a716-446655440001",
       "extensions": ["profile", "preferences", "security"]
     }
   }
@@ -199,6 +201,74 @@ TriggerTransitionTask sınıfındaki property'lere setter metodları ile erişil
 - **TriggerInstanceId**: `SetInstance(string instanceId)` metodu ile ayarlanır
 - **TriggerType**: `SetTriggerType(string type)` metodu ile ayarlanır
 - **Body**: `SetBody(dynamic body)` metodu ile ayarlanır
+
+### Konfigürasyon vs Dinamik Ayarlama
+
+Trigger Task için gerekli alanlar **iki şekilde** sağlanabilir:
+
+1. **Statik Konfigürasyon**: Task JSON tanımında config bölümünde belirtilir
+2. **Dinamik Ayarlama**: InputHandler içinde setter metodları ile runtime'da ayarlanır
+
+**Önemli:** Tetikleme türüne göre şu alanlardan **biri mutlaka** sağlanmalıdır:
+
+| Trigger Type | Gerekli Alan | JSON Config | IMapping Method |
+|--------------|--------------|-------------|-----------------|
+| **Start** | `key` | `"key": "workflow-key"` | `triggerTask.SetKey("workflow-key")` |
+| **Trigger** | `instanceId` | `"instanceId": "guid"` | `triggerTask.SetInstance("guid")` |
+| **SubProcess** | `key` | `"key": "workflow-key"` | `triggerTask.SetKey("workflow-key")` |
+| **GetInstanceData** | `instanceId` | `"instanceId": "guid"` | `triggerTask.SetInstance("guid")` |
+
+**Öncelik Kuralı:** Hem JSON config'te hem de InputHandler mapping'inde aynı alan (key veya instanceId) tanımlanmışsa, **InputHandler'da set edilen değer önceliğe sahiptir**. Bu sayede runtime'da dinamik değerlerle statik konfigürasyon override edilebilir.
+
+**Kullanım Stratejileri:**
+
+```csharp
+// Senaryo 1: JSON'da key tanımlı, mapping'te override edilmez
+// Task JSON: "config": { "type": "Start", "key": "default-workflow" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Key zaten config'te tanımlı, değiştirmeye gerek yok
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Senaryo 2: JSON'da key yok, mapping'te dinamik olarak ayarlanır
+// Task JSON: "config": { "type": "Start" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Runtime'da dinamik olarak key belirlenir
+    var workflowKey = context.Instance.Data.workflowType == "approval" 
+        ? "document-approval" 
+        : "simple-approval";
+    triggerTask.SetKey(workflowKey);
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Senaryo 3: JSON'da instanceId yok, mapping'te context'ten alınır
+// Task JSON: "config": { "type": "Trigger" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Instance ID workflow data'sından alınır
+    triggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Senaryo 4: JSON'da instanceId var, mapping'te override edilir (Öncelik mapping'te!)
+// Task JSON: "config": { "type": "Trigger", "instanceId": "default-instance-id" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // JSON'daki default değer override edilir - mapping değeri kullanılır!
+    triggerTask.SetInstance(context.Instance.Data.targetInstanceId);
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+```
 
 ## Mapping Örnekleri
 

@@ -110,6 +110,7 @@ Executes a specific transition on an existing workflow instance. Use this to tri
       "type": "Trigger",
       "domain": "approvals",
       "flow": "approval-flow",
+      "instanceId": "550e8400-e29b-41d4-a716-446655440000",
       "transitionName": "approve"
     }
   }
@@ -176,6 +177,7 @@ Retrieves instance data from another workflow instance. Supports optional extens
       "type": "GetInstanceData",
       "domain": "users",
       "flow": "user-profile",
+      "instanceId": "660e8400-e29b-41d4-a716-446655440001",
       "extensions": ["profile", "preferences", "security"]
     }
   }
@@ -199,6 +201,74 @@ Properties in the TriggerTransitionTask class are accessed through setter method
 - **TriggerInstanceId**: Set with `SetInstance(string instanceId)` method
 - **TriggerType**: Set with `SetTriggerType(string type)` method
 - **Body**: Set with `SetBody(dynamic body)` method
+
+### Configuration vs Dynamic Setting
+
+Required fields for Trigger Task can be provided in **two ways**:
+
+1. **Static Configuration**: Specified in the config section of the task JSON definition
+2. **Dynamic Setting**: Set at runtime using setter methods in the InputHandler
+
+**Important:** Depending on the trigger type, **one of these fields must be provided**:
+
+| Trigger Type | Required Field | JSON Config | IMapping Method |
+|--------------|----------------|-------------|-----------------|
+| **Start** | `key` | `"key": "workflow-key"` | `triggerTask.SetKey("workflow-key")` |
+| **Trigger** | `instanceId` | `"instanceId": "guid"` | `triggerTask.SetInstance("guid")` |
+| **SubProcess** | `key` | `"key": "workflow-key"` | `triggerTask.SetKey("workflow-key")` |
+| **GetInstanceData** | `instanceId` | `"instanceId": "guid"` | `triggerTask.SetInstance("guid")` |
+
+**Priority Rule:** If the same field (key or instanceId) is defined in both JSON config and InputHandler mapping, **the value set in InputHandler takes precedence**. This allows dynamic runtime values to override static configuration.
+
+**Usage Strategies:**
+
+```csharp
+// Scenario 1: Key defined in JSON, not overridden in mapping
+// Task JSON: "config": { "type": "Start", "key": "default-workflow" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Key already defined in config, no need to change
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Scenario 2: No key in JSON, set dynamically in mapping
+// Task JSON: "config": { "type": "Start" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Key determined dynamically at runtime
+    var workflowKey = context.Instance.Data.workflowType == "approval" 
+        ? "document-approval" 
+        : "simple-approval";
+    triggerTask.SetKey(workflowKey);
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Scenario 3: No instanceId in JSON, retrieved from context in mapping
+// Task JSON: "config": { "type": "Trigger" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Instance ID retrieved from workflow data
+    triggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Scenario 4: instanceId in JSON, but overridden in mapping (Mapping takes priority!)
+// Task JSON: "config": { "type": "Trigger", "instanceId": "default-instance-id" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var triggerTask = task as TriggerTransitionTask;
+    // Default value in JSON is overridden - mapping value is used!
+    triggerTask.SetInstance(context.Instance.Data.targetInstanceId);
+    triggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+```
 
 ## Mapping Examples
 
