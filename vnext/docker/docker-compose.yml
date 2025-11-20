@@ -157,17 +157,6 @@ services:
     networks:
       - vnext-development
 
-  redis-insight:
-    container_name: vnext-red-insight
-    image: "redislabs/redisinsight:${REDIS_INSIGHT_VERSION:-latest}"
-    ports:
-      - '5501:8001'
-    # volumes:
-    #   - redis-insight:/db
-    restart: unless-stopped
-    networks:
-      - vnext-development
-
   postgres:
     container_name: vnext-postgres
     image: "postgres:${POSTGRES_VERSION:-latest}"
@@ -183,21 +172,6 @@ services:
     networks:
       - vnext-development
 
-  pgadmin:
-    container_name: vnext-pgadmin
-    image: "dpage/pgadmin4:${PGADMIN_VERSION:-latest}"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "info@info.com"
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5502:80"
-    restart: unless-stopped
-    networks:
-      - vnext-development
-  
   vault:
     container_name: vnext-vault
     image: "vault:${VAULT_VERSION:-1.13.3}"
@@ -274,97 +248,6 @@ services:
       - openobserve
     networks:
       - vnext-development
-
-  prometheus:
-    container_name: vnext-prometheus
-    image: prom/prometheus:${PROMETHEUS_VERSION:-latest}
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=200h"
-      - "--web.enable-lifecycle"
-    volumes:
-      - ./config/prometheus:/etc/prometheus
-      - prometheus:/prometheus
-    ports:
-      - "9090:9090"
-    networks:
-      - vnext-development
-    restart: unless-stopped
-
-  grafana:
-    container_name: vnext-grafana
-    image: grafana/grafana:${GRAFANA_VERSION:-latest}
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_USERS_ALLOW_SIGN_UP: 'false'
-    volumes:
-      - grafana:/var/lib/grafana
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
-      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
-    ports:
-      - "3000:3000"
-    networks:
-      - vnext-development
-    depends_on:
-      - prometheus
-    restart: unless-stopped
-
-  metabase:
-    container_name: vnext-metabase
-    image: metabase/metabase:${METABASE_VERSION:-latest}
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabase
-      MB_DB_PORT: 5432
-      MB_DB_USER: postgres
-      MB_DB_PASS: postgres
-      MB_DB_HOST: postgres
-      MB_ENCRYPTION_SECRET_KEY: "vnext-metabase-secret-key-change-this-in-production"
-      JAVA_OPTS: "-Xmx2g"
-    ports:
-      - "3002:3000"
-    volumes:
-      - metabase:/metabase.db
-      - ../../metabase-dashboards:/metabase-dashboards:ro
-    networks:
-      - vnext-development
-    depends_on:
-      - postgres
-    restart: unless-stopped
-    healthcheck:
-      test: curl --fail -I http://localhost:3000/api/health || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 5
-
-  clickhouse:
-    container_name: vnext-clickhouse
-    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION:-latest}
-    environment:
-      CLICKHOUSE_DB: workflow_analytics
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-    ports:
-      - "8123:8123"  # HTTP interface
-      - "9000:9000"  # Native interface
-    volumes:
-      - clickhouse:/var/lib/clickhouse
-      - ./config/clickhouse:/etc/clickhouse-server/config.d
-      - ./config/clickhouse/users.xml:/etc/clickhouse-server/users.xml
-      - ./config/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - vnext-development
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
   # Mockoon API Mock Server
   mockoon:
