@@ -102,12 +102,65 @@ The Makefile in the project provides the most comfortable running environment fo
 # Check environment files and start development environment
 make dev
 
+# Start lightweight development environment (without monitoring/analytics tools)
+make dev-lightweight
+
 # Display help menu
 make help
 
 # Setup network and check environment
 make setup
 ```
+
+### 🪶 Lightweight Mode
+
+For resource-constrained environments or when you only need core functionality, use **lightweight mode**. This mode excludes heavy monitoring and analytics tools:
+
+**Excluded Services:**
+- Prometheus (Metrics collection)
+- Grafana (Metrics visualization)
+- Metabase (BI Analytics)
+- ClickHouse (Analytics database)
+- PgAdmin (PostgreSQL GUI)
+- Redis Insight (Redis GUI)
+
+**Included Services:**
+- VNext Orchestration & Execution services
+- PostgreSQL, Redis, Vault
+- DAPR runtime components
+- OpenObserve & OpenTelemetry Collector
+- Mockoon API mock server
+
+**Usage:**
+
+```bash
+# Start in lightweight mode
+make dev-lightweight
+
+# Or start services directly
+make up-lightweight
+
+# Start with rebuild
+make up-build-lightweight
+
+# Stop lightweight services
+make down-lightweight
+
+# Restart lightweight services
+make restart-lightweight
+
+# View lightweight services status
+make status-lightweight
+
+# View lightweight services logs
+make logs-lightweight
+```
+
+**Benefits:**
+- ⚡ Faster startup time
+- 💾 Lower memory usage (~2GB vs ~4GB)
+- 🚀 Lighter resource footprint
+- 🎯 Focus on core workflow development
 
 ### Manual Setup
 
@@ -405,18 +458,25 @@ make help
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `make up` | Starts services | `make up` |
+| `make up-lightweight` | Starts services (lightweight mode) | `make up-lightweight` |
 | `make up-build` | Starts services with build | `make up-build` |
+| `make up-build-lightweight` | Starts services with build (lightweight) | `make up-build-lightweight` |
 | `make down` | Stops services | `make down` |
+| `make down-lightweight` | Stops services (lightweight mode) | `make down-lightweight` |
 | `make restart` | Restarts services | `make restart` |
+| `make restart-lightweight` | Restarts services (lightweight mode) | `make restart-lightweight` |
 | `make build` | Builds Docker images | `make build` |
+| `make build-lightweight` | Builds Docker images (lightweight mode) | `make build-lightweight` |
 
 ### Service Management
 
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `make status` | Shows service status | `make status` |
+| `make status-lightweight` | Shows service status (lightweight mode) | `make status-lightweight` |
 | `make health` | Checks service health | `make health` |
 | `make logs` | Shows logs for all services | `make logs` |
+| `make logs-lightweight` | Shows logs for all services (lightweight) | `make logs-lightweight` |
 | `make logs-orchestration` | Shows only orchestration service logs | `make logs-orchestration` |
 | `make logs-execution` | Shows only execution service logs | `make logs-execution` |
 | `make logs-init` | Shows core init service logs | `make logs-init` |
@@ -474,15 +534,21 @@ make help
 # Running project for the first time
 make dev
 
+# Running project in lightweight mode (recommended for development)
+make dev-lightweight
+
 # Following logs only
 make logs-orchestration
+make logs-lightweight  # All logs in lightweight mode
 
 # Checking service status
 make status
+make status-lightweight  # Status in lightweight mode
 make health
 
 # Restarting during development
 make restart
+make restart-lightweight  # Restart in lightweight mode
 
 # Reloading after adding custom components
 make reload-components
@@ -490,12 +556,15 @@ make reload-components
 # Cleanup and reinstall
 make reset
 make dev
+# or for lightweight
+make down-lightweight
+make dev-lightweight
 
 # Container access
 make shell-orchestration
 make shell-postgres
 
-# Monitoring specific operations
+# Monitoring specific operations (not available in lightweight mode)
 make monitoring-up          # Start only monitoring services
 make logs-monitoring        # Monitor Prometheus & Grafana logs
 make monitoring-status      # Check monitoring service status
@@ -505,33 +574,37 @@ make grafana-reset-password    # Reset Grafana password
 
 ## Services and Ports
 
-| Service | Description | Port | Access URL |
-|---------|-------------|------|------------|
-| **vnext-app** | Main orchestration application | 4201 | http://localhost:4201 |
-| **vnext-execution-app** | Execution service application | 4202 | http://localhost:4202 |
-| **vnext-core-init** | Init container that loads system components | - | - |
-| **vnext-orchestration-dapr** | Dapr sidecar for orchestration service | 42110/42111 | - |
-| **vnext-execution-dapr** | Dapr sidecar for execution service | 43110/43111 | - |
-| **dapr-placement** | Dapr placement service | 50005 | - |
-| **dapr-scheduler** | Dapr scheduler service | 50007 | - |
-| **vnext-redis** | Redis cache | 6379 | - |
-| **vnext-postgres** | PostgreSQL database | 5432 | - |
-| **vnext-vault** | HashiCorp Vault (optional) | 8200 | http://localhost:8200 |
-| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
-| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
-| **prometheus** | Metrics collection and storage | 9090 | http://localhost:9090 |
-| **grafana** | Metrics visualization and dashboards | 3000 | http://localhost:3000 |
+| Service | Description | Port | Access URL | Lightweight Mode |
+|---------|-------------|------|------------|------------------|
+| **vnext-app** | Main orchestration application | 4201 | http://localhost:4201 | ✅ Available |
+| **vnext-execution-app** | Execution service application | 4202 | http://localhost:4202 | ✅ Available |
+| **vnext-core-init** | Init container that loads system components | - | - | ✅ Available |
+| **vnext-orchestration-dapr** | Dapr sidecar for orchestration service | 42110/42111 | - | ✅ Available |
+| **vnext-execution-dapr** | Dapr sidecar for execution service | 43110/43111 | - | ✅ Available |
+| **dapr-placement** | Dapr placement service | 50005 | - | ✅ Available |
+| **dapr-scheduler** | Dapr scheduler service | 50007 | - | ✅ Available |
+| **vnext-redis** | Redis cache | 6379 | - | ✅ Available |
+| **vnext-postgres** | PostgreSQL database | 5432 | - | ✅ Available |
+| **vnext-vault** | HashiCorp Vault (optional) | 8200 | http://localhost:8200 | ✅ Available |
+| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 | ✅ Available |
+| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - | ✅ Available |
+| **mockoon** | API Mock Server | 3001 | http://localhost:3001 | ✅ Available |
+| **prometheus** | Metrics collection and storage | 9090 | http://localhost:9090 | ❌ Not included |
+| **grafana** | Metrics visualization and dashboards | 3000 | http://localhost:3000 | ❌ Not included |
+| **metabase** | BI Analytics Platform | 3002 | http://localhost:3002 | ❌ Not included |
+| **clickhouse** | Analytics database | 8123, 9000 | http://localhost:8123 | ❌ Not included |
 
 ## Management Tools
 
-| Tool | URL | Username | Password |
-|------|-----|----------|----------|
-| **Redis Insight** | http://localhost:5501 | - | - |
-| **PgAdmin** | http://localhost:5502 | info@info.com | admin |
-| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 |
-| **Vault UI** | http://localhost:8200 | - | admin (token) |
-| **Prometheus** | http://localhost:9090 | - | - |
-| **Grafana** | http://localhost:3000 | admin | admin |
+| Tool | URL | Username | Password | Lightweight Mode |
+|------|-----|----------|----------|------------------|
+| **Redis Insight** | http://localhost:5501 | - | - | ❌ Not included |
+| **PgAdmin** | http://localhost:5502 | info@info.com | admin | ❌ Not included |
+| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 | ✅ Available |
+| **Vault UI** | http://localhost:8200 | - | admin (token) | ✅ Available |
+| **Prometheus** | http://localhost:9090 | - | - | ❌ Not included |
+| **Grafana** | http://localhost:3000 | admin | admin | ❌ Not included |
+| **Metabase** | http://localhost:3002 | - | - | ❌ Not included |
 
 ## Development Tips
 
