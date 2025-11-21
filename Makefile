@@ -3,6 +3,7 @@
 
 # Variables
 DOCKER_COMPOSE_FILE = vnext/docker/docker-compose.yml
+DOCKER_COMPOSE_LIGHTWEIGHT_FILE = vnext/docker/docker-compose.lightweight.yml
 DOCKER_DIR = vnext/docker
 ENV_FILE = $(DOCKER_DIR)/.env
 ENV_ORCHESTRATION_FILE = $(DOCKER_DIR)/.env.orchestration
@@ -167,10 +168,22 @@ check-env: ## Check if environment files exist
 	fi
 
 ##@ Docker Operations
+build-lightweight: check-env ## Build Docker images (lightweight mode)
+	@echo "$(YELLOW)Building Docker images (lightweight mode)...$(NC)"
+	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml build
+	@echo "$(GREEN)Build completed!$(NC)"
+
 build: check-env ## Build Docker images
 	@echo "$(YELLOW)Building Docker images...$(NC)"
 	cd $(DOCKER_DIR) && docker-compose build
 	@echo "$(GREEN)Build completed!$(NC)"
+
+up-lightweight: check-env ## Start all services (lightweight mode)
+	@echo "$(YELLOW)Starting VNext Runtime services (lightweight mode)...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml up -d
+	@echo "$(GREEN)Services started (lightweight mode)!$(NC)"
+	@$(MAKE) status-lightweight
 
 up: check-env ## Start all services
 	@echo "$(YELLOW)Starting VNext Runtime services...$(NC)"
@@ -179,7 +192,16 @@ up: check-env ## Start all services
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
+start-lightweight: up-build-lightweight ## Start services with build (lightweight mode)
+
 start: up-build ## Start services with build
+
+up-build-lightweight: check-env ## Start services with build (lightweight mode)
+	@echo "$(YELLOW)Starting VNext Runtime services with build (lightweight mode)...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml up -d --build
+	@echo "$(GREEN)Services started (lightweight mode)!$(NC)"
+	@$(MAKE) status-lightweight
 
 up-build: check-env ## Start services with build
 	@echo "$(YELLOW)Starting VNext Runtime services with build...$(NC)"
@@ -188,12 +210,25 @@ up-build: check-env ## Start services with build
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
+down-lightweight: ## Stop all services (lightweight mode)
+	@echo "$(YELLOW)Stopping VNext Runtime services (lightweight mode)...$(NC)"
+	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml down
+	@echo "$(GREEN)Services stopped (lightweight mode)!$(NC)"
+
 down: ## Stop all services
 	@echo "$(YELLOW)Stopping VNext Runtime services...$(NC)"
 	cd $(DOCKER_DIR) && docker-compose down
 	@echo "$(GREEN)Services stopped!$(NC)"
 
+stop-lightweight: down-lightweight ## Alias for 'down' (lightweight mode)
+
 stop: down ## Alias for 'down'
+
+restart-lightweight: ## Restart all services (lightweight mode)
+	@echo "$(YELLOW)Restarting VNext Runtime services (lightweight mode)...$(NC)"
+	@$(MAKE) down-lightweight
+	@$(MAKE) up-lightweight
+	@echo "$(GREEN)Services restarted (lightweight mode)!$(NC)"
 
 restart: ## Restart all services
 	@echo "$(YELLOW)Restarting VNext Runtime services...$(NC)"
@@ -202,10 +237,18 @@ restart: ## Restart all services
 	@echo "$(GREEN)Services restarted!$(NC)"
 
 ##@ Service Management
+status-lightweight: ## Show status of all services (lightweight mode)
+	@echo "$(BLUE)VNext Runtime Services Status (Lightweight):$(NC)"
+	@echo "================================================"
+	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml ps
+
 status: ## Show status of all services
 	@echo "$(BLUE)VNext Runtime Services Status:$(NC)"
 	@echo "================================="
 	cd $(DOCKER_DIR) && docker-compose ps
+
+logs-lightweight: ## Show logs for all services (lightweight mode)
+	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml logs -f
 
 logs: ## Show logs for all services
 	cd $(DOCKER_DIR) && docker-compose logs -f
@@ -254,6 +297,12 @@ health: ## Check health of services
 	@echo "• Grafana: http://localhost:3000"
 
 ##@ Development
+dev-lightweight: ## Start development environment (lightweight mode)
+	@echo "$(YELLOW)Starting development environment (lightweight mode)...$(NC)"
+	@$(MAKE) setup
+	@$(MAKE) up-build-lightweight
+	@$(MAKE) health
+
 dev: ## Start development environment
 	@echo "$(YELLOW)Starting development environment...$(NC)"
 	@$(MAKE) setup

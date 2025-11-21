@@ -102,12 +102,65 @@ Projede bulunan Makefile, geliştiriciler için en konforlu çalıştırma ortam
 # Environment dosyalarını kontrol et ve development ortamını başlat
 make dev
 
+# Lightweight development ortamını başlat (monitoring/analytics araçları olmadan)
+make dev-lightweight
+
 # Yardım menüsünü görüntüle
 make help
 
 # Network kurulumu ve environment kontrolü
 make setup
 ```
+
+### 🪶 Lightweight Modu
+
+Kaynak kısıtlı ortamlar için veya sadece temel işlevselliğe ihtiyacınız olduğunda **lightweight modu** kullanın. Bu mod, ağır monitoring ve analytics araçlarını hariç tutar:
+
+**Hariç Tutulan Servisler:**
+- Prometheus (Metrics toplama)
+- Grafana (Metrics görselleştirme)
+- Metabase (BI Analytics)
+- ClickHouse (Analytics veritabanı)
+- PgAdmin (PostgreSQL GUI)
+- Redis Insight (Redis GUI)
+
+**Dahil Olan Servisler:**
+- VNext Orchestration & Execution servisleri
+- PostgreSQL, Redis, Vault
+- DAPR runtime bileşenleri
+- OpenObserve & OpenTelemetry Collector
+- Mockoon API mock server
+
+**Kullanım:**
+
+```bash
+# Lightweight modda başlat
+make dev-lightweight
+
+# Veya servisleri doğrudan başlat
+make up-lightweight
+
+# Rebuild ile başlat
+make up-build-lightweight
+
+# Lightweight servisleri durdur
+make down-lightweight
+
+# Lightweight servisleri yeniden başlat
+make restart-lightweight
+
+# Lightweight servis durumunu görüntüle
+make status-lightweight
+
+# Lightweight servis loglarını görüntüle
+make logs-lightweight
+```
+
+**Avantajlar:**
+- ⚡ Daha hızlı başlangıç süresi
+- 💾 Daha düşük bellek kullanımı (~2GB vs ~4GB)
+- 🚀 Daha hafif kaynak ayak izi
+- 🎯 Temel workflow geliştirmeye odaklanma
 
 ### Manuel Kurulum
 
@@ -405,18 +458,25 @@ make help
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
 | `make up` | Servisleri başlatır | `make up` |
+| `make up-lightweight` | Servisleri başlatır (lightweight mod) | `make up-lightweight` |
 | `make up-build` | Servisleri build ederek başlatır | `make up-build` |
+| `make up-build-lightweight` | Servisleri build ederek başlatır (lightweight) | `make up-build-lightweight` |
 | `make down` | Servisleri durdurur | `make down` |
+| `make down-lightweight` | Servisleri durdurur (lightweight mod) | `make down-lightweight` |
 | `make restart` | Servisleri yeniden başlatır | `make restart` |
+| `make restart-lightweight` | Servisleri yeniden başlatır (lightweight mod) | `make restart-lightweight` |
 | `make build` | Docker image'larını build eder | `make build` |
+| `make build-lightweight` | Docker image'larını build eder (lightweight mod) | `make build-lightweight` |
 
 ### Service Management
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
 | `make status` | Servislerin durumunu gösterir | `make status` |
+| `make status-lightweight` | Servislerin durumunu gösterir (lightweight mod) | `make status-lightweight` |
 | `make health` | Servislerin sağlık durumunu kontrol eder | `make health` |
 | `make logs` | Tüm servislerin loglarını gösterir | `make logs` |
+| `make logs-lightweight` | Tüm servislerin loglarını gösterir (lightweight) | `make logs-lightweight` |
 | `make logs-orchestration` | Sadece orchestration servis logları | `make logs-orchestration` |
 | `make logs-execution` | Sadece execution servis logları | `make logs-execution` |
 | `make logs-init` | Core init servis logları | `make logs-init` |
@@ -474,15 +534,21 @@ make help
 # İlk kez projeyi çalıştırma
 make dev
 
+# Projeyi lightweight modda çalıştırma (geliştirme için önerilir)
+make dev-lightweight
+
 # Sadece logları takip etme
 make logs-orchestration
+make logs-lightweight  # Lightweight moddaki tüm loglar
 
 # Servis durumunu kontrol etme
 make status
+make status-lightweight  # Lightweight moddaki durum
 make health
 
 # Development sırasında yeniden başlatma
 make restart
+make restart-lightweight  # Lightweight modda restart
 
 # Custom component ekledikten sonra yeniden yükleme
 make reload-components
@@ -490,12 +556,15 @@ make reload-components
 # Temizlik ve yeniden kurulum
 make reset
 make dev
+# veya lightweight için
+make down-lightweight
+make dev-lightweight
 
 # Container'lara erişim
 make shell-orchestration
 make shell-postgres
 
-# Monitoring özel işlemleri
+# Monitoring özel işlemleri (lightweight modda mevcut değil)
 make monitoring-up          # Sadece monitoring servislerini başlat
 make logs-monitoring        # Prometheus & Grafana loglarını takip et
 make monitoring-status      # Monitoring servis durumunu kontrol et
@@ -505,33 +574,37 @@ make grafana-reset-password    # Grafana şifresini resetle
 
 ## Servisler ve Portlar
 
-| Servis | Açıklama | Port | Erişim URL |
-|--------|----------|------|------------|
-| **vnext-app** | Ana orchestration uygulaması | 4201 | http://localhost:4201 |
-| **vnext-execution-app** | Execution servis uygulaması | 4202 | http://localhost:4202 |
-| **vnext-core-init** | Sistem component'lerini yükleyen init container | - | - |
-| **vnext-orchestration-dapr** | Orchestration servisi için Dapr sidecar | 42110/42111 | - |
-| **vnext-execution-dapr** | Execution servisi için Dapr sidecar | 43110/43111 | - |
-| **dapr-placement** | Dapr placement servisi | 50005 | - |
-| **dapr-scheduler** | Dapr scheduler servisi | 50007 | - |
-| **vnext-redis** | Redis cache | 6379 | - |
-| **vnext-postgres** | PostgreSQL veritabanı | 5432 | - |
-| **vnext-vault** | HashiCorp Vault (opsiyonel) | 8200 | http://localhost:8200 |
-| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
-| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
-| **prometheus** | Metrics toplama ve depolama | 9090 | http://localhost:9090 |
-| **grafana** | Metrics görselleştirme ve dashboard | 3000 | http://localhost:3000 |
+| Servis | Açıklama | Port | Erişim URL | Lightweight Mod |
+|--------|----------|------|------------|-----------------|
+| **vnext-app** | Ana orchestration uygulaması | 4201 | http://localhost:4201 | ✅ Mevcut |
+| **vnext-execution-app** | Execution servis uygulaması | 4202 | http://localhost:4202 | ✅ Mevcut |
+| **vnext-core-init** | Sistem component'lerini yükleyen init container | - | - | ✅ Mevcut |
+| **vnext-orchestration-dapr** | Orchestration servisi için Dapr sidecar | 42110/42111 | - | ✅ Mevcut |
+| **vnext-execution-dapr** | Execution servisi için Dapr sidecar | 43110/43111 | - | ✅ Mevcut |
+| **dapr-placement** | Dapr placement servisi | 50005 | - | ✅ Mevcut |
+| **dapr-scheduler** | Dapr scheduler servisi | 50007 | - | ✅ Mevcut |
+| **vnext-redis** | Redis cache | 6379 | - | ✅ Mevcut |
+| **vnext-postgres** | PostgreSQL veritabanı | 5432 | - | ✅ Mevcut |
+| **vnext-vault** | HashiCorp Vault (opsiyonel) | 8200 | http://localhost:8200 | ✅ Mevcut |
+| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 | ✅ Mevcut |
+| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - | ✅ Mevcut |
+| **mockoon** | API Mock Server | 3001 | http://localhost:3001 | ✅ Mevcut |
+| **prometheus** | Metrics toplama ve depolama | 9090 | http://localhost:9090 | ❌ Yok |
+| **grafana** | Metrics görselleştirme ve dashboard | 3000 | http://localhost:3000 | ❌ Yok |
+| **metabase** | BI Analytics Platform | 3002 | http://localhost:3002 | ❌ Yok |
+| **clickhouse** | Analytics veritabanı | 8123, 9000 | http://localhost:8123 | ❌ Yok |
 
 ## Management Tools
 
-| Tool | URL | Kullanıcı Adı | Şifre |
-|------|-----|---------------|-------|
-| **Redis Insight** | http://localhost:5501 | - | - |
-| **PgAdmin** | http://localhost:5502 | info@info.com | admin |
-| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 |
-| **Vault UI** | http://localhost:8200 | - | admin (token) |
-| **Prometheus** | http://localhost:9090 | - | - |
-| **Grafana** | http://localhost:3000 | admin | admin |
+| Tool | URL | Kullanıcı Adı | Şifre | Lightweight Mod |
+|------|-----|---------------|-------|-----------------|
+| **Redis Insight** | http://localhost:5501 | - | - | ❌ Yok |
+| **PgAdmin** | http://localhost:5502 | info@info.com | admin | ❌ Yok |
+| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 | ✅ Mevcut |
+| **Vault UI** | http://localhost:8200 | - | admin (token) | ✅ Mevcut |
+| **Prometheus** | http://localhost:9090 | - | - | ❌ Yok |
+| **Grafana** | http://localhost:3000 | admin | admin | ❌ Yok |
+| **Metabase** | http://localhost:3002 | - | - | ❌ Yok |
 
 ## Development İpuçları
 

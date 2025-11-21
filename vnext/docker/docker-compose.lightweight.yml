@@ -1,0 +1,301 @@
+services:
+
+  vnext-app:
+    container_name: vnext-app
+    image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
+    env_file:
+      - .env.orchestration
+    volumes:
+      - ./appsettings.Development.json:/app/appsettings.Development.json:ro
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-app:5000/health" ]
+      interval: 10s
+      retries: 5
+      start_period: 35s
+      timeout: 30s
+    ports:
+      - "4201:5000"
+    networks:
+      - vnext-development
+    depends_on:
+      - dapr-placement
+      - dapr-scheduler
+      - postgres
+
+  # VNext Core Runtime Initializer - vnext-app loads system components after it is healthy
+  vnext-core-init:
+    container_name: vnext-core-init
+    image: "ghcr.io/burgan-tech/vnext/init:${VNEXT_INIT_VERSION:-latest}"
+    environment:
+      VNEXT_CORE_RUNTIME_VERSION: "${VNEXT_CORE_RUNTIME_VERSION:-latest}"
+      VNEXT_APP_URL: "http://vnext-app:5000"
+      APP_DOMAIN: "${APP_DOMAIN:-core}"
+    volumes:
+      - npm-cache:/app/.npm-cache
+      # Custom components volume - users can mount their components here
+      - "${CUSTOM_COMPONENTS_PATH:-./custom-components}:/app/custom-components"
+    networks:
+      - vnext-development
+    depends_on:
+      vnext-app:
+        condition: service_healthy
+    restart: "no"
+      
+  vnext-execution-app:
+    container_name: vnext-execution-app
+    image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
+    env_file:
+      - .env.execution
+    volumes:
+      - ./appsettings.Execution.Development.json:/app/appsettings.Development.json:ro
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-execution-app:5000/health" ]
+      interval: 10s
+      retries: 5
+      start_period: 35s
+      timeout: 30s
+    ports:
+      - "4202:5000"
+    networks:
+      - vnext-development
+    depends_on:
+      vnext-app:
+        condition: service_healthy
+      dapr-placement:
+        condition: service_started
+      dapr-scheduler:
+        condition: service_started
+      postgres:
+        condition: service_started
+
+  vnext-orchestration-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: vnext-orchestration-dapr
+    command: [
+      "./daprd",
+      "--app-id", "vnext-app",
+      "--app-port", "5000",
+      "--resources-path", "./components",
+      "--dapr-grpc-port", "42111",
+      "--dapr-http-port", "42110",
+      "--scheduler-host-address", "dapr-scheduler:50007",
+      "--placement-host-address", "dapr-placement:50005"
+    ]
+    volumes:
+      - "../orchestration/dapr/components:/components"
+    network_mode: "service:vnext-app"
+    depends_on:
+      - vnext-app
+      - dapr-placement
+      - dapr-scheduler
+      - redis
+      - vault
+        
+  vnext-execution-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: vnext-execution-dapr
+    command: [
+      "./daprd",
+      "--app-id", "vnext-execution-app",
+      "--app-port", "5000",
+      "--resources-path", "./components",
+      "--dapr-grpc-port", "43111",
+      "--dapr-http-port", "43110",
+      "--scheduler-host-address", "dapr-scheduler:50007",
+      "--placement-host-address", "dapr-placement:50005"
+    ]
+    volumes:
+      - "../execution/dapr/components:/components"
+    network_mode: "service:vnext-execution-app"
+    depends_on:
+      - vnext-execution-app
+      - dapr-placement
+      - dapr-scheduler
+      - redis
+      - vault
+
+  dapr-placement:
+    image: "daprio/dapr:${DAPR_PLACEMENT_VERSION:-latest}"
+    container_name: dapr-placement
+    command: ["./placement"]
+    ports:
+      - "50005:50005"
+    networks:
+      - vnext-development
+
+  dapr-scheduler:
+    image: "daprio/scheduler:${DAPR_SCHEDULER_VERSION:-latest}"
+    container_name: dapr-scheduler
+    user: "0:0"
+    command: [
+      "./scheduler",
+      "--port",
+      "50007",
+      "--etcd-data-dir",
+      "/data"
+    ]
+    ports:
+      - "50007:50007"
+    volumes:
+      - type: tmpfs
+        target: /data
+        tmpfs:
+          size: "64m"
+          mode: 1777
+    networks:
+      - vnext-development
+
+  redis:
+    container_name: vnext-redis
+    image: "redis:${REDIS_VERSION:-latest}"
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    # volumes:
+    #   - redis:/data
+    networks:
+      - vnext-development
+
+  postgres:
+    container_name: vnext-postgres
+    image: "postgres:${POSTGRES_VERSION:-latest}"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - vnext-development
+  
+  vault:
+    container_name: vnext-vault
+    image: "vault:${VAULT_VERSION:-1.13.3}"
+    restart: on-failure:10
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: 'https://0.0.0.0:8200'
+      VAULT_API_ADDR: 'https://0.0.0.0:8200'
+      VAULT_DEV_ROOT_TOKEN_ID: 'admin'
+      VAULT_TOKEN: 'admin'
+    volumes:
+      - ./config/vault:/vault/file
+    cap_add:
+      - IPC_LOCK
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "--proxy",
+          "off",
+          "http://vault:8200/v1/sys/health?standbyok=true",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    command: server -dev -dev-root-token-id="admin"
+    networks:
+      - vnext-development
+
+  vault-prepopulate:
+    image: "alpine/curl:${ALPINE_CURL_VERSION:-latest}"
+    depends_on:
+      - vault
+    volumes:
+      - ./config/vault/vault.sh:/etc/vault/prepopulate_vault.sh
+    command: ["sh", "-c", "chmod +x /etc/vault/prepopulate_vault.sh && /etc/vault/prepopulate_vault.sh"]
+    networks:
+      - vnext-development
+
+  # OpenObserve for observability
+  openobserve:
+    container_name: vnext-openobserve
+    image: "public.ecr.aws/zinclabs/openobserve:${OPENOBSERVE_VERSION:-latest}"
+    environment:
+      ZO_ROOT_USER_EMAIL: "root@example.com"
+      ZO_ROOT_USER_PASSWORD: "Complexpass#@123"
+      ZO_DATA_DIR: "/data"
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve:/data
+    networks:
+      - vnext-development
+
+  # OpenTelemetry Collector
+  otel-collector:
+    container_name: vnext-otel-collector
+    image: "otel/opentelemetry-collector-contrib:${OTEL_COLLECTOR_VERSION:-latest}"
+    volumes:
+      - ./config/otel/otel-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "1888:1888" # pprof extension
+      - "8888:8888" # Prometheus metrics exposed by the Collector
+      - "8889:8889" # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
+      - "4317:4317" # OTLP gRPC receiver
+      - "4318:4318" # OTLP http receiver
+      - "55679:55679" # zpages extension
+    depends_on:
+      - openobserve
+    networks:
+      - vnext-development
+
+  # Mockoon API Mock Server
+  mockoon:
+    image: mockoon/cli:${MOCKOON_VERSION:-latest}
+    container_name: migration-mockoon
+    command: ["--data", "/data/migration-api.json", "--port", "3001", "--hostname", "0.0.0.0"]
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./config/mockoon:/data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - vnext-development
+
+
+  mockoon-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: mockoon-dapr
+    command:
+      [
+        "./daprd",
+        "--app-id", "mockoon",
+        "--app-port", "3000",
+        "--resources-path", "./components",
+        "--dapr-grpc-port", "3501",
+        "--dapr-http-port", "3500",
+        "--scheduler-host-address", "dapr-scheduler:50007",
+        "--placement-host-address", "dapr-placement:50005"
+      ]
+    volumes:
+      - "../mockoon/dapr/components:/components"
+    network_mode: "service:mockoon"
+    depends_on:
+      - mockoon
+      - dapr-placement
+      - dapr-scheduler
+      
+networks:
+  vnext-development:
+    external: true
+
+volumes:
+  # redis:
+  postgres:
+  openobserve:
+  npm-cache: {}
