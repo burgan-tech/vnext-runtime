@@ -1,41 +1,46 @@
-# Trigger Task
+# Trigger Task Types
 
-Trigger Task is a unified task type that provides comprehensive workflow instance management capabilities. It enables workflows to start new instances, trigger transitions, launch subprocesses, and fetch instance data—all within the workflow execution context.
+Four separate task types are available for workflow instance management. Each task type supports a different workflow interaction scenario and has its own type number.
+
+## Task Types
+
+- **StartTask** (Type: "11") - Starts new workflow instances
+- **DirectTriggerTask** (Type: "12") - Triggers transitions on existing instances
+- **GetInstanceDataTask** (Type: "13") - Retrieves instance data
+- **SubProcessTask** (Type: "14") - Launches independent subprocess instances
 
 ## Features
 
 - ✅ Start new workflow instances programmatically
-- ✅ Trigger transitions on existing instances (direct or correlation-based)
+- ✅ Trigger transitions on existing instances (direct or key-based)
 - ✅ Launch independent subprocess instances
 - ✅ Fetch instance data with extension support
 - ✅ Cross-workflow orchestration
 - ✅ Dynamic workflow composition
-- ✅ Flexible trigger type configuration
 - ✅ Detailed response tracking
 
-## Task Definition
+## 1. StartTask (Type: "11")
 
-### Basic Structure
+Creates a new workflow instance. Use this to programmatically start new workflow instances during workflow execution.
+
+### Task Definition
 
 ```json
 {
-  "key": "trigger-workflow-action",
+  "key": "start-approval-workflow",
   "flow": "sys-tasks",
   "domain": "core",
   "version": "1.0.0",
-  "tags": [
-    "trigger",
-    "workflow",
-    "orchestration"
-  ],
+  "tags": ["workflow", "instance", "start"],
   "attributes": {
     "type": "11",
     "config": {
-      "type": "Start",
-      "domain": "target-domain",
-      "flow": "target-flow",
-      "key": "target-key",
-      "version": "1.0.0"
+      "domain": "approvals",
+      "flow": "approval-flow",
+      "body": {
+        "documentId": "doc-12345",
+        "requestedBy": "user-123"
+      }
     }
   }
 }
@@ -43,236 +48,20 @@ Trigger Task is a unified task type that provides comprehensive workflow instanc
 
 ### Configuration Fields
 
-The following fields are defined in the config section of Trigger Task:
-
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `type` | string | Yes | Trigger type: "Start", "Trigger", "SubProcess", "GetInstanceData" |
 | `domain` | string | Yes | Target workflow domain |
 | `flow` | string | Yes | Target workflow flow name |
-| `key` | string | Conditional | Target workflow key (required for Start, SubProcess) |
-| `instanceId` | string | Conditional | Target instance ID (required for Trigger, GetInstanceData) |
-| `transitionName` | string | Conditional | Transition name to execute (required for Trigger type) |
-| `version` | string | No | Target workflow version (optional) |
-| `extensions` | string[] | No | Extensions to fetch (for GetInstanceData type) |
 | `body` | object | No | Data to send with the request |
 
-## Trigger Types
+### Use Cases
 
-Trigger Task supports four distinct operation types through the `TriggerTransitionType` enum:
-
-### 1. Start Instance (Type: Start = 1)
-
-Creates a new workflow instance. Use this trigger type to programmatically start new workflow instances during workflow execution.
-
-**Configuration Example:**
-```json
-{
-  "key": "start-approval-workflow",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["workflow", "instance", "start"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "Start",
-      "domain": "approvals",
-      "flow": "approval-flow",
-      "key": "document-approval",
-      "version": "1.0.0"
-    }
-  }
-}
-```
-
-**Use Cases:**
 - Starting approval workflows from main business processes
 - Creating audit workflows for transaction logging
 - Initiating notification workflows
 - Launching parallel processing workflows
 
-### 2. Trigger Transition (Type: Trigger = 2)
-
-Executes a specific transition on an existing workflow instance. Use this to trigger state transitions in other workflow instances.
-
-**Configuration Example:**
-```json
-{
-  "key": "trigger-approval-action",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["transition", "trigger"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "Trigger",
-      "domain": "approvals",
-      "flow": "approval-flow",
-      "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-      "transitionName": "approve"
-    }
-  }
-}
-```
-
-**Use Cases:**
-- Approving or rejecting workflows from external systems
-- Triggering status updates in dependent workflows
-- Coordinating multi-workflow processes
-- Implementing workflow callbacks
-
-### 3. Launch SubProcess (Type: SubProcess = 3)
-
-Starts an independent subprocess instance that runs in parallel with the main workflow. Subprocesses are fire-and-forget operations that don't block the parent workflow.
-
-**Configuration Example:**
-```json
-{
-  "key": "start-audit-subprocess",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["subprocess", "audit"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "SubProcess",
-      "domain": "audit",
-      "flow": "audit-flow",
-      "key": "transaction-audit",
-      "version": "1.0.0"
-    }
-  }
-}
-```
-
-**Use Cases:**
-- Background audit logging
-- Asynchronous notification sending
-- Parallel data processing
-- Independent reporting workflows
-- Event-driven side effects
-
-**SubProcess vs SubFlow:**
-- **SubProcess**: Fire-and-forget, runs independently, doesn't block parent
-- **SubFlow**: Blocks parent, returns data, tightly integrated
-
-### 4. Get Instance Data (Type: GetInstanceData = 4)
-
-Retrieves instance data from another workflow instance. Supports optional extensions to fetch additional related data.
-
-**Configuration Example:**
-```json
-{
-  "key": "get-user-profile-data",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["instance", "data", "fetch"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "GetInstanceData",
-      "domain": "users",
-      "flow": "user-profile",
-      "instanceId": "660e8400-e29b-41d4-a716-446655440001",
-      "extensions": ["profile", "preferences", "security"]
-    }
-  }
-}
-```
-
-**Use Cases:**
-- Fetching user profile data for personalization
-- Retrieving configuration from central workflows
-- Loading reference data from master workflows
-- Aggregating data from multiple workflow instances
-- Cross-workflow data federation
-
-## Property Access
-
-Properties in the TriggerTransitionTask class are accessed through setter methods:
-
-- **TriggerDomain**: Set with `SetDomain(string domain)` method
-- **TriggerFlow**: Set with `SetFlow(string flow)` method
-- **TriggerKey**: Set with `SetKey(string key)` method
-- **TriggerInstanceId**: Set with `SetInstance(string instanceId)` method
-- **TriggerType**: Set with `SetTriggerType(string type)` method
-- **Body**: Set with `SetBody(dynamic body)` method
-
-### Configuration vs Dynamic Setting
-
-Required fields for Trigger Task can be provided in **two ways**:
-
-1. **Static Configuration**: Specified in the config section of the task JSON definition
-2. **Dynamic Setting**: Set at runtime using setter methods in the InputHandler
-
-**Important:** Depending on the trigger type, **one of these fields must be provided**:
-
-| Trigger Type | Required Field | JSON Config | IMapping Method |
-|--------------|----------------|-------------|-----------------|
-| **Start** | `key` | `"key": "workflow-key"` | `triggerTask.SetKey("workflow-key")` |
-| **Trigger** | `instanceId` | `"instanceId": "guid"` | `triggerTask.SetInstance("guid")` |
-| **SubProcess** | `key` | `"key": "workflow-key"` | `triggerTask.SetKey("workflow-key")` |
-| **GetInstanceData** | `instanceId` | `"instanceId": "guid"` | `triggerTask.SetInstance("guid")` |
-
-**Priority Rule:** If the same field (key or instanceId) is defined in both JSON config and InputHandler mapping, **the value set in InputHandler takes precedence**. This allows dynamic runtime values to override static configuration.
-
-**Usage Strategies:**
-
-```csharp
-// Scenario 1: Key defined in JSON, not overridden in mapping
-// Task JSON: "config": { "type": "Start", "key": "default-workflow" }
-public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
-{
-    var triggerTask = task as TriggerTransitionTask;
-    // Key already defined in config, no need to change
-    triggerTask.SetBody(new { /* data */ });
-    return Task.FromResult(new ScriptResponse());
-}
-
-// Scenario 2: No key in JSON, set dynamically in mapping
-// Task JSON: "config": { "type": "Start" }
-public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
-{
-    var triggerTask = task as TriggerTransitionTask;
-    // Key determined dynamically at runtime
-    var workflowKey = context.Instance.Data.workflowType == "approval" 
-        ? "document-approval" 
-        : "simple-approval";
-    triggerTask.SetKey(workflowKey);
-    triggerTask.SetBody(new { /* data */ });
-    return Task.FromResult(new ScriptResponse());
-}
-
-// Scenario 3: No instanceId in JSON, retrieved from context in mapping
-// Task JSON: "config": { "type": "Trigger" }
-public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
-{
-    var triggerTask = task as TriggerTransitionTask;
-    // Instance ID retrieved from workflow data
-    triggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
-    triggerTask.SetBody(new { /* data */ });
-    return Task.FromResult(new ScriptResponse());
-}
-
-// Scenario 4: instanceId in JSON, but overridden in mapping (Mapping takes priority!)
-// Task JSON: "config": { "type": "Trigger", "instanceId": "default-instance-id" }
-public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
-{
-    var triggerTask = task as TriggerTransitionTask;
-    // Default value in JSON is overridden - mapping value is used!
-    triggerTask.SetInstance(context.Instance.Data.targetInstanceId);
-    triggerTask.SetBody(new { /* data */ });
-    return Task.FromResult(new ScriptResponse());
-}
-```
-
-## Mapping Examples
-
-### Example 1: Start New Instance
+### Mapping Example
 
 ```csharp
 using System;
@@ -284,16 +73,14 @@ public class StartApprovalMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var startTask = task as StartTask;
         
         // Configure target workflow
-        triggerTask.SetDomain("approvals");
-        triggerTask.SetFlow("approval-flow");
-        triggerTask.SetKey("document-approval");
-        triggerTask.SetTriggerType("Start");
+        startTask.SetDomain("approvals");
+        startTask.SetFlow("approval-flow");
         
         // Prepare initialization data
-        triggerTask.SetBody(new {
+        startTask.SetBody(new {
             documentId = context.Instance.Data.documentId,
             documentType = context.Instance.Data.documentType,
             requestedBy = context.Instance.Data.userId,
@@ -302,7 +89,6 @@ public class StartApprovalMapping : IMapping
             requestedAt = DateTime.UtcNow,
             metadata = new {
                 sourceInstanceId = context.Instance.Id,
-                correlationId = context.Instance.CorrelationId
             }
         });
         
@@ -341,7 +127,69 @@ public class StartApprovalMapping : IMapping
 }
 ```
 
-### Example 2: Trigger Transition
+### Successful Response
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "state": "initial-state",
+    "createdAt": "2025-11-19T10:30:00Z"
+  }
+}
+```
+
+## 2. DirectTriggerTask (Type: "12")
+
+Executes a specific transition on an existing workflow instance. Use this to trigger state transitions in other workflow instances.
+
+### Task Definition
+
+```json
+{
+  "key": "trigger-approval-action",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": ["transition", "trigger"],
+  "attributes": {
+    "type": "12",
+    "config": {
+      "domain": "approvals",
+      "flow": "approval-flow",
+      "transitionName": "approve",
+      "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+      "body": {
+        "approvedBy": "manager123",
+        "approvalDate": "2024-01-15T10:30:00Z"
+      }
+    }
+  }
+}
+```
+
+### Configuration Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `domain` | string | Yes | Target workflow domain |
+| `flow` | string | Yes | Target workflow flow name |
+| `transitionName` | string | Yes | Transition name to execute |
+| `key` | string | Conditional | Target instance key (used if instanceId is not provided) |
+| `instanceId` | string | Conditional | Target instance ID (takes priority) |
+| `body` | object | No | Data to send with the request |
+
+**Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
+
+### Use Cases
+
+- Approving or rejecting workflows from external systems
+- Triggering status updates in dependent workflows
+- Coordinating multi-workflow processes
+- Implementing workflow callbacks
+
+### Mapping Example
 
 ```csharp
 using System;
@@ -353,14 +201,14 @@ public class TriggerApprovalMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var directTriggerTask = task as DirectTriggerTask;
         
         // Set target instance
-        triggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
-        triggerTask.SetTriggerType("Trigger");
+        directTriggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
+        directTriggerTask.SetTransitionName("approve");
         
         // Prepare transition payload
-        triggerTask.SetBody(new {
+        directTriggerTask.SetBody(new {
             action = "approve",
             approvedBy = context.Instance.Data.currentUser,
             approvalDate = DateTime.UtcNow,
@@ -404,70 +252,66 @@ public class TriggerApprovalMapping : IMapping
 }
 ```
 
-### Example 3: Launch SubProcess
+### Successful Response
 
-```csharp
-using System;
-using System.Threading.Tasks;
-using BBT.Workflow.Scripting;
-using BBT.Workflow.Definitions;
-
-public class StartAuditSubProcessMapping : IMapping
+```json
 {
-    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
-    {
-        var triggerTask = task as TriggerTransitionTask;
-        
-        // Configure subprocess
-        triggerTask.SetDomain("audit");
-        triggerTask.SetFlow("audit-flow");
-        triggerTask.SetKey("transaction-audit");
-        triggerTask.SetTriggerType("SubProcess");
-        
-        // Prepare subprocess initialization data
-        triggerTask.SetBody(new {
-            transactionId = context.Instance.Data.transactionId,
-            transactionType = context.Instance.Data.transactionType,
-            amount = context.Instance.Data.amount,
-            currency = context.Instance.Data.currency,
-            userId = context.Instance.Data.userId,
-            action = context.Instance.Data.action,
-            timestamp = DateTime.UtcNow,
-            parentInstanceId = context.Instance.Id,
-            correlationId = context.Instance.CorrelationId,
-            auditDetails = new {
-                ipAddress = context.Headers["x-forwarded-for"],
-                userAgent = context.Headers["user-agent"],
-                sessionId = context.Instance.Data.sessionId
-            }
-        });
-        
-        return Task.FromResult(new ScriptResponse
-        {
-            Data = context.Instance.Data
-        });
-    }
-
-    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
-    {
-        var response = new ScriptResponse();
-        
-        // SubProcess is fire-and-forget
-        // Just track that it was initiated
-        response.Data = new
-        {
-            auditSubProcessId = context.Body.data?.instanceId,
-            auditInitiated = true,
-            initiatedAt = DateTime.UtcNow,
-            status = "AUDIT_SUBPROCESS_LAUNCHED"
-        };
-        
-        return response;
-    }
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "currentState": "approved",
+    "transitionExecuted": "approve",
+    "executedAt": "2025-11-19T10:30:00Z"
+  }
 }
 ```
 
-### Example 4: Get Instance Data
+## 3. GetInstanceDataTask (Type: "13")
+
+Retrieves instance data from another workflow instance. Supports optional extensions to fetch additional related data.
+
+### Task Definition
+
+```json
+{
+  "key": "get-user-profile-data",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": ["instance", "data", "fetch"],
+  "attributes": {
+    "type": "13",
+    "config": {
+      "domain": "users",
+      "flow": "user-profile",
+      "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+      "extensions": ["profile", "preferences", "security"]
+    }
+  }
+}
+```
+
+### Configuration Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `domain` | string | Yes | Target workflow domain |
+| `flow` | string | Yes | Target workflow flow name |
+| `key` | string | Conditional | Target instance key (used if instanceId is not provided, used directly as key) |
+| `instanceId` | string | Conditional | Target instance ID (takes priority) |
+| `extensions` | string[] | No | Extensions to fetch |
+
+**Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
+
+### Use Cases
+
+- Fetching user profile data for personalization
+- Retrieving configuration from central workflows
+- Loading reference data from master workflows
+- Aggregating data from multiple workflow instances
+- Cross-workflow data federation
+
+### Mapping Example
 
 ```csharp
 using System;
@@ -479,11 +323,13 @@ public class GetUserProfileDataMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var getDataTask = task as GetInstanceDataTask;
         
         // Set target instance to fetch data from
-        triggerTask.SetInstance(context.Instance.Data.userProfileInstanceId);
-        triggerTask.SetTriggerType("GetInstanceData");
+        getDataTask.SetInstance(context.Instance.Data.userProfileInstanceId);
+        
+        // Set extensions (optional)
+        getDataTask.SetExtensions(new[] { "profile", "preferences", "security" });
         
         return Task.FromResult(new ScriptResponse
         {
@@ -531,69 +377,8 @@ public class GetUserProfileDataMapping : IMapping
 }
 ```
 
-## Standard Response
+### Successful Response
 
-Trigger Task returns the following standard response structure:
-
-```csharp
-{
-    "Data": {
-        "instanceId": "guid",           // For Start and SubProcess types
-        "currentState": "state-name",   // For Trigger type
-        "data": { /* instance data */ } // For GetInstanceData type
-    },
-    "IsSuccess": true,
-    "ErrorMessage": null,
-    "Metadata": {
-        "TriggerType": "Start",
-        "TargetDomain": "approvals",
-        "TargetFlow": "approval-flow"
-    },
-    "ExecutionDurationMs": 145,
-    "TaskType": "TriggerTransition"
-}
-```
-
-### Successful Response by Type
-
-#### Start Instance Response
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-    "state": "initial-state",
-    "createdAt": "2025-11-19T10:30:00Z"
-  }
-}
-```
-
-#### Trigger Transition Response
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-    "currentState": "approved",
-    "transitionExecuted": "approve",
-    "executedAt": "2025-11-19T10:30:00Z"
-  }
-}
-```
-
-#### SubProcess Response
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
-    "state": "initial-state",
-    "launched": true
-  }
-}
-```
-
-#### GetInstanceData Response
 ```json
 {
   "isSuccess": true,
@@ -611,7 +396,308 @@ Trigger Task returns the following standard response structure:
 }
 ```
 
+## 4. SubProcessTask (Type: "14")
+
+Starts an independent subprocess instance that runs in parallel with the main workflow. Subprocesses are fire-and-forget operations that don't block the parent workflow.
+
+### Task Definition
+
+```json
+{
+  "key": "start-audit-subprocess",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": ["subprocess", "audit"],
+  "attributes": {
+    "type": "14",
+    "config": {
+      "domain": "audit",
+      "key": "transaction-audit",
+      "version": "1.0.0",
+      "body": {
+        "transactionId": "txn-12345",
+        "userId": "user-123"
+      }
+    }
+  }
+}
+```
+
+### Configuration Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `domain` | string | Yes | Target workflow domain |
+| `key` | string | Yes | Target workflow key |
+| `version` | string | No | SubFlow version |
+| `body` | object | No | Data to send with the request |
+
+### Use Cases
+
+- Background audit logging
+- Asynchronous notification sending
+- Parallel data processing
+- Independent reporting workflows
+- Event-driven side effects
+
+**SubProcess vs SubFlow:**
+- **SubProcess**: Fire-and-forget, runs independently, doesn't block parent
+- **SubFlow**: Blocks parent, returns data, tightly integrated
+
+### Mapping Example
+
+```csharp
+using System;
+using System.Threading.Tasks;
+using BBT.Workflow.Scripting;
+using BBT.Workflow.Definitions;
+
+public class StartAuditSubProcessMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        var subProcessTask = task as SubProcessTask;
+        
+        // Configure subprocess
+        subProcessTask.SetDomain("audit");
+        subProcessTask.SetKey("transaction-audit");
+        subProcessTask.SetVersion("1.0.0");
+        
+        // Prepare subprocess initialization data
+        subProcessTask.SetBody(new {
+            transactionId = context.Instance.Data.transactionId,
+            transactionType = context.Instance.Data.transactionType,
+            amount = context.Instance.Data.amount,
+            currency = context.Instance.Data.currency,
+            userId = context.Instance.Data.userId,
+            action = context.Instance.Data.action,
+            timestamp = DateTime.UtcNow,
+            parentInstanceId = context.Instance.Id,
+            auditDetails = new {
+                ipAddress = context.Headers["x-forwarded-for"],
+                userAgent = context.Headers["user-agent"],
+                sessionId = context.Instance.Data.sessionId
+            }
+        });
+        
+        return Task.FromResult(new ScriptResponse
+        {
+            Data = context.Instance.Data
+        });
+    }
+
+    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        var response = new ScriptResponse();
+        
+        // SubProcess is fire-and-forget
+        // Just track that it was initiated
+        response.Data = new
+        {
+            auditSubProcessId = context.Body.data?.instanceId,
+            auditInitiated = true,
+            initiatedAt = DateTime.UtcNow,
+            status = "AUDIT_SUBPROCESS_LAUNCHED"
+        };
+        
+        return response;
+    }
+}
+```
+
+### Successful Response
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "state": "initial-state",
+    "launched": true
+  }
+}
+```
+
+## Property Access
+
+Each task type has its own setter methods:
+
+### StartTask Setter Methods
+
+- **SetDomain(string domain)**: Sets the target workflow domain
+- **SetFlow(string flow)**: Sets the target workflow flow name
+- **SetBody(dynamic body)**: Sets the request body
+
+### DirectTriggerTask Setter Methods
+
+- **SetDomain(string domain)**: Sets the target workflow domain
+- **SetFlow(string flow)**: Sets the target workflow flow name
+- **SetTransitionName(string transitionName)**: Sets the transition name to execute
+- **SetInstance(string instanceId)**: Sets the target instance ID
+- **SetKey(string key)**: Sets the target instance key (used if instanceId is not provided)
+- **SetBody(dynamic body)**: Sets the request body
+
+### GetInstanceDataTask Setter Methods
+
+- **SetDomain(string domain)**: Sets the target workflow domain
+- **SetFlow(string flow)**: Sets the target workflow flow name
+- **SetInstance(string instanceId)**: Sets the target instance ID
+- **SetKey(string key)**: Sets the target instance key (used if instanceId is not provided, used directly as key)
+- **SetExtensions(string[] extensions)**: Sets the extensions to fetch
+
+### SubProcessTask Setter Methods
+
+- **SetDomain(string domain)**: Sets the target workflow domain
+- **SetKey(string key)**: Sets the target workflow key
+- **SetVersion(string version)**: Sets the SubFlow version
+- **SetBody(dynamic body)**: Sets the request body
+
+### Configuration vs Dynamic Setting
+
+Required fields for tasks can be provided in **two ways**:
+
+1. **Static Configuration**: Specified in the config section of the task JSON definition
+2. **Dynamic Setting**: Set at runtime using setter methods in the InputHandler
+
+**Priority Rule:** If the same field is defined in both JSON config and InputHandler mapping, **the value set in InputHandler takes precedence**. This allows dynamic runtime values to override static configuration.
+
+**Usage Strategies:**
+
+```csharp
+// Scenario 1: Domain and flow defined in JSON, not overridden in mapping
+// Task JSON: "config": { "domain": "approvals", "flow": "approval-flow" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var startTask = task as StartTask;
+    // Domain and flow already defined in config, no need to change
+    startTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Scenario 2: No domain in JSON, set dynamically in mapping
+// Task JSON: "config": { "flow": "approval-flow" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var startTask = task as StartTask;
+    // Domain determined dynamically at runtime
+    var targetDomain = context.Instance.Data.approvalType == "document" 
+        ? "document-approvals" 
+        : "standard-approvals";
+    startTask.SetDomain(targetDomain);
+    startTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Scenario 3: No instanceId in JSON, retrieved from context in mapping
+// Task JSON: "config": { "domain": "approvals", "flow": "approval-flow", "transitionName": "approve" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var directTriggerTask = task as DirectTriggerTask;
+    // Instance ID retrieved from workflow data
+    directTriggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
+    directTriggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Scenario 4: instanceId in JSON, but overridden in mapping (Mapping takes priority!)
+// Task JSON: "config": { "instanceId": "default-instance-id" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var directTriggerTask = task as DirectTriggerTask;
+    // Default value in JSON is overridden - mapping value is used!
+    directTriggerTask.SetInstance(context.Instance.Data.targetInstanceId);
+    directTriggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+```
+
+## Standard Response
+
+Each task type has its own response structure:
+
+### StartTask Response
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "state": "initial-state",
+    "createdAt": "2025-11-19T10:30:00Z"
+  },
+  "metadata": {
+    "TaskType": "StartTrigger",
+    "Domain": "approvals",
+    "Flow": "approval-flow"
+  }
+}
+```
+
+### DirectTriggerTask Response
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "currentState": "approved",
+    "transitionExecuted": "approve",
+    "executedAt": "2025-11-19T10:30:00Z"
+  },
+  "metadata": {
+    "TaskType": "DirectTrigger",
+    "Domain": "approvals",
+    "Flow": "approval-flow",
+    "TransitionName": "approve"
+  }
+}
+```
+
+### GetInstanceDataTask Response
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "userId": "user123",
+    "profile": {
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    },
+    "preferences": {
+      "language": "en-US",
+      "theme": "dark"
+    }
+  },
+  "metadata": {
+    "TaskType": "GetInstanceData",
+    "Domain": "users",
+    "Flow": "user-profile"
+  }
+}
+```
+
+### SubProcessTask Response
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "state": "initial-state",
+    "launched": true
+  },
+  "metadata": {
+    "TaskType": "SubProcess",
+    "Domain": "audit",
+    "Key": "transaction-audit"
+  }
+}
+```
+
 ### Error Response
+
 ```json
 {
   "isSuccess": false,
@@ -627,6 +713,7 @@ Trigger Task returns the following standard response structure:
 ## Error Scenarios
 
 ### Workflow Not Found
+
 ```json
 {
   "IsSuccess": false,
@@ -640,6 +727,7 @@ Trigger Task returns the following standard response structure:
 ```
 
 ### Instance Not Found
+
 ```json
 {
   "IsSuccess": false,
@@ -652,6 +740,7 @@ Trigger Task returns the following standard response structure:
 ```
 
 ### Transition Not Available
+
 ```json
 {
   "IsSuccess": false,
@@ -666,40 +755,45 @@ Trigger Task returns the following standard response structure:
 
 ## Best Practices
 
-### 1. Trigger Type Selection
+### 1. Task Type Selection
+
 ```csharp
-// ✅ Correct - Use Start for new instances
-triggerTask.SetTriggerType("Start");
-triggerTask.SetKey("new-workflow");
+// ✅ Correct - Use StartTask for new instances
+var startTask = task as StartTask;
+startTask.SetDomain("approvals");
+startTask.SetFlow("approval-flow");
 
-// ✅ Correct - Use Trigger for existing instances
-triggerTask.SetTriggerType("Trigger");
-triggerTask.SetInstance(existingInstanceId);
+// ✅ Correct - Use DirectTriggerTask for transitions on existing instances
+var directTriggerTask = task as DirectTriggerTask;
+directTriggerTask.SetInstance(existingInstanceId);
+directTriggerTask.SetTransitionName("approve");
 
-// ❌ Wrong - Don't use Start with instanceId
-triggerTask.SetTriggerType("Start");
-triggerTask.SetInstance(existingInstanceId); // This will fail
+// ❌ Wrong - Don't use StartTask with instanceId
+var startTask = task as StartTask;
+startTask.SetInstance(existingInstanceId); // StartTask doesn't have SetInstance method
 ```
 
 ### 2. Data Preparation
+
 ```csharp
-// ✅ Correct - Provide complete data for SubProcess
-triggerTask.SetBody(new {
+// ✅ Correct - Provide complete data for SubProcessTask
+var subProcessTask = task as SubProcessTask;
+subProcessTask.SetBody(new {
     // All required data for independent execution
     userId = context.Instance.Data.userId,
     transactionId = context.Instance.Data.transactionId,
     parentInstanceId = context.Instance.Id,
-    correlationId = context.Instance.CorrelationId
 });
 
-// ❌ Wrong - Incomplete data for SubProcess
-triggerTask.SetBody(new {
+// ❌ Wrong - Incomplete data for SubProcessTask
+subProcessTask.SetBody(new {
     userId = context.Instance.Data.userId
     // Missing other required fields
 });
 ```
 
 ### 3. Error Handling
+
 ```csharp
 // ✅ Correct - Handle errors appropriately
 public async Task<ScriptResponse> OutputHandler(ScriptContext context)
@@ -732,29 +826,35 @@ private bool ShouldRetryError(string errorMessage)
 }
 ```
 
-### 4. SubProcess vs Start Instance
-```csharp
-// ✅ Use SubProcess for fire-and-forget background tasks
-// Parent workflow doesn't need to wait for completion
-triggerTask.SetTriggerType("SubProcess");
+### 4. SubProcessTask vs StartTask
 
-// ✅ Use Start for workflows that may need future interaction
-// You get instanceId back and can trigger transitions later
-triggerTask.SetTriggerType("Start");
+```csharp
+// ✅ Use SubProcessTask for fire-and-forget background tasks
+// Parent workflow doesn't need to wait for completion
+var subProcessTask = task as SubProcessTask;
+subProcessTask.SetDomain("audit");
+subProcessTask.SetKey("transaction-audit");
+
+// ✅ Use StartTask for workflows that may need future interaction
+// You get instanceId back and can trigger transitions later with DirectTriggerTask
+var startTask = task as StartTask;
+startTask.SetDomain("approvals");
+startTask.SetFlow("approval-flow");
 ```
 
 ### 5. Extensions Usage
+
 ```csharp
 // ✅ Correct - Request only needed extensions
-var triggerTask = task as TriggerTransitionTask;
-// Extensions are already configured in task definition
-// No need to set them again in mapping
+var getDataTask = task as GetInstanceDataTask;
+getDataTask.SetExtensions(new[] { "profile", "preferences" });
 
 // ✅ Best Practice - Define extensions in task config
 // Task JSON:
 {
   "config": {
-    "type": "GetInstanceData",
+    "domain": "users",
+    "flow": "user-profile",
     "extensions": ["profile", "preferences"]
   }
 }
@@ -763,20 +863,19 @@ var triggerTask = task as TriggerTransitionTask;
 ## Common Use Cases
 
 ### Use Case 1: Multi-Stage Approval Workflow
+
 ```csharp
 // Start approval workflow when document is submitted
 public class StartApprovalWorkflow : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var startTask = task as StartTask;
         
-        triggerTask.SetTriggerType("Start");
-        triggerTask.SetDomain("approvals");
-        triggerTask.SetFlow("multi-stage-approval");
-        triggerTask.SetKey("document-approval");
+        startTask.SetDomain("approvals");
+        startTask.SetFlow("multi-stage-approval");
         
-        triggerTask.SetBody(new {
+        startTask.SetBody(new {
             documentId = context.Instance.Data.documentId,
             approvalStages = new[] { "L1", "L2", "L3" },
             currentStage = 0,
@@ -800,19 +899,20 @@ public class StartApprovalWorkflow : IMapping
 ```
 
 ### Use Case 2: Distributed Transaction Coordination
+
 ```csharp
 // Trigger transitions in multiple workflow instances
 public class CoordinateTransactionMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var directTriggerTask = task as DirectTriggerTask;
         
         // Trigger commit on payment workflow
-        triggerTask.SetInstance(context.Instance.Data.paymentInstanceId);
-        triggerTask.SetTriggerType("Trigger");
+        directTriggerTask.SetInstance(context.Instance.Data.paymentInstanceId);
+        directTriggerTask.SetTransitionName("commit");
         
-        triggerTask.SetBody(new {
+        directTriggerTask.SetBody(new {
             action = "commit",
             transactionId = context.Instance.Data.transactionId,
             timestamp = DateTime.UtcNow
@@ -835,20 +935,19 @@ public class CoordinateTransactionMapping : IMapping
 ```
 
 ### Use Case 3: Audit Trail Creation
+
 ```csharp
 // Launch subprocess for audit logging
 public class CreateAuditTrail : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var subProcessTask = task as SubProcessTask;
         
-        triggerTask.SetTriggerType("SubProcess");
-        triggerTask.SetDomain("audit");
-        triggerTask.SetFlow("audit-trail");
-        triggerTask.SetKey("transaction-audit");
+        subProcessTask.SetDomain("audit");
+        subProcessTask.SetKey("transaction-audit");
         
-        triggerTask.SetBody(new {
+        subProcessTask.SetBody(new {
             transactionId = context.Instance.Data.transactionId,
             userId = context.Instance.Data.userId,
             action = context.Instance.Data.action,
@@ -870,17 +969,92 @@ public class CreateAuditTrail : IMapping
 }
 ```
 
+### Use Case 4: Fetch User Profile Data
+
+```csharp
+// Fetch user profile data
+public class GetUserProfileMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        var getDataTask = task as GetInstanceDataTask;
+        
+        getDataTask.SetInstance(context.Instance.Data.userProfileInstanceId);
+        getDataTask.SetExtensions(new[] { "profile", "preferences", "security" });
+        
+        return Task.FromResult(new ScriptResponse());
+    }
+
+    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        if (context.Body.isSuccess)
+        {
+            return new ScriptResponse
+            {
+                Data = new {
+                    userProfile = context.Body.data,
+                    loadedAt = DateTime.UtcNow
+                }
+            };
+        }
+        
+        return new ScriptResponse
+        {
+            Data = new {
+                error = "Failed to fetch profile data",
+                errorMessage = context.Body.errorMessage
+            }
+        };
+    }
+}
+```
+
 ## Common Problems
 
-### Problem: Trigger Type Mismatch
-**Solution:** Ensure the trigger type matches the operation. Use "Start" for new instances, "Trigger" for transitions.
+### Problem: Wrong Task Type Usage
+**Solution:** Each task type has its own purpose. Use StartTask for new instances, DirectTriggerTask for transitions.
 
 ### Problem: Missing Required Fields
-**Solution:** Verify that domain and flow are always provided. Key is required for Start/SubProcess, instanceId for Trigger/GetInstanceData.
+**Solution:** Verify that domain and flow are always provided. DirectTriggerTask requires transitionName. SubProcessTask requires key.
 
-### Problem: SubProcess Not Independent
-**Solution:** Provide complete data in the body. SubProcesses don't have access to parent workflow data after launch.
+### Problem: SubProcessTask Not Independent
+**Solution:** Provide complete data in the body. SubProcessTask instances don't have access to parent workflow data after launch.
 
 ### Problem: Extensions Not Loading
-**Solution:** Ensure extensions are defined in the task configuration, not in the mapping code.
+**Solution:** Ensure extensions are defined in the task configuration or set via SetExtensions() in the mapping.
 
+## Migration Notes
+
+If you are using the old TriggerTransitionTask (type "11" with nested "type" field), you need to migrate to the new task types:
+
+| Old Type | Old Nested Type | New Task Type | New Type Number |
+|----------|-----------------|---------------|-----------------|
+| "11" | "Start" | StartTask | "11" |
+| "11" | "Trigger" | DirectTriggerTask | "12" |
+| "11" | "GetInstanceData" | GetInstanceDataTask | "13" |
+| "11" | "SubProcess" | SubProcessTask | "14" |
+
+**Migration Example:**
+
+**Old (TriggerTransitionTask):**
+```json
+{
+  "type": "11",
+  "config": {
+    "type": "Start",
+    "domain": "approvals",
+    "flow": "approval-flow"
+  }
+}
+```
+
+**New (StartTask):**
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow"
+  }
+}
+```
