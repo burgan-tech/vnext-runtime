@@ -1,41 +1,46 @@
-# Trigger Task (Tetikleme Görevi)
+# Trigger Task Türleri
 
-Trigger Task, kapsamlı iş akışı instance yönetim yetenekleri sağlayan birleşik bir görev türüdür. İş akışlarının yeni instance'lar başlatmasına, transition'ları tetiklemesine, subprocess'ler başlatmasına ve instance verilerini almasına olanak tanır—tümü iş akışı yürütme bağlamı içinde.
+İş akışı instance yönetimi için dört ayrı task türü mevcuttur. Her task türü, farklı bir iş akışı etkileşim senaryosunu destekler ve kendi type numarasına sahiptir.
+
+## Task Türleri
+
+- **StartTask** (Type: "11") - Yeni iş akışı instance'ları başlatır
+- **DirectTriggerTask** (Type: "12") - Mevcut instance'larda transition tetikler
+- **GetInstanceDataTask** (Type: "13") - Instance verilerini alır
+- **SubProcessTask** (Type: "14") - Bağımsız subprocess instance'ları başlatır
 
 ## Özellikler
 
 - ✅ Programatik olarak yeni iş akışı instance'ları başlatma
-- ✅ Mevcut instance'larda transition tetikleme (doğrudan veya korelasyon tabanlı)
+- ✅ Mevcut instance'larda transition tetikleme (doğrudan veya key tabanlı)
 - ✅ Bağımsız subprocess instance'ları başlatma
 - ✅ Extension desteği ile instance verilerini alma
 - ✅ Çapraz iş akışı orkestrasyon
 - ✅ Dinamik iş akışı kompozisyonu
-- ✅ Esnek tetikleme türü konfigürasyonu
 - ✅ Detaylı yanıt takibi
 
-## Görev Tanımı
+## 1. StartTask (Type: "11")
 
-### Temel Yapı
+Yeni bir iş akışı instance'ı oluşturur. İş akışı yürütmesi sırasında programatik olarak yeni iş akışı instance'ları başlatmak için kullanılır.
+
+### Görev Tanımı
 
 ```json
 {
-  "key": "trigger-workflow-action",
+  "key": "start-approval-workflow",
   "flow": "sys-tasks",
   "domain": "core",
   "version": "1.0.0",
-  "tags": [
-    "trigger",
-    "workflow",
-    "orchestration"
-  ],
+  "tags": ["workflow", "instance", "start"],
   "attributes": {
     "type": "11",
     "config": {
-      "type": "Start",
-      "domain": "target-domain",
-      "flow": "target-flow",
-      "key": "target-key",
-      "version": "1.0.0"
+      "domain": "approvals",
+      "flow": "approval-flow",
+      "body": {
+        "documentId": "doc-12345",
+        "requestedBy": "user-123"
+      }
     }
   }
 }
@@ -43,166 +48,20 @@ Trigger Task, kapsamlı iş akışı instance yönetim yetenekleri sağlayan bir
 
 ### Konfigürasyon Alanları
 
-Trigger Task'ın config bölümünde tanımlanan alanlar:
-
 | Alan | Tür | Gerekli | Açıklama |
 |------|-----|---------|----------|
-| `type` | string | Evet | Tetikleme türü: "Start", "Trigger", "SubProcess", "GetInstanceData" |
 | `domain` | string | Evet | Hedef iş akışı domain'i |
 | `flow` | string | Evet | Hedef iş akışı flow adı |
-| `key` | string | Koşullu | Hedef iş akışı key'i (Start, SubProcess için gerekli) |
-| `instanceId` | string | Koşullu | Hedef instance ID'si (Trigger, GetInstanceData için gerekli) |
-| `transitionName` | string | Koşullu | Çalıştırılacak transition adı (Trigger türü için gerekli) |
-| `version` | string | Hayır | Hedef iş akışı versiyonu (opsiyonel) |
-| `extensions` | string[] | Hayır | Alınacak extension'lar (GetInstanceData türü için) |
 | `body` | object | Hayır | İstekle gönderilecek veri |
 
-## Tetikleme Türleri
+### Kullanım Alanları
 
-Trigger Task, `TriggerTransitionType` enum'u aracılığıyla dört farklı işlem türünü destekler:
-
-### 1. Instance Başlatma (Type: Start = 1)
-
-Yeni bir iş akışı instance'ı oluşturur. İş akışı yürütmesi sırasında programatik olarak yeni iş akışı instance'ları başlatmak için bu tetikleme türünü kullanın.
-
-**Konfigürasyon Örneği:**
-```json
-{
-  "key": "start-approval-workflow",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["workflow", "instance", "start"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "Start",
-      "domain": "approvals",
-      "flow": "approval-flow",
-      "key": "document-approval",
-      "version": "1.0.0"
-    }
-  }
-}
-```
-
-**Kullanım Alanları:**
 - Ana iş süreçlerinden onay iş akışları başlatma
 - Transaction loglama için audit iş akışları oluşturma
 - Bildirim iş akışları başlatma
 - Paralel işleme iş akışları başlatma
 
-### 2. Transition Tetikleme (Type: Trigger = 2)
-
-Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Diğer iş akışı instance'larında state transition'larını tetiklemek için kullanın.
-
-**Konfigürasyon Örneği:**
-```json
-{
-  "key": "trigger-approval-action",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["transition", "trigger"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "Trigger",
-      "domain": "approvals",
-      "flow": "approval-flow",
-      "transitionName": "approve"
-    }
-  }
-}
-```
-
-**Kullanım Alanları:**
-- Harici sistemlerden iş akışlarını onaylama veya reddetme
-- Bağımlı iş akışlarında durum güncellemelerini tetikleme
-- Çoklu iş akışı süreçlerini koordine etme
-- İş akışı callback'lerini uygulama
-
-### 3. SubProcess Başlatma (Type: SubProcess = 3)
-
-Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı başlatır. Subprocess'ler, ana iş akışını bloke etmeyen fire-and-forget işlemlerdir.
-
-**Konfigürasyon Örneği:**
-```json
-{
-  "key": "start-audit-subprocess",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["subprocess", "audit"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "SubProcess",
-      "domain": "audit",
-      "flow": "audit-flow",
-      "key": "transaction-audit",
-      "version": "1.0.0"
-    }
-  }
-}
-```
-
-**Kullanım Alanları:**
-- Arka planda audit loglama
-- Asenkron bildirim gönderme
-- Paralel veri işleme
-- Bağımsız raporlama iş akışları
-- Event-driven yan etkiler
-
-**SubProcess vs SubFlow:**
-- **SubProcess**: Fire-and-forget, bağımsız çalışır, ana iş akışını bloke etmez
-- **SubFlow**: Ana iş akışını bloke eder, veri döner, sıkı entegrasyon
-
-### 4. Instance Verisi Alma (Type: GetInstanceData = 4)
-
-Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili verileri almak için opsiyonel extension'ları destekler.
-
-**Konfigürasyon Örneği:**
-```json
-{
-  "key": "get-user-profile-data",
-  "domain": "core",
-  "version": "1.0.0",
-  "flow": "sys-tasks",
-  "tags": ["instance", "data", "fetch"],
-  "attributes": {
-    "type": "11",
-    "config": {
-      "type": "GetInstanceData",
-      "domain": "users",
-      "flow": "user-profile",
-      "extensions": ["profile", "preferences", "security"]
-    }
-  }
-}
-```
-
-**Kullanım Alanları:**
-- Kişiselleştirme için kullanıcı profil verilerini alma
-- Merkezi iş akışlarından konfigürasyon alma
-- Master iş akışlarından referans verileri yükleme
-- Birden fazla iş akışı instance'ından veri toplama
-- Çapraz iş akışı veri federasyonu
-
-## Property Erişimi
-
-TriggerTransitionTask sınıfındaki property'lere setter metodları ile erişilir:
-
-- **TriggerDomain**: `SetDomain(string domain)` metodu ile ayarlanır
-- **TriggerFlow**: `SetFlow(string flow)` metodu ile ayarlanır
-- **TriggerKey**: `SetKey(string key)` metodu ile ayarlanır
-- **TriggerInstanceId**: `SetInstance(string instanceId)` metodu ile ayarlanır
-- **TriggerType**: `SetTriggerType(string type)` metodu ile ayarlanır
-- **Body**: `SetBody(dynamic body)` metodu ile ayarlanır
-
-## Mapping Örnekleri
-
-### Örnek 1: Yeni Instance Başlatma
+### Mapping Örneği
 
 ```csharp
 using System;
@@ -214,16 +73,14 @@ public class StartApprovalMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var startTask = task as StartTask;
         
         // Hedef iş akışını yapılandır
-        triggerTask.SetDomain("approvals");
-        triggerTask.SetFlow("approval-flow");
-        triggerTask.SetKey("document-approval");
-        triggerTask.SetTriggerType("Start");
+        startTask.SetDomain("approvals");
+        startTask.SetFlow("approval-flow");
         
         // Başlangıç verilerini hazırla
-        triggerTask.SetBody(new {
+        startTask.SetBody(new {
             documentId = context.Instance.Data.documentId,
             documentType = context.Instance.Data.documentType,
             requestedBy = context.Instance.Data.userId,
@@ -232,7 +89,6 @@ public class StartApprovalMapping : IMapping
             requestedAt = DateTime.UtcNow,
             metadata = new {
                 sourceInstanceId = context.Instance.Id,
-                correlationId = context.Instance.CorrelationId
             }
         });
         
@@ -271,7 +127,69 @@ public class StartApprovalMapping : IMapping
 }
 ```
 
-### Örnek 2: Transition Tetikleme
+### Başarılı Yanıt
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "state": "initial-state",
+    "createdAt": "2025-11-19T10:30:00Z"
+  }
+}
+```
+
+## 2. DirectTriggerTask (Type: "12")
+
+Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Diğer iş akışı instance'larında state transition'larını tetiklemek için kullanılır.
+
+### Görev Tanımı
+
+```json
+{
+  "key": "trigger-approval-action",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": ["transition", "trigger"],
+  "attributes": {
+    "type": "12",
+    "config": {
+      "domain": "approvals",
+      "flow": "approval-flow",
+      "transitionName": "approve",
+      "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+      "body": {
+        "approvedBy": "manager123",
+        "approvalDate": "2024-01-15T10:30:00Z"
+      }
+    }
+  }
+}
+```
+
+### Konfigürasyon Alanları
+
+| Alan | Tür | Gerekli | Açıklama |
+|------|-----|---------|----------|
+| `domain` | string | Evet | Hedef iş akışı domain'i |
+| `flow` | string | Evet | Hedef iş akışı flow adı |
+| `transitionName` | string | Evet | Çalıştırılacak transition adı |
+| `key` | string | Koşullu | Hedef instance key'i (instanceId yoksa kullanılır) |
+| `instanceId` | string | Koşullu | Hedef instance ID'si (öncelikli) |
+| `body` | object | Hayır | İstekle gönderilecek veri |
+
+**Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
+
+### Kullanım Alanları
+
+- Harici sistemlerden iş akışlarını onaylama veya reddetme
+- Bağımlı iş akışlarında durum güncellemelerini tetikleme
+- Çoklu iş akışı süreçlerini koordine etme
+- İş akışı callback'lerini uygulama
+
+### Mapping Örneği
 
 ```csharp
 using System;
@@ -283,14 +201,14 @@ public class TriggerApprovalMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var directTriggerTask = task as DirectTriggerTask;
         
         // Hedef instance'ı ayarla
-        triggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
-        triggerTask.SetTriggerType("Trigger");
+        directTriggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
+        directTriggerTask.SetTransitionName("approve");
         
         // Transition payload'ını hazırla
-        triggerTask.SetBody(new {
+        directTriggerTask.SetBody(new {
             action = "approve",
             approvedBy = context.Instance.Data.currentUser,
             approvalDate = DateTime.UtcNow,
@@ -334,70 +252,66 @@ public class TriggerApprovalMapping : IMapping
 }
 ```
 
-### Örnek 3: SubProcess Başlatma
+### Başarılı Yanıt
 
-```csharp
-using System;
-using System.Threading.Tasks;
-using BBT.Workflow.Scripting;
-using BBT.Workflow.Definitions;
-
-public class StartAuditSubProcessMapping : IMapping
+```json
 {
-    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
-    {
-        var triggerTask = task as TriggerTransitionTask;
-        
-        // Subprocess'i yapılandır
-        triggerTask.SetDomain("audit");
-        triggerTask.SetFlow("audit-flow");
-        triggerTask.SetKey("transaction-audit");
-        triggerTask.SetTriggerType("SubProcess");
-        
-        // Subprocess başlangıç verilerini hazırla
-        triggerTask.SetBody(new {
-            transactionId = context.Instance.Data.transactionId,
-            transactionType = context.Instance.Data.transactionType,
-            amount = context.Instance.Data.amount,
-            currency = context.Instance.Data.currency,
-            userId = context.Instance.Data.userId,
-            action = context.Instance.Data.action,
-            timestamp = DateTime.UtcNow,
-            parentInstanceId = context.Instance.Id,
-            correlationId = context.Instance.CorrelationId,
-            auditDetails = new {
-                ipAddress = context.Headers["x-forwarded-for"],
-                userAgent = context.Headers["user-agent"],
-                sessionId = context.Instance.Data.sessionId
-            }
-        });
-        
-        return Task.FromResult(new ScriptResponse
-        {
-            Data = context.Instance.Data
-        });
-    }
-
-    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
-    {
-        var response = new ScriptResponse();
-        
-        // SubProcess fire-and-forget'tir
-        // Sadece başlatıldığını onayla
-        response.Data = new
-        {
-            auditSubProcessId = context.Body.data?.instanceId,
-            auditInitiated = true,
-            initiatedAt = DateTime.UtcNow,
-            status = "AUDIT_SUBPROCESS_LAUNCHED"
-        };
-        
-        return response;
-    }
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "currentState": "approved",
+    "transitionExecuted": "approve",
+    "executedAt": "2025-11-19T10:30:00Z"
+  }
 }
 ```
 
-### Örnek 4: Instance Verisi Alma
+## 3. GetInstanceDataTask (Type: "13")
+
+Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili verileri almak için opsiyonel extension'ları destekler.
+
+### Görev Tanımı
+
+```json
+{
+  "key": "get-user-profile-data",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": ["instance", "data", "fetch"],
+  "attributes": {
+    "type": "13",
+    "config": {
+      "domain": "users",
+      "flow": "user-profile",
+      "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+      "extensions": ["profile", "preferences", "security"]
+    }
+  }
+}
+```
+
+### Konfigürasyon Alanları
+
+| Alan | Tür | Gerekli | Açıklama |
+|------|-----|---------|----------|
+| `domain` | string | Evet | Hedef iş akışı domain'i |
+| `flow` | string | Evet | Hedef iş akışı flow adı |
+| `key` | string | Koşullu | Hedef instance key'i (instanceId yoksa kullanılır, doğrudan key olarak kullanılır) |
+| `instanceId` | string | Koşullu | Hedef instance ID'si (öncelikli) |
+| `extensions` | string[] | Hayır | Alınacak extension'lar |
+
+**Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
+
+### Kullanım Alanları
+
+- Kişiselleştirme için kullanıcı profil verilerini alma
+- Merkezi iş akışlarından konfigürasyon alma
+- Master iş akışlarından referans verileri yükleme
+- Birden fazla iş akışı instance'ından veri toplama
+- Çapraz iş akışı veri federasyonu
+
+### Mapping Örneği
 
 ```csharp
 using System;
@@ -409,11 +323,13 @@ public class GetUserProfileDataMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var getDataTask = task as GetInstanceDataTask;
         
         // Veri alınacak hedef instance'ı ayarla
-        triggerTask.SetInstance(context.Instance.Data.userProfileInstanceId);
-        triggerTask.SetTriggerType("GetInstanceData");
+        getDataTask.SetInstance(context.Instance.Data.userProfileInstanceId);
+        
+        // Extension'ları ayarla (opsiyonel)
+        getDataTask.SetExtensions(new[] { "profile", "preferences", "security" });
         
         return Task.FromResult(new ScriptResponse
         {
@@ -461,69 +377,8 @@ public class GetUserProfileDataMapping : IMapping
 }
 ```
 
-## Standart Yanıt
+### Başarılı Yanıt
 
-Trigger Task aşağıdaki standart yanıt yapısını döner:
-
-```csharp
-{
-    "Data": {
-        "instanceId": "guid",           // Start ve SubProcess türleri için
-        "currentState": "state-name",   // Trigger türü için
-        "data": { /* instance data */ } // GetInstanceData türü için
-    },
-    "IsSuccess": true,
-    "ErrorMessage": null,
-    "Metadata": {
-        "TriggerType": "Start",
-        "TargetDomain": "approvals",
-        "TargetFlow": "approval-flow"
-    },
-    "ExecutionDurationMs": 145,
-    "TaskType": "TriggerTransition"
-}
-```
-
-### Türe Göre Başarılı Yanıtlar
-
-#### Instance Başlatma Yanıtı
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-    "state": "initial-state",
-    "createdAt": "2025-11-19T10:30:00Z"
-  }
-}
-```
-
-#### Transition Tetikleme Yanıtı
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-    "currentState": "approved",
-    "transitionExecuted": "approve",
-    "executedAt": "2025-11-19T10:30:00Z"
-  }
-}
-```
-
-#### SubProcess Yanıtı
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
-    "state": "initial-state",
-    "launched": true
-  }
-}
-```
-
-#### GetInstanceData Yanıtı
 ```json
 {
   "isSuccess": true,
@@ -541,7 +396,308 @@ Trigger Task aşağıdaki standart yanıt yapısını döner:
 }
 ```
 
+## 4. SubProcessTask (Type: "14")
+
+Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı başlatır. Subprocess'ler, ana iş akışını bloke etmeyen fire-and-forget işlemlerdir.
+
+### Görev Tanımı
+
+```json
+{
+  "key": "start-audit-subprocess",
+  "flow": "sys-tasks",
+  "domain": "core",
+  "version": "1.0.0",
+  "tags": ["subprocess", "audit"],
+  "attributes": {
+    "type": "14",
+    "config": {
+      "domain": "audit",
+      "key": "transaction-audit",
+      "version": "1.0.0",
+      "body": {
+        "transactionId": "txn-12345",
+        "userId": "user-123"
+      }
+    }
+  }
+}
+```
+
+### Konfigürasyon Alanları
+
+| Alan | Tür | Gerekli | Açıklama |
+|------|-----|---------|----------|
+| `domain` | string | Evet | Hedef iş akışı domain'i |
+| `key` | string | Evet | Hedef iş akışı key'i |
+| `version` | string | Hayır | SubFlow versiyonu |
+| `body` | object | Hayır | İstekle gönderilecek veri |
+
+### Kullanım Alanları
+
+- Arka planda audit loglama
+- Asenkron bildirim gönderme
+- Paralel veri işleme
+- Bağımsız raporlama iş akışları
+- Event-driven yan etkiler
+
+**SubProcess vs SubFlow:**
+- **SubProcess**: Fire-and-forget, bağımsız çalışır, ana iş akışını bloke etmez
+- **SubFlow**: Ana iş akışını bloke eder, veri döner, sıkı entegrasyon
+
+### Mapping Örneği
+
+```csharp
+using System;
+using System.Threading.Tasks;
+using BBT.Workflow.Scripting;
+using BBT.Workflow.Definitions;
+
+public class StartAuditSubProcessMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        var subProcessTask = task as SubProcessTask;
+        
+        // Subprocess'i yapılandır
+        subProcessTask.SetDomain("audit");
+        subProcessTask.SetKey("transaction-audit");
+        subProcessTask.SetVersion("1.0.0");
+        
+        // Subprocess başlangıç verilerini hazırla
+        subProcessTask.SetBody(new {
+            transactionId = context.Instance.Data.transactionId,
+            transactionType = context.Instance.Data.transactionType,
+            amount = context.Instance.Data.amount,
+            currency = context.Instance.Data.currency,
+            userId = context.Instance.Data.userId,
+            action = context.Instance.Data.action,
+            timestamp = DateTime.UtcNow,
+            parentInstanceId = context.Instance.Id,
+            auditDetails = new {
+                ipAddress = context.Headers["x-forwarded-for"],
+                userAgent = context.Headers["user-agent"],
+                sessionId = context.Instance.Data.sessionId
+            }
+        });
+        
+        return Task.FromResult(new ScriptResponse
+        {
+            Data = context.Instance.Data
+        });
+    }
+
+    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        var response = new ScriptResponse();
+        
+        // SubProcess fire-and-forget'tir
+        // Sadece başlatıldığını onayla
+        response.Data = new
+        {
+            auditSubProcessId = context.Body.data?.instanceId,
+            auditInitiated = true,
+            initiatedAt = DateTime.UtcNow,
+            status = "AUDIT_SUBPROCESS_LAUNCHED"
+        };
+        
+        return response;
+    }
+}
+```
+
+### Başarılı Yanıt
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "state": "initial-state",
+    "launched": true
+  }
+}
+```
+
+## Property Erişimi
+
+Her task türü kendi setter metodlarına sahiptir:
+
+### StartTask Setter Metodları
+
+- **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
+- **SetFlow(string flow)**: Hedef iş akışı flow adını ayarlar
+- **SetBody(dynamic body)**: İstek body'sini ayarlar
+
+### DirectTriggerTask Setter Metodları
+
+- **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
+- **SetFlow(string flow)**: Hedef iş akışı flow adını ayarlar
+- **SetTransitionName(string transitionName)**: Çalıştırılacak transition adını ayarlar
+- **SetInstance(string instanceId)**: Hedef instance ID'sini ayarlar
+- **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır)
+- **SetBody(dynamic body)**: İstek body'sini ayarlar
+
+### GetInstanceDataTask Setter Metodları
+
+- **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
+- **SetFlow(string flow)**: Hedef iş akışı flow adını ayarlar
+- **SetInstance(string instanceId)**: Hedef instance ID'sini ayarlar
+- **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır, doğrudan key olarak kullanılır)
+- **SetExtensions(string[] extensions)**: Alınacak extension'ları ayarlar
+
+### SubProcessTask Setter Metodları
+
+- **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
+- **SetKey(string key)**: Hedef iş akışı key'ini ayarlar
+- **SetVersion(string version)**: SubFlow versiyonunu ayarlar
+- **SetBody(dynamic body)**: İstek body'sini ayarlar
+
+### Konfigürasyon vs Dinamik Ayarlama
+
+Task'lar için gerekli alanlar **iki şekilde** sağlanabilir:
+
+1. **Statik Konfigürasyon**: Task JSON tanımında config bölümünde belirtilir
+2. **Dinamik Ayarlama**: InputHandler içinde setter metodları ile runtime'da ayarlanır
+
+**Öncelik Kuralı:** Hem JSON config'te hem de InputHandler mapping'inde aynı alan tanımlanmışsa, **InputHandler'da set edilen değer önceliğe sahiptir**. Bu sayede runtime'da dinamik değerlerle statik konfigürasyon override edilebilir.
+
+**Kullanım Stratejileri:**
+
+```csharp
+// Senaryo 1: JSON'da domain ve flow tanımlı, mapping'te override edilmez
+// Task JSON: "config": { "domain": "approvals", "flow": "approval-flow" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var startTask = task as StartTask;
+    // Domain ve flow zaten config'te tanımlı, değiştirmeye gerek yok
+    startTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Senaryo 2: JSON'da domain yok, mapping'te dinamik olarak ayarlanır
+// Task JSON: "config": { "flow": "approval-flow" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var startTask = task as StartTask;
+    // Runtime'da dinamik olarak domain belirlenir
+    var targetDomain = context.Instance.Data.approvalType == "document" 
+        ? "document-approvals" 
+        : "standard-approvals";
+    startTask.SetDomain(targetDomain);
+    startTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Senaryo 3: JSON'da instanceId yok, mapping'te context'ten alınır
+// Task JSON: "config": { "domain": "approvals", "flow": "approval-flow", "transitionName": "approve" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var directTriggerTask = task as DirectTriggerTask;
+    // Instance ID workflow data'sından alınır
+    directTriggerTask.SetInstance(context.Instance.Data.approvalInstanceId);
+    directTriggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+
+// Senaryo 4: JSON'da instanceId var, mapping'te override edilir (Öncelik mapping'te!)
+// Task JSON: "config": { "instanceId": "default-instance-id" }
+public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+{
+    var directTriggerTask = task as DirectTriggerTask;
+    // JSON'daki default değer override edilir - mapping değeri kullanılır!
+    directTriggerTask.SetInstance(context.Instance.Data.targetInstanceId);
+    directTriggerTask.SetBody(new { /* data */ });
+    return Task.FromResult(new ScriptResponse());
+}
+```
+
+## Standart Yanıt
+
+Her task türü kendi yanıt yapısına sahiptir:
+
+### StartTask Yanıtı
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "state": "initial-state",
+    "createdAt": "2025-11-19T10:30:00Z"
+  },
+  "metadata": {
+    "TaskType": "StartTrigger",
+    "Domain": "approvals",
+    "Flow": "approval-flow"
+  }
+}
+```
+
+### DirectTriggerTask Yanıtı
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
+    "currentState": "approved",
+    "transitionExecuted": "approve",
+    "executedAt": "2025-11-19T10:30:00Z"
+  },
+  "metadata": {
+    "TaskType": "DirectTrigger",
+    "Domain": "approvals",
+    "Flow": "approval-flow",
+    "TransitionName": "approve"
+  }
+}
+```
+
+### GetInstanceDataTask Yanıtı
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "userId": "user123",
+    "profile": {
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    },
+    "preferences": {
+      "language": "tr-TR",
+      "theme": "dark"
+    }
+  },
+  "metadata": {
+    "TaskType": "GetInstanceData",
+    "Domain": "users",
+    "Flow": "user-profile"
+  }
+}
+```
+
+### SubProcessTask Yanıtı
+
+```json
+{
+  "isSuccess": true,
+  "data": {
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "state": "initial-state",
+    "launched": true
+  },
+  "metadata": {
+    "TaskType": "SubProcess",
+    "Domain": "audit",
+    "Key": "transaction-audit"
+  }
+}
+```
+
 ### Hata Yanıtı
+
 ```json
 {
   "isSuccess": false,
@@ -557,6 +713,7 @@ Trigger Task aşağıdaki standart yanıt yapısını döner:
 ## Hata Senaryoları
 
 ### İş Akışı Bulunamadı
+
 ```json
 {
   "IsSuccess": false,
@@ -570,6 +727,7 @@ Trigger Task aşağıdaki standart yanıt yapısını döner:
 ```
 
 ### Instance Bulunamadı
+
 ```json
 {
   "IsSuccess": false,
@@ -582,6 +740,7 @@ Trigger Task aşağıdaki standart yanıt yapısını döner:
 ```
 
 ### Transition Kullanılamıyor
+
 ```json
 {
   "IsSuccess": false,
@@ -596,40 +755,45 @@ Trigger Task aşağıdaki standart yanıt yapısını döner:
 
 ## En İyi Pratikler
 
-### 1. Tetikleme Türü Seçimi
+### 1. Task Türü Seçimi
+
 ```csharp
-// ✅ Doğru - Yeni instance'lar için Start kullan
-triggerTask.SetTriggerType("Start");
-triggerTask.SetKey("new-workflow");
+// ✅ Doğru - Yeni instance'lar için StartTask kullan
+var startTask = task as StartTask;
+startTask.SetDomain("approvals");
+startTask.SetFlow("approval-flow");
 
-// ✅ Doğru - Mevcut instance'lar için Trigger kullan
-triggerTask.SetTriggerType("Trigger");
-triggerTask.SetInstance(existingInstanceId);
+// ✅ Doğru - Mevcut instance'larda transition için DirectTriggerTask kullan
+var directTriggerTask = task as DirectTriggerTask;
+directTriggerTask.SetInstance(existingInstanceId);
+directTriggerTask.SetTransitionName("approve");
 
-// ❌ Yanlış - Start'ı instanceId ile kullanma
-triggerTask.SetTriggerType("Start");
-triggerTask.SetInstance(existingInstanceId); // Bu başarısız olur
+// ❌ Yanlış - StartTask'ı instanceId ile kullanma
+var startTask = task as StartTask;
+startTask.SetInstance(existingInstanceId); // StartTask'ta SetInstance metodu yok
 ```
 
 ### 2. Veri Hazırlama
+
 ```csharp
-// ✅ Doğru - SubProcess için tam veri sağla
-triggerTask.SetBody(new {
+// ✅ Doğru - SubProcessTask için tam veri sağla
+var subProcessTask = task as SubProcessTask;
+subProcessTask.SetBody(new {
     // Bağımsız çalışma için gerekli tüm veriler
     userId = context.Instance.Data.userId,
     transactionId = context.Instance.Data.transactionId,
     parentInstanceId = context.Instance.Id,
-    correlationId = context.Instance.CorrelationId
 });
 
-// ❌ Yanlış - SubProcess için eksik veri
-triggerTask.SetBody(new {
+// ❌ Yanlış - SubProcessTask için eksik veri
+subProcessTask.SetBody(new {
     userId = context.Instance.Data.userId
     // Diğer gerekli alanlar eksik
 });
 ```
 
 ### 3. Hata İşleme
+
 ```csharp
 // ✅ Doğru - Hataları uygun şekilde ele al
 public async Task<ScriptResponse> OutputHandler(ScriptContext context)
@@ -662,29 +826,35 @@ private bool ShouldRetryError(string errorMessage)
 }
 ```
 
-### 4. SubProcess vs Instance Başlatma
-```csharp
-// ✅ Fire-and-forget arka plan görevleri için SubProcess kullan
-// Ana iş akışının tamamlanmasını beklemesi gerekmez
-triggerTask.SetTriggerType("SubProcess");
+### 4. SubProcessTask vs StartTask
 
-// ✅ Gelecekte etkileşim gerekebilecek iş akışları için Start kullan
-// InstanceId'yi geri alırsınız ve daha sonra transition tetikleyebilirsiniz
-triggerTask.SetTriggerType("Start");
+```csharp
+// ✅ Fire-and-forget arka plan görevleri için SubProcessTask kullan
+// Ana iş akışının tamamlanmasını beklemesi gerekmez
+var subProcessTask = task as SubProcessTask;
+subProcessTask.SetDomain("audit");
+subProcessTask.SetKey("transaction-audit");
+
+// ✅ Gelecekte etkileşim gerekebilecek iş akışları için StartTask kullan
+// InstanceId'yi geri alırsınız ve daha sonra DirectTriggerTask ile transition tetikleyebilirsiniz
+var startTask = task as StartTask;
+startTask.SetDomain("approvals");
+startTask.SetFlow("approval-flow");
 ```
 
 ### 5. Extension Kullanımı
+
 ```csharp
 // ✅ Doğru - Sadece gerekli extension'ları talep et
-var triggerTask = task as TriggerTransitionTask;
-// Extension'lar zaten görev tanımında yapılandırılmıştır
-// Mapping'te tekrar ayarlamaya gerek yok
+var getDataTask = task as GetInstanceDataTask;
+getDataTask.SetExtensions(new[] { "profile", "preferences" });
 
 // ✅ En İyi Pratik - Extension'ları task config'inde tanımla
 // Task JSON:
 {
   "config": {
-    "type": "GetInstanceData",
+    "domain": "users",
+    "flow": "user-profile",
     "extensions": ["profile", "preferences"]
   }
 }
@@ -692,21 +862,20 @@ var triggerTask = task as TriggerTransitionTask;
 
 ## Yaygın Kullanım Senaryoları
 
-### Kullanım Senaryosu 1: Çok Aşamalı Onay İş Akışı
+### Senaryo 1: Çok Aşamalı Onay İş Akışı
+
 ```csharp
 // Doküman gönderildiğinde onay iş akışını başlat
 public class StartApprovalWorkflow : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var startTask = task as StartTask;
         
-        triggerTask.SetTriggerType("Start");
-        triggerTask.SetDomain("approvals");
-        triggerTask.SetFlow("multi-stage-approval");
-        triggerTask.SetKey("document-approval");
+        startTask.SetDomain("approvals");
+        startTask.SetFlow("multi-stage-approval");
         
-        triggerTask.SetBody(new {
+        startTask.SetBody(new {
             documentId = context.Instance.Data.documentId,
             approvalStages = new[] { "L1", "L2", "L3" },
             currentStage = 0,
@@ -729,20 +898,21 @@ public class StartApprovalWorkflow : IMapping
 }
 ```
 
-### Kullanım Senaryosu 2: Dağıtık Transaction Koordinasyonu
+### Senaryo 2: Dağıtık Transaction Koordinasyonu
+
 ```csharp
 // Birden fazla iş akışı instance'ında transition'ları tetikle
 public class CoordinateTransactionMapping : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var directTriggerTask = task as DirectTriggerTask;
         
         // Ödeme iş akışında commit'i tetikle
-        triggerTask.SetInstance(context.Instance.Data.paymentInstanceId);
-        triggerTask.SetTriggerType("Trigger");
+        directTriggerTask.SetInstance(context.Instance.Data.paymentInstanceId);
+        directTriggerTask.SetTransitionName("commit");
         
-        triggerTask.SetBody(new {
+        directTriggerTask.SetBody(new {
             action = "commit",
             transactionId = context.Instance.Data.transactionId,
             timestamp = DateTime.UtcNow
@@ -764,21 +934,20 @@ public class CoordinateTransactionMapping : IMapping
 }
 ```
 
-### Kullanım Senaryosu 3: Audit İzi Oluşturma
+### Senaryo 3: Audit İzi Oluşturma
+
 ```csharp
 // Audit loglama için subprocess başlat
 public class CreateAuditTrail : IMapping
 {
     public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
     {
-        var triggerTask = task as TriggerTransitionTask;
+        var subProcessTask = task as SubProcessTask;
         
-        triggerTask.SetTriggerType("SubProcess");
-        triggerTask.SetDomain("audit");
-        triggerTask.SetFlow("audit-trail");
-        triggerTask.SetKey("transaction-audit");
+        subProcessTask.SetDomain("audit");
+        subProcessTask.SetKey("transaction-audit");
         
-        triggerTask.SetBody(new {
+        subProcessTask.SetBody(new {
             transactionId = context.Instance.Data.transactionId,
             userId = context.Instance.Data.userId,
             action = context.Instance.Data.action,
@@ -800,17 +969,92 @@ public class CreateAuditTrail : IMapping
 }
 ```
 
+### Senaryo 4: Kullanıcı Profil Verisi Alma
+
+```csharp
+// Kullanıcı profil verilerini al
+public class GetUserProfileMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        var getDataTask = task as GetInstanceDataTask;
+        
+        getDataTask.SetInstance(context.Instance.Data.userProfileInstanceId);
+        getDataTask.SetExtensions(new[] { "profile", "preferences", "security" });
+        
+        return Task.FromResult(new ScriptResponse());
+    }
+
+    public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        if (context.Body.isSuccess)
+        {
+            return new ScriptResponse
+            {
+                Data = new {
+                    userProfile = context.Body.data,
+                    loadedAt = DateTime.UtcNow
+                }
+            };
+        }
+        
+        return new ScriptResponse
+        {
+            Data = new {
+                error = "Profil verisi alınamadı",
+                errorMessage = context.Body.errorMessage
+            }
+        };
+    }
+}
+```
+
 ## Yaygın Sorunlar
 
-### Sorun: Tetikleme Türü Uyumsuzluğu
-**Çözüm:** Tetikleme türünün işlemle eşleştiğinden emin olun. Yeni instance'lar için "Start", transition'lar için "Trigger" kullanın.
+### Sorun: Yanlış Task Türü Kullanımı
+**Çözüm:** Her task türünün kendi kullanım amacı vardır. Yeni instance'lar için StartTask, transition'lar için DirectTriggerTask kullanın.
 
 ### Sorun: Eksik Gerekli Alanlar
-**Çözüm:** Domain ve flow'un her zaman sağlandığını doğrulayın. Key, Start/SubProcess için; instanceId, Trigger/GetInstanceData için gereklidir.
+**Çözüm:** Domain ve flow'un her zaman sağlandığını doğrulayın. DirectTriggerTask için transitionName gereklidir. SubProcessTask için key gereklidir.
 
-### Sorun: SubProcess Bağımsız Değil
-**Çözüm:** Body'de tam veri sağlayın. SubProcess'ler başlatıldıktan sonra ana iş akışı verilerine erişemez.
+### Sorun: SubProcessTask Bağımsız Değil
+**Çözüm:** Body'de tam veri sağlayın. SubProcessTask'ler başlatıldıktan sonra ana iş akışı verilerine erişemez.
 
 ### Sorun: Extension'lar Yüklenmiyor
-**Çözüm:** Extension'ların görev konfigürasyonunda tanımlandığından, mapping kodunda değil, emin olun.
+**Çözüm:** Extension'ların görev konfigürasyonunda veya mapping'te SetExtensions() ile tanımlandığından emin olun.
 
+## Migration Notları
+
+Eğer eski TriggerTransitionTask (type "11" ile nested "type" field) kullanıyorsanız, yeni task türlerine geçiş yapmanız gerekmektedir:
+
+| Eski Type | Eski Nested Type | Yeni Task Type | Yeni Type Numarası |
+|-----------|------------------|----------------|-------------------|
+| "11" | "Start" | StartTask | "11" |
+| "11" | "Trigger" | DirectTriggerTask | "12" |
+| "11" | "GetInstanceData" | GetInstanceDataTask | "13" |
+| "11" | "SubProcess" | SubProcessTask | "14" |
+
+**Örnek Migration:**
+
+**Eski (TriggerTransitionTask):**
+```json
+{
+  "type": "11",
+  "config": {
+    "type": "Start",
+    "domain": "approvals",
+    "flow": "approval-flow"
+  }
+}
+```
+
+**Yeni (StartTask):**
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow"
+  }
+}
+```
