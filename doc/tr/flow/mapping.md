@@ -166,6 +166,7 @@ public sealed class ScriptContext
     // Request bilgileri (camelCase formatında otomatik dönüştürülür)
     public dynamic? Body { get; private set; }
     public dynamic? Headers { get; private set; }
+    public dynamic? QueryParameters { get; private set; }
     public dynamic? RouteValues { get; private set; }
     
     // Workflow instance bilgileri
@@ -205,6 +206,45 @@ Request header bilgilerini içerir. Tutarlılık sağlamak için tüm header isi
 var authorization = context.Headers?.authorization;
 var contentType = context.Headers?.["content-type"];
 var userAgent = context.Headers?.["user-agent"];
+```
+
+#### QueryParameters
+Function task'larından gelen query string parametrelerini içerir. Bu özellik **sadece Function task'ları kullanıldığında** kullanılabilir ve function endpoint'ine geçilen query parametrelerine erişim sağlar.
+
+> **Önemli**: QueryParameters, Function task'larına özgüdür ve indeksleyici söz dizimi ile erişilir.
+
+```csharp
+// Query parametrelerinden veri okuma (sadece Function task'larında)
+var userId = context.QueryParameters?.["userId"];
+var cityId = context.QueryParameters?.["cityId"];
+var page = context.QueryParameters?.["page"];
+var pageSize = context.QueryParameters?.["pageSize"];
+var filter = context.QueryParameters?.["filter"];
+```
+
+**Yaygın Kullanım Alanları:**
+- Function task handler'larında özel query parametrelerine erişim
+- Function'lara geçilen filtre parametrelerini okuma
+- Function çağrılarından pagination parametrelerini alma
+- Query string'lerinden kullanıcıya özel tanımlayıcıları çıkarma
+
+**Function Task Mapping'inde Örnek:**
+```csharp
+public class FunctionTaskMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        // Function çağrısından query parametrelerine erişim
+        var userId = context.QueryParameters?.["userId"];
+        var cityId = context.QueryParameters?.["cityId"];
+        
+        // Function mantığında kullanım
+        LogInformation("Function işleniyor - userId: {0}, cityId: {1}", 
+            args: new object?[] { userId, cityId });
+        
+        return Task.FromResult(new ScriptResponse());
+    }
+}
 ```
 
 #### Instance.Data
