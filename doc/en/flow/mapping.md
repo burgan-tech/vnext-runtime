@@ -166,6 +166,7 @@ public sealed class ScriptContext
     // Request information (automatically converted to camelCase format)
     public dynamic? Body { get; private set; }
     public dynamic? Headers { get; private set; }
+    public dynamic? QueryParameters { get; private set; }
     public dynamic? RouteValues { get; private set; }
     
     // Workflow instance information
@@ -205,6 +206,45 @@ Contains request header information. All header names are converted to **lower-c
 var authorization = context.Headers?.authorization;
 var contentType = context.Headers?.["content-type"];
 var userAgent = context.Headers?.["user-agent"];
+```
+
+#### QueryParameters
+Contains query string parameters from Function tasks. This property is **only available when using Function tasks** and provides access to query parameters passed to the function endpoint.
+
+> **Important**: QueryParameters is specific to Function tasks and is accessed using indexer syntax.
+
+```csharp
+// Reading data from query parameters (Function tasks only)
+var userId = context.QueryParameters?.["userId"];
+var cityId = context.QueryParameters?.["cityId"];
+var page = context.QueryParameters?.["page"];
+var pageSize = context.QueryParameters?.["pageSize"];
+var filter = context.QueryParameters?.["filter"];
+```
+
+**Common Use Cases:**
+- Accessing custom query parameters in Function task handlers
+- Reading filter parameters passed to functions
+- Getting pagination parameters from function calls
+- Extracting user-specific identifiers from query strings
+
+**Example in Function Task Mapping:**
+```csharp
+public class FunctionTaskMapping : IMapping
+{
+    public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext context)
+    {
+        // Access query parameters from function call
+        var userId = context.QueryParameters?.["userId"];
+        var cityId = context.QueryParameters?.["cityId"];
+        
+        // Use in function logic
+        LogInformation("Processing function for userId: {0}, cityId: {1}", 
+            args: new object?[] { userId, cityId });
+        
+        return Task.FromResult(new ScriptResponse());
+    }
+}
 ```
 
 #### Instance.Data

@@ -266,12 +266,70 @@ Extensions provide additional context data that enriches the instance data:
   - Real-time calculated values
   - External system data
 
+### Filtering Instance Data
+
+The Data function supports powerful filtering capabilities to query instance data based on attributes. This allows you to filter and retrieve specific instances that match your criteria.
+
+#### Filter Syntax
+
+Filters use the format: `filter=attributes={field}={operator}:{value}`
+
+#### Available Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `eq` | Equal to | `filter=attributes=clientId=eq:122` |
+| `ne` | Not equal to | `filter=attributes=status=ne:inactive` |
+| `gt` | Greater than | `filter=attributes=amount=gt:100` |
+| `ge` | Greater than or equal | `filter=attributes=score=ge:80` |
+| `lt` | Less than | `filter=attributes=count=lt:10` |
+| `le` | Less than or equal | `filter=attributes=age=le:65` |
+| `between` | Between two values | `filter=attributes=amount=between:50,200` |
+| `like` | Contains substring | `filter=attributes=name=like:john` |
+| `startswith` | Starts with | `filter=attributes=email=startswith:test` |
+| `endswith` | Ends with | `filter=attributes=email=endswith:.com` |
+| `in` | Value in list | `filter=attributes=status=in:active,pending` |
+| `nin` | Value not in list | `filter=attributes=type=nin:test,debug` |
+
+#### Filter Examples
+
+**Single Filter:**
+```http
+GET /core/workflows/payment-flow/instances/abc-123/functions/data?filter=attributes=amount=gt:1000 HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+**Multiple Filters (AND logic):**
+```http
+GET /core/workflows/order-processing/instances/123/functions/data?filter=attributes=status=eq:active&filter=attributes=priority=eq:high HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+**Range Filter:**
+```http
+GET /core/workflows/payment-flow/instances/abc-123/functions/data?filter=attributes=amount=between:100,500 HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+**String Operations:**
+```http
+GET /core/workflows/customer/instances/123/functions/data?filter=attributes=email=endswith:@company.com HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+> **Note:** Filtering works on instance attributes and is particularly useful when combined with pagination for large datasets. For more details on instance filtering, see the [Instance Filtering](../../../README.md#instance-filtering) section.
+
 ### Use Cases
 
 1. **Data Synchronization**: Keep client-side data in sync with server
 2. **Efficient Polling**: Use ETag to avoid unnecessary data transfers
 3. **View Data Binding**: Populate views with current instance data
 4. **Audit and Logging**: Retrieve complete instance state for auditing
+5. **Filtered Data Retrieval**: Query specific instances based on attribute values
 
 ### Example Request
 

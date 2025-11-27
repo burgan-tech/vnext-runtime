@@ -51,16 +51,20 @@ Content-Type: application/json
 
 ### 2. Instance Transition
 
-The transition endpoint is used to advance the started instance.
+The transition endpoint is used to advance the started instance. You can use either the instance ID (UUID) or the instance Key to reference the instance.
 
 **Endpoint:**
 ```
-PATCH /:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true
+PATCH /:domain/workflows/:flow/instances/:instanceIdOrKey/transitions/:transition?sync=true
 ```
 
-**Example Request:**
+> **Note**: The `:instanceIdOrKey` parameter accepts either:
+> - **Instance ID**: The UUID returned when the instance was created (e.g., `18075ad5-e5b2-4437-b884-21d733339113`)
+> - **Instance Key**: The key value provided during instance creation (e.g., `99999999999`)
+
+**Example Request (using Instance ID):**
 ```http
-PATCH /ecommerce/workflows/scheduled-payments/instances/inst_abc123def456/transitions/activate?sync=true
+PATCH /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113/transitions/activate?sync=true
 Content-Type: application/json
 
 {
@@ -69,18 +73,40 @@ Content-Type: application/json
 }
 ```
 
+**Example Request (using Instance Key):**
+```http
+PATCH /ecommerce/workflows/scheduled-payments/instances/99999999999/transitions/activate?sync=true
+Content-Type: application/json
+
+{
+    "approvedBy": "admin",
+    "approvalDate": "2025-09-20T10:30:00Z"
+}
+```
+
+> **Benefits of Using Instance Key:**
+> - More readable and meaningful identifiers (e.g., order numbers, customer IDs)
+> - Easier integration with external systems that use business keys
+> - No need to store and manage UUIDs separately
+
 ### 3. Querying Instance Status
 
-The GET endpoint is used to query the current status and data of the instance. This endpoint works with the ETag pattern.
+The GET endpoint is used to query the current status and data of the instance. This endpoint works with the ETag pattern. You can use either the instance ID or instance Key.
 
 **Endpoint:**
 ```
-GET /:domain/workflows/:flow/instances/:instanceId
+GET /:domain/workflows/:flow/instances/:instanceIdOrKey
 ```
 
-**Example Request:**
+**Example Request (using Instance ID):**
 ```http
 GET /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113
+If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
+```
+
+**Example Request (using Instance Key):**
+```http
+GET /ecommerce/workflows/scheduled-payments/instances/99999999999
 If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 ```
 

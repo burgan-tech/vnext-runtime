@@ -266,12 +266,70 @@ Extension'lar, instance verisini zenginleştiren ek bağlam verisi sağlar:
   - Gerçek zamanlı hesaplanan değerler
   - Harici sistem verileri
 
+### Instance Verilerini Filtreleme
+
+Data fonksiyonu, attribute'lara göre instance verilerini sorgulamak için güçlü filtreleme yetenekleri destekler. Bu, kriterlerinize uyan belirli instance'ları filtrelemenize ve almanıza olanak tanır.
+
+#### Filtre Söz Dizimi
+
+Filtreler şu formatı kullanır: `filter=attributes={alan}={operatör}:{değer}`
+
+#### Kullanılabilir Operatörler
+
+| Operatör | Açıklama | Örnek |
+|----------|----------|-------|
+| `eq` | Eşittir | `filter=attributes=clientId=eq:122` |
+| `ne` | Eşit değildir | `filter=attributes=status=ne:inactive` |
+| `gt` | Büyüktür | `filter=attributes=amount=gt:100` |
+| `ge` | Büyük veya eşittir | `filter=attributes=score=ge:80` |
+| `lt` | Küçüktür | `filter=attributes=count=lt:10` |
+| `le` | Küçük veya eşittir | `filter=attributes=age=le:65` |
+| `between` | İki değer arasında | `filter=attributes=amount=between:50,200` |
+| `like` | Alt dize içerir | `filter=attributes=name=like:john` |
+| `startswith` | İle başlar | `filter=attributes=email=startswith:test` |
+| `endswith` | İle biter | `filter=attributes=email=endswith:.com` |
+| `in` | Liste içinde değer | `filter=attributes=status=in:active,pending` |
+| `nin` | Liste dışında değer | `filter=attributes=type=nin:test,debug` |
+
+#### Filtre Örnekleri
+
+**Tek Filtre:**
+```http
+GET /core/workflows/payment-flow/instances/abc-123/functions/data?filter=attributes=amount=gt:1000 HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+**Çoklu Filtre (VE mantığı):**
+```http
+GET /core/workflows/order-processing/instances/123/functions/data?filter=attributes=status=eq:active&filter=attributes=priority=eq:high HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+**Aralık Filtresi:**
+```http
+GET /core/workflows/payment-flow/instances/abc-123/functions/data?filter=attributes=amount=between:100,500 HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+**Dize İşlemleri:**
+```http
+GET /core/workflows/customer/instances/123/functions/data?filter=attributes=email=endswith:@company.com HTTP/1.1
+Host: api.example.com
+Accept: application/json
+```
+
+> **Not:** Filtreleme, instance attribute'ları üzerinde çalışır ve büyük veri kümeleri için pagination ile birleştirildiğinde özellikle kullanışlıdır. Instance filtreleme hakkında daha fazla bilgi için [Instance Filtreleme](../../../README.md#instance-filtering) bölümüne bakın.
+
 ### Kullanım Alanları
 
 1. **Veri Senkronizasyonu**: Client-side veriyi sunucu ile senkronize tutma
 2. **Verimli Polling**: Gereksiz veri transferlerinden kaçınmak için ETag kullanma
 3. **View Veri Binding**: View'ları mevcut instance verisi ile doldurma
 4. **Audit ve Loglama**: Audit için tam instance durumunu alma
+5. **Filtrelenmiş Veri Alma**: Attribute değerlerine göre belirli instance'ları sorgulama
 
 ### Örnek İstek
 
