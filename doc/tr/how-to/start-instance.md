@@ -51,21 +51,78 @@ Content-Type: application/json
 
 ### 2. Instance Transition
 
-Başlatılan instance'ı ilerletmek için transition endpoint'i kullanılır.
+Başlatılan instance'ı ilerletmek için transition endpoint'i kullanılır. Instance'a referans vermek için instance ID (UUID) veya instance Key kullanabilirsiniz.
 
 **Endpoint:**
 ```
-PATCH /:domain/workflows/:flow/instances/:instanceId/transitions/activate?sync=true
+PATCH /:domain/workflows/:flow/instances/:instanceIdOrKey/transitions/:transition?sync=true
 ```
 
-**Örnek İstek:**
+> **Not**: `:instanceIdOrKey` parametresi şunları kabul eder:
+> - **Instance ID**: Instance oluşturulduğunda dönen UUID (örn. `18075ad5-e5b2-4437-b884-21d733339113`)
+> - **Instance Key**: Instance oluşturulurken sağlanan key değeri (örn. `99999999999`)
+
+**Örnek İstek (Instance ID kullanarak):**
 ```http
-PATCH /ecommerce/workflows/scheduled-payments/instances/inst_abc123def456/transitions/activate?sync=true
+PATCH /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113/transitions/activate?sync=true
 Content-Type: application/json
 
 {
     "approvedBy": "admin",
     "approvalDate": "2025-09-20T10:30:00Z"
+}
+```
+
+**Örnek İstek (Instance Key kullanarak):**
+```http
+PATCH /ecommerce/workflows/scheduled-payments/instances/99999999999/transitions/activate?sync=true
+Content-Type: application/json
+
+{
+    "approvedBy": "admin",
+    "approvalDate": "2025-09-20T10:30:00Z"
+}
+```
+
+> **Instance Key Kullanmanın Avantajları:**
+> - Daha okunabilir ve anlamlı tanımlayıcılar (örn. sipariş numaraları, müşteri ID'leri)
+> - İş anahtarları kullanan harici sistemlerle daha kolay entegrasyon
+> - UUID'leri ayrıca saklamaya ve yönetmeye gerek yok
+
+### 3. Instance Durumunu Sorgulama
+
+Instance'ın mevcut durumunu ve verisini sorgulamak için GET endpoint'i kullanılır. Bu endpoint ETag pattern'i ile çalışır. Instance ID veya instance Key kullanabilirsiniz.
+
+**Endpoint:**
+```
+GET /:domain/workflows/:flow/instances/:instanceIdOrKey
+```
+
+**Örnek İstek (Instance ID kullanarak):**
+```http
+GET /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113
+If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
+```
+
+**Örnek İstek (Instance Key kullanarak):**
+```http
+GET /ecommerce/workflows/scheduled-payments/instances/99999999999
+If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
+```
+
+**Örnek Response:**
+```json
+{
+  "id": "18075ad5-e5b2-4437-b884-21d733339113",
+  "key": "99999999999",
+  "flow": "scheduled-payments",
+  "domain": "core",
+  "flowVersion": "1.0.1",
+  "eTag": "18075ad5-e5b2-4437-b884-21d733339113",
+  "tags": [],
+  "attributes": {},
+  "extensions": {},
+  "sortValue": ""
 }
 ```
 
