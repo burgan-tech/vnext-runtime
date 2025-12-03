@@ -25,9 +25,9 @@ services:
   # VNext Core Runtime Initializer - vnext-app loads system components after it is healthy
   vnext-core-init:
     container_name: vnext-core-init
-    image: "ghcr.io/burgan-tech/vnext/init:${VNEXT_INIT_VERSION:-latest}"
+    image: "ghcr.io/burgan-tech/vnext/init:${VNEXTVERSION:-latest}"
     environment:
-      VNEXT_CORE_RUNTIME_VERSION: "${VNEXT_CORE_RUNTIME_VERSION:-latest}"
+      VNEXT_COMPONENT_VERSION: "${VNEXT_COMPONENT_VERSION:-latest}"
       VNEXT_APP_URL: "http://vnext-app:5000"
       APP_DOMAIN: "${APP_DOMAIN:-core}"
     volumes:
@@ -43,7 +43,7 @@ services:
       
   vnext-execution-app:
     container_name: vnext-execution-app
-    image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_EXECUTION_VERSION:-latest}"
+    image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_VERSION:-latest}"
     env_file:
       - .env.execution
     volumes:
@@ -109,6 +109,106 @@ services:
     network_mode: "service:vnext-execution-app"
     depends_on:
       - vnext-execution-app
+      - dapr-placement
+      - dapr-scheduler
+      - redis
+      - vault
+
+  vnext-worker-inbox:
+    container_name: vnext-worker-inbox
+    image: "ghcr.io/burgan-tech/vnext/inbox:${VNEXT_VERSION:-latest}"
+    env_file:
+      - .env.worker-inbox
+    volumes:
+      - ./appsettings.WorkerInbox.Development.json:/app/appsettings.Development.json:ro
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-worker-inbox:5000/health" ]
+      interval: 10s
+      retries: 5
+      start_period: 35s
+      timeout: 30s
+    ports:
+      - "4203:5000"
+    networks:
+      - vnext-development
+    depends_on:
+      vnext-app:
+        condition: service_healthy
+      dapr-placement:
+        condition: service_started
+      dapr-scheduler:
+        condition: service_started
+      postgres:
+        condition: service_started
+
+  vnext-worker-inbox-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: vnext-worker-inbox-dapr
+    command: [
+      "./daprd",
+      "--app-id", "vnext-worker-inbox",
+      "--app-port", "5000",
+      "--resources-path", "./components",
+      "--dapr-grpc-port", "44111",
+      "--dapr-http-port", "44110",
+      "--scheduler-host-address", "dapr-scheduler:50007",
+      "--placement-host-address", "dapr-placement:50005"
+    ]
+    volumes:
+      - "../worker-inbox/dapr/components:/components"
+    network_mode: "service:vnext-worker-inbox"
+    depends_on:
+      - vnext-worker-inbox
+      - dapr-placement
+      - dapr-scheduler
+      - redis
+      - vault
+
+  vnext-worker-outbox:
+    container_name: vnext-worker-outbox
+    image: "ghcr.io/burgan-tech/vnext/outbox:${VNEXT_VERSION:-latest}"
+    env_file:
+      - .env.worker-outbox
+    volumes:
+      - ./appsettings.WorkerOutbox.Development.json:/app/appsettings.Development.json:ro
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-worker-outbox:5000/health" ]
+      interval: 10s
+      retries: 5
+      start_period: 35s
+      timeout: 30s
+    ports:
+      - "4204:5000"
+    networks:
+      - vnext-development
+    depends_on:
+      vnext-app:
+        condition: service_healthy
+      dapr-placement:
+        condition: service_started
+      dapr-scheduler:
+        condition: service_started
+      postgres:
+        condition: service_started
+
+  vnext-worker-outbox-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: vnext-worker-outbox-dapr
+    command: [
+      "./daprd",
+      "--app-id", "vnext-worker-outbox",
+      "--app-port", "5000",
+      "--resources-path", "./components",
+      "--dapr-grpc-port", "45111",
+      "--dapr-http-port", "45110",
+      "--scheduler-host-address", "dapr-scheduler:50007",
+      "--placement-host-address", "dapr-placement:50005"
+    ]
+    volumes:
+      - "../worker-outbox/dapr/components:/components"
+    network_mode: "service:vnext-worker-outbox"
+    depends_on:
+      - vnext-worker-outbox
       - dapr-placement
       - dapr-scheduler
       - redis

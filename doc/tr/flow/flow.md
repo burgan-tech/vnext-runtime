@@ -115,6 +115,43 @@ Ortak geçişler (örnek: Cancel, Approve):
 ]
 ```
 
+#### Cancel (İptal)
+İş akışının iptal davranışını tanımlar:
+```json
+"cancel": {
+  "key": "cancel-account-opening",
+  "target": "cancelled",
+  "triggerType": 0,
+  "versionStrategy": "Minor",
+  "labels": [
+    {
+      "language": "en-US",
+      "label": "Cancel Account Opening"
+    }
+  ],
+  "onExecutionTasks": [],
+  "availableIn": []
+}
+```
+
+:::warning Kritik: Kademeli İptal (Cascading Cancel)
+Alt korelasyonların iptal edilebilmesi için, alt akış tanımlarında da **cancel tanımının bulunması gerekmektedir**. Eğer alt akışta cancel tanımı yoksa, üst sistem isteği bildirir ancak yanıt alamazsa **bypass** eder.
+:::
+
+**Cancel Özellikleri:**
+- `key`: İptal geçişinin benzersiz tanımlayıcısı
+- `target`: İptal edildiğinde geçilecek bitiş durumu
+- `triggerType`: İptalin nasıl tetikleneceği (genellikle Manual - 0)
+- `versionStrategy`: Versiyon işleme stratejisi (Major/Minor)
+- `labels`: İptal aksiyonu için çoklu dil etiketleri
+- `onExecutionTasks`: İptal sırasında çalıştırılacak görevler
+- `availableIn`: İptalin kullanılabilir olduğu durumlar (boş array tüm durumlar anlamına gelir)
+
+**İptal edilenler:**
+- İş akışı instance'ı ile ilişkili aktif job'lar
+- İş akışında çalışan aktif task'lar
+- Aktif korelasyonlar (SubFlow'lar ve SubProcess'ler)
+
 ## Başlangıç Geçişi (Start Transition)
 
 :::warning Zorunlu Bileşen
@@ -200,6 +237,15 @@ Tüm iş akışları `startTransition` bileşenine sahip olmalıdır. Bu, iş ak
       "reset": "string",
       "duration": "string (ISO 8601)"
     }
+  },
+  "cancel": {
+    "key": "string",
+    "target": "string",
+    "triggerType": "0 (Manual)|1 (Automatic)|2 (Scheduled)|3 (Event)",
+    "versionStrategy": "Major|Minor",
+    "labels": [...],
+    "onExecutionTasks": [...],
+    "availableIn": ["state1", "state2"]
   },
   "labels": [
     {

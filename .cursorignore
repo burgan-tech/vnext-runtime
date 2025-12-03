@@ -4,7 +4,7 @@
 vnext/
 
 # Build and deployment files
-Makefile
+#Makefile
 
 # CI/CD pipeline files
 .github/

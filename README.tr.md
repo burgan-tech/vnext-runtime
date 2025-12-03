@@ -30,68 +30,6 @@ APP_DOMAIN=sirketim
 
 Bu, tüm workflow bileşenlerinin, görevlerin ve sistem kaynaklarının doğru şekilde kendi domain namespace'inize atanmasını sağlar.
 
-## 🚀 vNext Geliştirmeye Başlangıç
-
-vNext Runtime için workflow ve bileşenler geliştirmek amacıyla aşağıdaki araçlara ihtiyacınız olacak:
-
-### 1. vNext CLI
-
-**Repository:** https://github.com/burgan-tech/vnext-cli
-
-vNext CLI, vNext workflow projelerini oluşturmak, doğrulamak ve build etmek için kullanılan komut satırı aracıdır.
-
-**Kurulum & Kullanım:**
-
-```bash
-# CLI'ı kurun
-npm install -g @burgan-tech/vnext-cli
-
-# Kendi domain'iniz ile yeni bir vNext projesi oluşturun
-vnext create DOMAIN_ADINIZ
-
-# Workflow'larınızı doğrulayın
-vnext validate
-
-# Workflow paketinizi build edin
-vnext build
-```
-
-CLI, workflow geliştirme yaşam döngünüzü yönetmenize yardımcı olacak çeşitli komutlar sağlar. Detaylı dokümantasyon için [vnext-cli repository'sini](https://github.com/burgan-tech/vnext-cli) ziyaret edin.
-
-### 2. vNext Flow Studio
-
-**Repository:** https://github.com/burgan-tech/vnext-flow-studio
-
-Görsel workflow tasarımı ve yönetimi için güçlü bir Visual Studio Code uzantısı.
-
-**Özellikler:**
-- 🎨 Görsel workflow tasarım arayüzü
-- 📦 Workflow'ları ve bileşenleri görsel olarak yönetin
-- 🚀 VS Code'dan doğrudan deploy edin
-- 🔍 IntelliSense ve doğrulama desteği
-
-**Kurulum:**
-1. VS Code'u açın
-2. Extensions'da "vNext Flow Studio" araması yapın
-3. Kurun ve workflow'larınızı görsel olarak tasarlamaya başlayın
-
-Detaylı kullanım talimatları için [vnext-flow-studio repository'sini](https://github.com/burgan-tech/vnext-flow-studio) ziyaret edin.
-
-### 3. vNext Schema
-
-**Repository:** https://github.com/burgan-tech/vnext-schema
-
-Tüm desteklenen vNext bileşenleri (workflow'lar, görevler, fonksiyonlar, vb.) için JSON şemalarını içerir.
-
-**Amaç:**
-- 📚 Mevcut bileşenler ve özellikleri hakkında bilgi edinin
-- 🤖 Şema doğrulama için AI araçları ile entegre edin
-- ✅ Workflow'larınızın platform standartlarına uygun olduğundan emin olun
-
-Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema repository'sine](https://github.com/burgan-tech/vnext-schema) başvurun.
-
----
-
 ## Hızlı Başlangıç
 
 ### Makefile ile Kolay Kurulum (Önerilen)
@@ -201,6 +139,89 @@ docker-compose ps
 # vnext-app sağlık kontrolü
 curl http://localhost:4201/health
 ```
+
+## 🚀 vNext Geliştirmeye Başlangıç
+
+vNext Runtime için workflow ve bileşenler geliştirmek amacıyla aşağıdaki araçlara ihtiyacınız olacak:
+
+### 1. vNext Template
+
+**Repository:** https://github.com/burgan-tech/vnext-template
+
+Domain tabanlı mimariye sahip vNext workflow bileşenleri için yapılandırılmış bir şablon paketi. Bu şablon, yerleşik doğrulama ve build yetenekleriyle eksiksiz bir proje yapısı oluşturur.
+
+**Kurulum & Kullanım:**
+
+```bash
+# Domain adınızla yeni bir vNext projesi oluşturun
+npx @burgan-tech/vnext-template DOMAIN_ADINIZ
+
+# Örnek
+npx @burgan-tech/vnext-template kullanici-yonetimi
+```
+
+Bu komut, aşağıdaki yapıyı içeren domain adınızla yeni bir dizin oluşturacaktır:
+
+```
+DOMAIN_ADINIZ/
+├── Extensions/    # Custom extension tanımları
+├── Functions/     # Custom function tanımları
+├── Schemas/       # JSON schema tanımları
+├── Tasks/         # Task tanımları
+├── Views/         # View bileşenleri
+└── Workflows/     # Workflow tanımları
+```
+
+**Kullanılabilir Script'ler:**
+
+| Script | Açıklama |
+|--------|----------|
+| `npm run validate` | Proje yapısını ve şemaları doğrula |
+| `npm run build` | Runtime paketini dist/ dizinine build et |
+| `npm run build:runtime` | Runtime paketini açıkça build et |
+| `npm run build:reference` | Sadece export'larla referans paketi build et |
+
+**Belirli Versiyon Kurulumu:**
+
+```bash
+npx @burgan-tech/vnext-template@<versiyon> DOMAIN_ADINIZ
+```
+
+Detaylı dokümantasyon için [vnext-template repository'sini](https://github.com/burgan-tech/vnext-template) ziyaret edin.
+
+### 2. vNext Flow Studio
+
+**Repository:** https://github.com/burgan-tech/vnext-flow-studio
+
+Görsel workflow tasarımı ve yönetimi için güçlü bir Visual Studio Code uzantısı.
+
+**Özellikler:**
+- 🎨 Görsel workflow tasarım arayüzü
+- 📦 Workflow'ları ve bileşenleri görsel olarak yönetin
+- 🚀 VS Code'dan doğrudan deploy edin
+- 🔍 IntelliSense ve doğrulama desteği
+
+**Kurulum:**
+1. VS Code'u açın
+2. Extensions'da "vNext Flow Studio" araması yapın
+3. Kurun ve workflow'larınızı görsel olarak tasarlamaya başlayın
+
+Detaylı kullanım talimatları için [vnext-flow-studio repository'sini](https://github.com/burgan-tech/vnext-flow-studio) ziyaret edin.
+
+### 3. vNext Schema
+
+**Repository:** https://github.com/burgan-tech/vnext-schema
+
+Tüm desteklenen vNext bileşenleri (workflow'lar, görevler, fonksiyonlar, vb.) için JSON şemalarını içerir.
+
+**Amaç:**
+- 📚 Mevcut bileşenler ve özellikleri hakkında bilgi edinin
+- 🤖 Şema doğrulama için AI araçları ile entegre edin
+- ✅ Workflow'larınızın platform standartlarına uygun olduğundan emin olun
+
+Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema repository'sine](https://github.com/burgan-tech/vnext-schema) başvurun.
+
+---
 
 ## VNext Core Runtime Initialization
 
