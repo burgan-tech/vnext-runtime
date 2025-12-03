@@ -115,6 +115,43 @@ Common transitions (example: Cancel, Approve):
 ]
 ```
 
+#### Cancel
+Defines the cancel behavior for the workflow:
+```json
+"cancel": {
+  "key": "cancel-account-opening",
+  "target": "cancelled",
+  "triggerType": 0,
+  "versionStrategy": "Minor",
+  "labels": [
+    {
+      "language": "en-US",
+      "label": "Cancel Account Opening"
+    }
+  ],
+  "onExecutionTasks": [],
+  "availableIn": []
+}
+```
+
+:::warning Critical: Cascading Cancel
+For sub-correlations to be cancelled, the child flow definitions **must also have a cancel definition**. If a child flow does not have a cancel definition, the parent system will notify the request but will **bypass** if no response is received.
+:::
+
+**Cancel Properties:**
+- `key`: Unique identifier for the cancel transition
+- `target`: The finish state to transition to when cancelled
+- `triggerType`: How the cancel is triggered (usually Manual - 0)
+- `versionStrategy`: Version handling strategy (Major/Minor)
+- `labels`: Multi-language labels for the cancel action
+- `onExecutionTasks`: Tasks to execute during cancellation
+- `availableIn`: States where cancel is available (empty array means all states)
+
+**What gets cancelled:**
+- Active jobs associated with the workflow instance
+- Active tasks running in the workflow
+- Active correlations (SubFlows and SubProcesses)
+
 ## Start Transition
 
 :::warning Required Component
@@ -197,6 +234,15 @@ Represents different stages of the workflow. For detailed information: [📄 Sta
       "reset": "string",
       "duration": "string (ISO 8601)"
     }
+  },
+  "cancel": {
+    "key": "string",
+    "target": "string",
+    "triggerType": "0 (Manual)|1 (Automatic)|2 (Scheduled)|3 (Event)",
+    "versionStrategy": "Major|Minor",
+    "labels": [...],
+    "onExecutionTasks": [...],
+    "availableIn": ["state1", "state2"]
   },
   "labels": [
     {

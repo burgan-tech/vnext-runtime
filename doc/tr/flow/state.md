@@ -28,6 +28,40 @@ State nesnesi aşağıdaki türlerde tanımlanabilir:
 - SubFlow tamamlandığında, auto ve schedule transition'lardan devam eder
 - Workflow'ların tekrar kullanılabilirlik yetkinliğini artırır
 
+## State Alt Türleri (SubTypes)
+
+State SubType'lar, durumlar için ek sınıflandırma sağlar. Özellikle Finish durumlarının sonuç türünü belirtmek için kullanışlıdır.
+
+| Alt Tür | Kod | Açıklama |
+|---------|-----|----------|
+| **None** | 0 | Belirli bir alt tür yok |
+| **Success** | 1 | Başarılı tamamlanma |
+| **Error** | 2 | Hata durumu |
+| **Terminated** | 3 | Manuel olarak sonlandırıldı |
+| **Suspended** | 4 | Geçici olarak askıya alındı |
+
+### Kullanım Örneği
+```json
+{
+  "key": "completed",
+  "stateType": 3,
+  "subType": 1,
+  "labels": [
+    {
+      "label": "Başarıyla Tamamlandı",
+      "language": "tr"
+    }
+  ]
+}
+```
+
+### Alt Tür Kullanım Senaryoları
+
+- **Success (1)**: Başarılı workflow tamamlanmasını temsil eden bitiş durumları için kullanın
+- **Error (2)**: Hata/başarısızlık sonuçlarını temsil eden bitiş durumları için kullanın
+- **Terminated (3)**: Manuel iptal yoluyla ulaşılan bitiş durumları için kullanın
+- **Suspended (4)**: Workflow'un geçici olarak duraklatıldığı durumlar için kullanın
+
 :::info[SubProcess vs SubFlow]
 **SubProcess**: Ana workflow'u bloklamaz ve paralelde izole şekilde çalışır. Ana workflow'a paralel çalışır ve fan-in gibi akış paternlerini gerçeklemek için kullanılır.
 
@@ -62,7 +96,7 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
 
 6. **State Tipi Kontrolü**
    - **Finish**: Instance durumu "Completed" olarak güncellenir
-   - **SubFlow**: SubFlow/SubProcess çalıştırılır
+   - **SubFlow**: Sadece SubFlow çalıştırılır
 
 7. **Auto Transition'lar**
    - Otomatik transition'lar çalıştırılır
@@ -71,6 +105,11 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
    - Zamanlanmış transition'lar çalıştırılır
 
 ## State Bileşenleri
+
+### SubType (Alt Tür)
+- State için ek sınıflandırma sağlar
+- Özellikle Finish durumlarında sonuç türünü belirtmek için kullanılır
+- Değerler: None (0), Success (1), Error (2), Terminated (3), Suspended (4)
 
 ### VersionStrategy
 - State'in veri versiyonlama stratejisi
@@ -106,7 +145,8 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
 ```json
 {
   "key": "string",
-  "stateType": "Initial|Intermediate|Finish|SubFlow",
+  "stateType": "1 (Initial)|2 (Intermediate)|3 (Finish)|4 (SubFlow)",
+  "subType": "0 (None)|1 (Success)|2 (Error)|3 (Terminated)|4 (Suspended)",
   "versionStrategy": {
     "type": "Major|Minor"
   },
@@ -126,9 +166,5 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
   }
 }
 ```
-
-
-
-
 
 

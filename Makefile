@@ -1,6 +1,37 @@
 # VNext Runtime Makefile
 # This Makefile provides convenient commands for managing the VNext Runtime application
 
+# Container Runtime Detection (OrbStack, Docker, Docker v2, or Podman)
+CONTAINER_RUNTIME := $(shell \
+	if command -v orb >/dev/null 2>&1; then \
+		echo "docker"; \
+	elif command -v docker >/dev/null 2>&1; then \
+		echo "docker"; \
+	elif command -v podman >/dev/null 2>&1; then \
+		echo "podman"; \
+	else \
+		echo "none"; \
+	fi)
+
+# Detect if OrbStack is being used
+IS_ORBSTACK := $(shell command -v orb >/dev/null 2>&1 && echo "yes" || echo "no")
+
+# Compose Command Detection
+COMPOSE_CMD := $(shell \
+	if command -v orb >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then \
+		echo "docker compose"; \
+	elif docker compose version >/dev/null 2>&1; then \
+		echo "docker compose"; \
+	elif command -v docker-compose >/dev/null 2>&1; then \
+		echo "docker-compose"; \
+	elif command -v podman-compose >/dev/null 2>&1; then \
+		echo "podman-compose"; \
+	elif command -v podman >/dev/null 2>&1 && podman compose version >/dev/null 2>&1; then \
+		echo "podman compose"; \
+	else \
+		echo "none"; \
+	fi)
+
 # Variables
 DOCKER_COMPOSE_FILE = vnext/docker/docker-compose.yml
 DOCKER_COMPOSE_LIGHTWEIGHT_FILE = vnext/docker/docker-compose.lightweight.yml
@@ -18,13 +49,40 @@ RED = \033[0;31m
 GREEN = \033[0;32m
 YELLOW = \033[1;33m
 BLUE = \033[0;34m
+PURPLE = \033[0;35m
 NC = \033[0m # No Color
 
 ##@ Help
 help: ## Display this help message
 	@echo "$(BLUE)VNext Runtime Management$(NC)"
 	@echo "=========================="
+	@echo "$(PURPLE)Container Runtime:$(NC) $(CONTAINER_RUNTIME)$(if $(filter yes,$(IS_ORBSTACK)), (OrbStack),)"
+	@echo "$(PURPLE)Compose Command:$(NC) $(COMPOSE_CMD)"
+	@echo ""
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+check-runtime: ## Validate container runtime availability
+	@if [ "$(CONTAINER_RUNTIME)" = "none" ]; then \
+		echo "$(RED)❌ No container runtime detected!$(NC)"; \
+		echo "$(YELLOW)Please install one of:$(NC)"; \
+		echo "  • OrbStack: https://orbstack.dev"; \
+		echo "  • Docker: https://docs.docker.com/get-docker/"; \
+		echo "  • Podman: https://podman.io/getting-started/installation"; \
+		exit 1; \
+	fi
+	@if [ "$(COMPOSE_CMD)" = "none" ]; then \
+		echo "$(RED)❌ No compose command detected!$(NC)"; \
+		echo "$(YELLOW)Please install docker-compose or podman-compose$(NC)"; \
+		exit 1; \
+	fi
+	@if [ "$(IS_ORBSTACK)" = "yes" ]; then \
+		echo "$(GREEN)✅ OrbStack detected and ready$(NC)"; \
+	elif [ "$(CONTAINER_RUNTIME)" = "docker" ]; then \
+		echo "$(GREEN)✅ Docker detected and ready$(NC)"; \
+	else \
+		echo "$(GREEN)✅ Podman detected and ready$(NC)"; \
+	fi
+	@echo "$(GREEN)✅ Compose command: $(COMPOSE_CMD)$(NC)"
 
 ##@ Environment Setup
 setup: ## Setup environment files and network
@@ -43,8 +101,7 @@ create-env-files: ## Create environment files from templates
 		echo "CUSTOM_COMPONENTS_PATH=./custom-components" >> $(ENV_FILE); \
 		echo "" >> $(ENV_FILE); \
 		echo "# Docker Image Versions" >> $(ENV_FILE); \
-		echo "VNEXT_ORCHESTRATOR_VERSION=latest" >> $(ENV_FILE); \
-		echo "VNEXT_EXECUTION_VERSION=latest" >> $(ENV_FILE); \
+		echo "VNEXT_VERSION=latest" >> $(ENV_FILE); \
 		echo "DAPR_RUNTIME_VERSION=latest" >> $(ENV_FILE); \
 		echo "DAPR_PLACEMENT_VERSION=latest" >> $(ENV_FILE); \
 		echo "DAPR_SCHEDULER_VERSION=latest" >> $(ENV_FILE); \
@@ -137,10 +194,10 @@ create-env-files: ## Create environment files from templates
 		echo "$(YELLOW)$(ENV_EXECUTION_FILE) already exists$(NC)"; \
 	fi
 
-create-network: ## Create Docker network
-	@echo "$(YELLOW)Creating Docker network: $(NETWORK_NAME)...$(NC)"
-	@docker network inspect $(NETWORK_NAME) >/dev/null 2>&1 || \
-	(docker network create $(NETWORK_NAME) && echo "$(GREEN)Network $(NETWORK_NAME) created$(NC)") || \
+create-network: check-runtime ## Create container network
+	@echo "$(YELLOW)Creating container network: $(NETWORK_NAME)...$(NC)"
+	@$(CONTAINER_RUNTIME) network inspect $(NETWORK_NAME) >/dev/null 2>&1 || \
+	($(CONTAINER_RUNTIME) network create $(NETWORK_NAME) && echo "$(GREEN)Network $(NETWORK_NAME) created$(NC)") || \
 	echo "$(YELLOW)Network $(NETWORK_NAME) already exists$(NC)"
 
 check-env: ## Check if environment files exist
@@ -167,28 +224,28 @@ check-env: ## Check if environment files exist
 		echo "$(GREEN)✅ $(ENV_EXECUTION_FILE) found$(NC)"; \
 	fi
 
-##@ Docker Operations
-build-lightweight: check-env ## Build Docker images (lightweight mode)
-	@echo "$(YELLOW)Building Docker images (lightweight mode)...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml build
+##@ Container Operations
+build-lightweight: check-env check-runtime ## Build container images (lightweight mode)
+	@echo "$(YELLOW)Building container images (lightweight mode)...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml build
 	@echo "$(GREEN)Build completed!$(NC)"
 
-build: check-env ## Build Docker images
-	@echo "$(YELLOW)Building Docker images...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose build
+build: check-env check-runtime ## Build container images
+	@echo "$(YELLOW)Building container images...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) build
 	@echo "$(GREEN)Build completed!$(NC)"
 
-up-lightweight: check-env ## Start all services (lightweight mode)
+up-lightweight: check-env check-runtime ## Start all services (lightweight mode)
 	@echo "$(YELLOW)Starting VNext Runtime services (lightweight mode)...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml up -d
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml up -d
 	@echo "$(GREEN)Services started (lightweight mode)!$(NC)"
 	@$(MAKE) status-lightweight
 
-up: check-env ## Start all services
+up: check-env check-runtime ## Start all services
 	@echo "$(YELLOW)Starting VNext Runtime services...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && docker-compose up -d
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
@@ -196,28 +253,28 @@ start-lightweight: up-build-lightweight ## Start services with build (lightweigh
 
 start: up-build ## Start services with build
 
-up-build-lightweight: check-env ## Start services with build (lightweight mode)
+up-build-lightweight: check-env check-runtime ## Start services with build (lightweight mode)
 	@echo "$(YELLOW)Starting VNext Runtime services with build (lightweight mode)...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml up -d --build
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml up -d --build
 	@echo "$(GREEN)Services started (lightweight mode)!$(NC)"
 	@$(MAKE) status-lightweight
 
-up-build: check-env ## Start services with build
+up-build: check-env check-runtime ## Start services with build
 	@echo "$(YELLOW)Starting VNext Runtime services with build...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && docker-compose up -d --build
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d --build
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
-down-lightweight: ## Stop all services (lightweight mode)
+down-lightweight: check-runtime ## Stop all services (lightweight mode)
 	@echo "$(YELLOW)Stopping VNext Runtime services (lightweight mode)...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml down
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml down
 	@echo "$(GREEN)Services stopped (lightweight mode)!$(NC)"
 
-down: ## Stop all services
+down: check-runtime ## Stop all services
 	@echo "$(YELLOW)Stopping VNext Runtime services...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose down
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down
 	@echo "$(GREEN)Services stopped!$(NC)"
 
 stop-lightweight: down-lightweight ## Alias for 'down' (lightweight mode)
@@ -237,45 +294,45 @@ restart: ## Restart all services
 	@echo "$(GREEN)Services restarted!$(NC)"
 
 ##@ Service Management
-status-lightweight: ## Show status of all services (lightweight mode)
+status-lightweight: check-runtime ## Show status of all services (lightweight mode)
 	@echo "$(BLUE)VNext Runtime Services Status (Lightweight):$(NC)"
 	@echo "================================================"
-	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml ps
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml ps
 
-status: ## Show status of all services
+status: check-runtime ## Show status of all services
 	@echo "$(BLUE)VNext Runtime Services Status:$(NC)"
 	@echo "================================="
-	cd $(DOCKER_DIR) && docker-compose ps
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
 
-logs-lightweight: ## Show logs for all services (lightweight mode)
-	cd $(DOCKER_DIR) && docker-compose -f docker-compose.lightweight.yml logs -f
+logs-lightweight: check-runtime ## Show logs for all services (lightweight mode)
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml logs -f
 
-logs: ## Show logs for all services
-	cd $(DOCKER_DIR) && docker-compose logs -f
+logs: check-runtime ## Show logs for all services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f
 
-logs-orchestration: ## Show logs for orchestration service
-	cd $(DOCKER_DIR) && docker-compose logs -f vnext-app
+logs-orchestration: check-runtime ## Show logs for orchestration service
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-app
 
-logs-execution: ## Show logs for execution service
-	cd $(DOCKER_DIR) && docker-compose logs -f vnext-execution-app
+logs-execution: check-runtime ## Show logs for execution service
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-execution-app
 
-logs-init: ## Show logs for core init service
-	cd $(DOCKER_DIR) && docker-compose logs -f vnext-core-init
+logs-init: check-runtime ## Show logs for core init service
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-core-init
 
-logs-dapr: ## Show logs for DAPR services
-	cd $(DOCKER_DIR) && docker-compose logs -f vnext-orchestration-dapr vnext-execution-dapr
+logs-dapr: check-runtime ## Show logs for DAPR services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-orchestration-dapr vnext-execution-dapr
 
-logs-db: ## Show logs for database services
-	cd $(DOCKER_DIR) && docker-compose logs -f postgres redis
+logs-db: check-runtime ## Show logs for database services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f postgres redis
 
-logs-monitoring: ## Show logs for monitoring services
-	cd $(DOCKER_DIR) && docker-compose logs -f prometheus grafana
+logs-monitoring: check-runtime ## Show logs for monitoring services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f prometheus grafana
 
-logs-prometheus: ## Show logs for Prometheus service
-	cd $(DOCKER_DIR) && docker-compose logs -f prometheus
+logs-prometheus: check-runtime ## Show logs for Prometheus service
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f prometheus
 
-logs-grafana: ## Show logs for Grafana service
-	cd $(DOCKER_DIR) && docker-compose logs -f grafana
+logs-grafana: check-runtime ## Show logs for Grafana service
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f grafana
 
 health: ## Check health of services
 	@echo "$(BLUE)Service Health Check:$(NC)"
@@ -309,32 +366,32 @@ dev: ## Start development environment
 	@$(MAKE) up-build
 	@$(MAKE) health
 
-shell-orchestration: ## Open shell in orchestration container
-	cd $(DOCKER_DIR) && docker-compose exec vnext-app sh
+shell-orchestration: check-runtime ## Open shell in orchestration container
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec vnext-app sh
 
-shell-execution: ## Open shell in execution container
-	cd $(DOCKER_DIR) && docker-compose exec vnext-execution-app sh
+shell-execution: check-runtime ## Open shell in execution container
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec vnext-execution-app sh
 
-shell-postgres: ## Open PostgreSQL shell
-	cd $(DOCKER_DIR) && docker-compose exec postgres psql -U postgres
+shell-postgres: check-runtime ## Open PostgreSQL shell
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec postgres psql -U postgres
 
-shell-redis: ## Open Redis CLI
-	cd $(DOCKER_DIR) && docker-compose exec redis redis-cli
+shell-redis: check-runtime ## Open Redis CLI
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec redis redis-cli
 
 ##@ Maintenance
-clean: ## Remove stopped containers and unused networks
-	@echo "$(YELLOW)Cleaning up Docker resources...$(NC)"
-	docker container prune -f
-	docker network prune -f
+clean: check-runtime ## Remove stopped containers and unused networks
+	@echo "$(YELLOW)Cleaning up container resources...$(NC)"
+	$(CONTAINER_RUNTIME) container prune -f
+	$(CONTAINER_RUNTIME) network prune -f
 	@echo "$(GREEN)Cleanup completed!$(NC)"
 
-clean-all: ## Remove all containers, images, and volumes (WARNING: Destructive)
+clean-all: check-runtime ## Remove all containers, images, and volumes (WARNING: Destructive)
 	@echo "$(RED)WARNING: This will remove ALL containers, images, and volumes!$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 10 seconds to continue...$(NC)"
 	@sleep 10
 	@$(MAKE) down
-	cd $(DOCKER_DIR) && docker-compose down -v --rmi all
-	docker system prune -a -f
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down -v --rmi all
+	$(CONTAINER_RUNTIME) system prune -a -f
 	@echo "$(GREEN)Complete cleanup finished!$(NC)"
 
 reset: ## Reset environment (stop, clean, and setup)
@@ -344,34 +401,34 @@ reset: ## Reset environment (stop, clean, and setup)
 	@$(MAKE) setup
 	@echo "$(GREEN)Environment reset completed!$(NC)"
 
-update: ## Pull latest images and restart
+update: check-runtime ## Pull latest images and restart
 	@echo "$(YELLOW)Updating VNext Runtime images...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose pull
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) pull
 	@$(MAKE) restart
 	@echo "$(GREEN)Update completed!$(NC)"
 
 ##@ Monitoring
-ps: ## Show running containers
-	cd $(DOCKER_DIR) && docker-compose ps
+ps: check-runtime ## Show running containers
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
 
-top: ## Show container resource usage
-	cd $(DOCKER_DIR) && docker-compose top
+top: check-runtime ## Show container resource usage
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) top
 
-stats: ## Show container statistics
-	docker stats $(shell cd $(DOCKER_DIR) && docker-compose ps -q)
+stats: check-runtime ## Show container statistics
+	$(CONTAINER_RUNTIME) stats $(shell cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps -q)
 
-monitoring-up: ## Start only monitoring services (Prometheus & Grafana)
+monitoring-up: check-runtime ## Start only monitoring services (Prometheus & Grafana)
 	@echo "$(YELLOW)Starting monitoring services...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && docker-compose up -d prometheus grafana
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d prometheus grafana
 	@echo "$(GREEN)Monitoring services started!$(NC)"
 	@echo "$(BLUE)Access URLs:$(NC)"
 	@echo "• Prometheus: http://localhost:9090"
 	@echo "• Grafana: http://localhost:3000 (admin/admin)"
 
-monitoring-down: ## Stop monitoring services
+monitoring-down: check-runtime ## Stop monitoring services
 	@echo "$(YELLOW)Stopping monitoring services...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose stop prometheus grafana
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) stop prometheus grafana
 	@echo "$(GREEN)Monitoring services stopped!$(NC)"
 
 monitoring-restart: ## Restart monitoring services
@@ -380,19 +437,19 @@ monitoring-restart: ## Restart monitoring services
 	@$(MAKE) monitoring-up
 	@echo "$(GREEN)Monitoring services restarted!$(NC)"
 
-monitoring-status: ## Show status of monitoring services
+monitoring-status: check-runtime ## Show status of monitoring services
 	@echo "$(BLUE)Monitoring Services Status:$(NC)"
 	@echo "=========================="
-	cd $(DOCKER_DIR) && docker-compose ps prometheus grafana
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps prometheus grafana
 
 prometheus-config-reload: ## Reload Prometheus configuration
 	@echo "$(YELLOW)Reloading Prometheus configuration...$(NC)"
 	@curl -X POST http://localhost:9090/-/reload || echo "$(RED)❌ Failed to reload Prometheus config$(NC)"
 	@echo "$(GREEN)Prometheus configuration reloaded!$(NC)"
 
-grafana-reset-password: ## Reset Grafana admin password
+grafana-reset-password: check-runtime ## Reset Grafana admin password
 	@echo "$(YELLOW)Resetting Grafana admin password...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose exec grafana grafana-cli admin reset-admin-password admin
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec grafana grafana-cli admin reset-admin-password admin
 	@echo "$(GREEN)Grafana admin password reset to 'admin'$(NC)"
 
 ##@ Custom Components
@@ -403,9 +460,9 @@ init-custom-components: ## Initialize custom components directory
 	@echo "$(BLUE)Directory structure:$(NC)"
 	@tree $(DOCKER_DIR)/custom-components 2>/dev/null || ls -la $(DOCKER_DIR)/custom-components
 
-reload-components: ## Reload custom components
+reload-components: check-runtime ## Reload custom components
 	@echo "$(YELLOW)Reloading custom components...$(NC)"
-	cd $(DOCKER_DIR) && docker-compose restart vnext-core-init
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) restart vnext-core-init
 	@echo "$(GREEN)Components reloaded!$(NC)"
 
 ##@ Git Operations
@@ -425,6 +482,8 @@ info: ## Show project information
 	@echo "$(BLUE)VNext Runtime Project Information$(NC)"
 	@echo "=================================="
 	@echo "$(YELLOW)Project:$(NC) VNext Runtime"
+	@echo "$(YELLOW)Container Runtime:$(NC) $(CONTAINER_RUNTIME)$(if $(filter yes,$(IS_ORBSTACK)), (OrbStack),)"
+	@echo "$(YELLOW)Compose Command:$(NC) $(COMPOSE_CMD)"
 	@echo "$(YELLOW)Docker Compose:$(NC) $(DOCKER_COMPOSE_FILE)"
 	@echo "$(YELLOW)Network:$(NC) $(NETWORK_NAME)"
 	@echo ""
@@ -452,8 +511,22 @@ version: ## Show version information
 	@echo "$(BLUE)Version Information:$(NC)"
 	@echo "==================="
 	@echo "$(YELLOW)Make:$(NC) $(shell make --version | head -n 1)"
-	@echo "$(YELLOW)Docker:$(NC) $(shell docker --version)"
-	@echo "$(YELLOW)Docker Compose:$(NC) $(shell docker-compose --version)"
+	@if [ "$(IS_ORBSTACK)" = "yes" ]; then \
+		echo "$(YELLOW)Container Runtime:$(NC) OrbStack (using Docker CLI)"; \
+		echo "$(YELLOW)OrbStack:$(NC) $(shell orb version 2>/dev/null || echo 'N/A')"; \
+	else \
+		echo "$(YELLOW)Container Runtime:$(NC) $(CONTAINER_RUNTIME)"; \
+	fi
+	@echo "$(YELLOW)$(CONTAINER_RUNTIME):$(NC) $(shell $(CONTAINER_RUNTIME) --version 2>/dev/null || echo 'N/A')"
+	@if [ "$(COMPOSE_CMD)" = "docker compose" ]; then \
+		echo "$(YELLOW)Compose Version:$(NC) $(shell docker compose version 2>/dev/null || echo 'N/A')"; \
+	elif [ "$(COMPOSE_CMD)" = "docker-compose" ]; then \
+		echo "$(YELLOW)Compose Version:$(NC) $(shell docker-compose --version 2>/dev/null || echo 'N/A')"; \
+	elif [ "$(COMPOSE_CMD)" = "podman-compose" ]; then \
+		echo "$(YELLOW)Compose Version:$(NC) $(shell podman-compose --version 2>/dev/null || echo 'N/A')"; \
+	elif [ "$(COMPOSE_CMD)" = "podman compose" ]; then \
+		echo "$(YELLOW)Compose Version:$(NC) $(shell podman compose version 2>/dev/null || echo 'N/A')"; \
+	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help setup create-env-files create-network check-env build up start up-build down stop restart status logs logs-orchestration logs-execution logs-init logs-dapr logs-db logs-monitoring logs-prometheus logs-grafana health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats monitoring-up monitoring-down monitoring-restart monitoring-status prometheus-config-reload grafana-reset-password init-custom-components reload-components git-init info version
+.PHONY: help check-runtime setup create-env-files create-network check-env build build-lightweight up up-lightweight start start-lightweight up-build up-build-lightweight down down-lightweight stop stop-lightweight restart restart-lightweight status status-lightweight logs logs-lightweight logs-orchestration logs-execution logs-init logs-dapr logs-db logs-monitoring logs-prometheus logs-grafana health dev dev-lightweight shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats monitoring-up monitoring-down monitoring-restart monitoring-status prometheus-config-reload grafana-reset-password init-custom-components reload-components git-init info version

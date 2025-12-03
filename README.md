@@ -30,68 +30,6 @@ APP_DOMAIN=my-company
 
 This ensures all workflow components, tasks, and system resources are properly scoped to your domain namespace.
 
-## 🚀 Getting Started with vNext Development
-
-To develop workflows and components for vNext Runtime, you'll need the following tools:
-
-### 1. vNext CLI
-
-**Repository:** https://github.com/burgan-tech/vnext-cli
-
-The vNext CLI is a command-line tool for creating, validating, and building vNext workflow projects.
-
-**Installation & Usage:**
-
-```bash
-# Install the CLI
-npm install -g @burgan-tech/vnext-cli
-
-# Create a new vNext project with your domain
-vnext create YOUR_DOMAIN_NAME
-
-# Validate your workflows
-vnext validate
-
-# Build your workflow package
-vnext build
-```
-
-The CLI provides various commands to help you manage your workflow development lifecycle. For detailed documentation, visit the [vnext-cli repository](https://github.com/burgan-tech/vnext-cli).
-
-### 2. vNext Flow Studio
-
-**Repository:** https://github.com/burgan-tech/vnext-flow-studio
-
-A powerful Visual Studio Code extension for visual workflow design and management.
-
-**Features:**
-- 🎨 Visual workflow design interface
-- 📦 Manage workflows and components visually
-- 🚀 Deploy workflows directly from VS Code
-- 🔍 IntelliSense and validation support
-
-**Installation:**
-1. Open VS Code
-2. Search for "vNext Flow Studio" in Extensions
-3. Install and start designing your workflows visually
-
-For detailed usage instructions, visit the [vnext-flow-studio repository](https://github.com/burgan-tech/vnext-flow-studio).
-
-### 3. vNext Schema
-
-**Repository:** https://github.com/burgan-tech/vnext-schema
-
-Contains JSON schemas for all supported vNext components (workflows, tasks, functions, etc.).
-
-**Purpose:**
-- 📚 Learn about available components and their properties
-- 🤖 Integrate with AI tools for schema validation
-- ✅ Ensure your workflows conform to platform standards
-
-Reference the [vnext-schema repository](https://github.com/burgan-tech/vnext-schema) to understand component structures and validation rules.
-
----
-
 ## Quick Start
 
 ### Easy Setup with Makefile (Recommended)
@@ -201,6 +139,89 @@ docker-compose ps
 # vnext-app health check
 curl http://localhost:4201/health
 ```
+
+## 🚀 Getting Started with vNext Development
+
+To develop workflows and components for vNext Runtime, you'll need the following tools:
+
+### 1. vNext Template
+
+**Repository:** https://github.com/burgan-tech/vnext-template
+
+A structured template package for vNext workflow components with domain-based architecture. This template creates a complete project structure with built-in validation and build capabilities.
+
+**Installation & Usage:**
+
+```bash
+# Create a new vNext project with your domain name
+npx @burgan-tech/vnext-template YOUR_DOMAIN_NAME
+
+# Example
+npx @burgan-tech/vnext-template user-management
+```
+
+This will create a new directory with your domain name containing the following structure:
+
+```
+YOUR_DOMAIN_NAME/
+├── Extensions/    # Custom extension definitions
+├── Functions/     # Custom function definitions
+├── Schemas/       # JSON schema definitions
+├── Tasks/         # Task definitions
+├── Views/         # View components
+└── Workflows/     # Workflow definitions
+```
+
+**Available Scripts:**
+
+| Script | Description |
+|--------|-------------|
+| `npm run validate` | Validate project structure and schemas |
+| `npm run build` | Build runtime package to dist/ |
+| `npm run build:runtime` | Build runtime package explicitly |
+| `npm run build:reference` | Build reference package with exports only |
+
+**Install Specific Version:**
+
+```bash
+npx @burgan-tech/vnext-template@<version> YOUR_DOMAIN_NAME
+```
+
+For detailed documentation, visit the [vnext-template repository](https://github.com/burgan-tech/vnext-template).
+
+### 2. vNext Flow Studio
+
+**Repository:** https://github.com/burgan-tech/vnext-flow-studio
+
+A powerful Visual Studio Code extension for visual workflow design and management.
+
+**Features:**
+- 🎨 Visual workflow design interface
+- 📦 Manage workflows and components visually
+- 🚀 Deploy workflows directly from VS Code
+- 🔍 IntelliSense and validation support
+
+**Installation:**
+1. Open VS Code
+2. Search for "vNext Flow Studio" in Extensions
+3. Install and start designing your workflows visually
+
+For detailed usage instructions, visit the [vnext-flow-studio repository](https://github.com/burgan-tech/vnext-flow-studio).
+
+### 3. vNext Schema
+
+**Repository:** https://github.com/burgan-tech/vnext-schema
+
+Contains JSON schemas for all supported vNext components (workflows, tasks, functions, etc.).
+
+**Purpose:**
+- 📚 Learn about available components and their properties
+- 🤖 Integrate with AI tools for schema validation
+- ✅ Ensure your workflows conform to platform standards
+
+Reference the [vnext-schema repository](https://github.com/burgan-tech/vnext-schema) to understand component structures and validation rules.
+
+---
 
 ## VNext Core Runtime Initialization
 

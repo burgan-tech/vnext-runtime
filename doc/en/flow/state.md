@@ -28,6 +28,40 @@ The State object can be defined in the following types:
 - When SubFlow is completed, it continues from auto and schedule transitions
 - Increases the reusability capability of workflows
 
+## State SubTypes
+
+State SubTypes provide additional classification for states, particularly useful for Finish states to indicate the outcome type.
+
+| SubType | Code | Description |
+|---------|------|-------------|
+| **None** | 0 | No specific subtype |
+| **Success** | 1 | Successful completion |
+| **Error** | 2 | Error condition |
+| **Terminated** | 3 | Manually terminated |
+| **Suspended** | 4 | Temporarily suspended |
+
+### Usage Example
+```json
+{
+  "key": "completed",
+  "stateType": 3,
+  "subType": 1,
+  "labels": [
+    {
+      "label": "Successfully Completed",
+      "language": "en"
+    }
+  ]
+}
+```
+
+### SubType Use Cases
+
+- **Success (1)**: Use for finish states that represent successful workflow completion
+- **Error (2)**: Use for finish states that represent error/failure outcomes
+- **Terminated (3)**: Use for finish states reached through manual cancellation
+- **Suspended (4)**: Use for states where the workflow is temporarily paused
+
 :::info[SubProcess vs SubFlow]
 **SubProcess**: Does not block the main workflow and runs in parallel in isolation. It runs parallel to the main workflow and is used to implement flow patterns like fan-in.
 
@@ -62,7 +96,7 @@ The state machine follows the following lifecycle:
 
 6. **State Type Check**
    - **Finish**: Instance status is updated as "Completed"
-   - **SubFlow**: SubFlow/SubProcess is executed
+   - **SubFlow**: Only SubFlow is executed
 
 7. **Auto Transitions**
    - Automatic transitions are executed
@@ -71,6 +105,11 @@ The state machine follows the following lifecycle:
    - Scheduled transitions are executed
 
 ## State Components
+
+### SubType
+- Provides additional classification for the state
+- Used to indicate the outcome type, especially for Finish states
+- Values: None (0), Success (1), Error (2), Terminated (3), Suspended (4)
 
 ### VersionStrategy
 - Data versioning strategy of the state
@@ -106,7 +145,8 @@ The state machine follows the following lifecycle:
 ```json
 {
   "key": "string",
-  "stateType": "Initial|Intermediate|Finish|SubFlow",
+  "stateType": "1 (Initial)|2 (Intermediate)|3 (Finish)|4 (SubFlow)",
+  "subType": "0 (None)|1 (Success)|2 (Error)|3 (Terminated)|4 (Suspended)",
   "versionStrategy": {
     "type": "Major|Minor"
   },
