@@ -823,6 +823,13 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
 
 ### Transition Definition with Mapping
 
+> **v0.0.23 Change**: The mapping schema has been updated. The `encoding` field has been added and Native C# code support (NAT) is now available.
+
+**Encoding Options:**
+- `B64`: BASE64 encoded code (`location` field is required)
+- `NAT`: Native C# code (`location` field is not required - more readable)
+
+**BASE64 Encoding Example (B64):**
 ```json
 {
   "key": "approve-order",
@@ -837,7 +844,28 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
   ],
   "mapping": {
     "location": "./src/OrderApprovalTransitionMapping.csx",
-    "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmc..."
+    "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmc...",
+    "encoding": "B64"
+  }
+}
+```
+
+**Native Encoding Example (NAT):**
+```json
+{
+  "key": "approve-order",
+  "source": "pending-approval",
+  "target": "approved",
+  "triggerType": 0,
+  "labels": [
+    {
+      "language": "en-US",
+      "label": "Approve Order"
+    }
+  ],
+  "mapping": {
+    "code": "public class OrderApprovalTransitionMapping : ScriptBase, ITransitionMapping { ... }",
+    "encoding": "NAT"
   }
 }
 ```

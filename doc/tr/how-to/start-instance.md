@@ -8,12 +8,30 @@ Bu dokümantasyon, vNext Runtime sisteminde bir instance'ın nasıl başlatılac
 
 Bir iş akışı başlatmak için her zaman `start` endpoint'i kullanılır. Sistem size bir `id` değerini response olarak döner. Bu id değeri, oluşturulan instance id'dir ve bundan sonraki transition süreci bu id ile ilerletilir.
 
+> **v0.0.23 Değişikliği**: `key` alanı artık zorunlu değildir. Başlangıçta boş bırakılabilir ve sonraki transition'larda atanabilir.
+
 **Endpoint:**
 ```
 POST /:domain/workflows/:flow/instances/start?sync=true
 ```
 
-**Örnek İstek:**
+**Payload Şeması:**
+```json
+{
+    "key": "",
+    "tags": [],
+    "attributes": {}
+}
+```
+
+> **Not**: Tüm alanlar opsiyoneldir.
+
+**Key Davranışı:**
+- `key` değeri dolu gelirse ve mevcut instance'da key boş ise kaydedilir
+- Validasyonda, o key'de aktif bir instance yoksa işlem yapılır
+- Key değeri başlangıçta verilmezse, sonraki transition'larda atanabilir
+
+**Örnek İstek (Key ile):**
 ```http
 POST /ecommerce/workflows/scheduled-payments/instances/start?sync=true
 Content-Type: application/json
@@ -41,6 +59,20 @@ Content-Type: application/json
 }
 ```
 
+**Örnek İstek (Key Olmadan):**
+```http
+POST /ecommerce/workflows/scheduled-payments/instances/start?sync=true
+Content-Type: application/json
+
+{
+    "tags": ["priority", "express"],
+    "attributes": {
+        "userId": 454,
+        "amount": 12000
+    }
+}
+```
+
 **Örnek Response:**
 ```json
 {
@@ -53,6 +85,8 @@ Content-Type: application/json
 
 Başlatılan instance'ı ilerletmek için transition endpoint'i kullanılır. Instance'a referans vermek için instance ID (UUID) veya instance Key kullanabilirsiniz.
 
+> **v0.0.23 Değişikliği**: Transition payload şeması güncellenmiştir. Artık `key`, `tags` ve `attributes` alanları ile yapılandırılmış format kullanılmaktadır.
+
 **Endpoint:**
 ```
 PATCH /:domain/workflows/:flow/instances/:instanceIdOrKey/transitions/:transition?sync=true
@@ -62,14 +96,31 @@ PATCH /:domain/workflows/:flow/instances/:instanceIdOrKey/transitions/:transitio
 > - **Instance ID**: Instance oluşturulduğunda dönen UUID (örn. `18075ad5-e5b2-4437-b884-21d733339113`)
 > - **Instance Key**: Instance oluşturulurken sağlanan key değeri (örn. `99999999999`)
 
+**Yeni Transition Payload Şeması:**
+```json
+{
+    "key": "",
+    "tags": [],
+    "attributes": {}
+}
+```
+
+> **Not**: Tüm alanlar opsiyoneldir.
+
+**Key Atama Davranışı:**
+- Transition sırasında `key` değeri gönderilirse ve mevcut instance'da key boş ise kaydedilir
+- Bu sayede başlangıçta key olmadan oluşturulan instance'lara sonradan key atanabilir
+
 **Örnek İstek (Instance ID kullanarak):**
 ```http
 PATCH /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113/transitions/activate?sync=true
 Content-Type: application/json
 
 {
-    "approvedBy": "admin",
-    "approvalDate": "2025-09-20T10:30:00Z"
+    "attributes": {
+        "approvedBy": "admin",
+        "approvalDate": "2025-09-20T10:30:00Z"
+    }
 }
 ```
 
@@ -79,8 +130,24 @@ PATCH /ecommerce/workflows/scheduled-payments/instances/99999999999/transitions/
 Content-Type: application/json
 
 {
-    "approvedBy": "admin",
-    "approvalDate": "2025-09-20T10:30:00Z"
+    "attributes": {
+        "approvedBy": "admin",
+        "approvalDate": "2025-09-20T10:30:00Z"
+    }
+}
+```
+
+**Örnek İstek (Transition'da Key Atama):**
+```http
+PATCH /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113/transitions/assign-key?sync=true
+Content-Type: application/json
+
+{
+    "key": "ORDER-2024-001",
+    "tags": ["assigned"],
+    "attributes": {
+        "assignedBy": "system"
+    }
 }
 ```
 

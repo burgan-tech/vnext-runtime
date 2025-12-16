@@ -1,11 +1,11 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: notificationbinding
+  name: vnext-notification-binding
 spec:
   type: bindings.http
   version: v1
   metadata:
     - name: url
-      value: https://{HubUrl}/sendMessage/public
+      value: http://mockoon:3001/api/notification/send
     

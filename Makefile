@@ -97,8 +97,9 @@ create-env-files: ## Create environment files from templates
 		echo "# VNext Core Runtime Version" > $(ENV_FILE); \
 		echo "VNEXT_CORE_VERSION=latest" >> $(ENV_FILE); \
 		echo "" >> $(ENV_FILE); \
-		echo "# Custom Components Path (optional)" >> $(ENV_FILE); \
-		echo "CUSTOM_COMPONENTS_PATH=./custom-components" >> $(ENV_FILE); \
+		echo "# Component Configuration" >> $(ENV_FILE); \
+		echo "VNEXT_COMPONENT_VERSION=latest" >> $(ENV_FILE); \
+		echo "APP_DOMAIN=core" >> $(ENV_FILE); \
 		echo "" >> $(ENV_FILE); \
 		echo "# Docker Image Versions" >> $(ENV_FILE); \
 		echo "VNEXT_VERSION=latest" >> $(ENV_FILE); \
@@ -465,6 +466,16 @@ reload-components: check-runtime ## Reload custom components
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) restart vnext-core-init
 	@echo "$(GREEN)Components reloaded!$(NC)"
 
+publish-component: check-env ## Publish component package (waits for vnext-init to be healthy)
+	@echo "$(YELLOW)Publishing component package...$(NC)"
+	@cd $(DOCKER_DIR) && ./publish-component.sh
+	@echo "$(GREEN)Component published!$(NC)"
+
+publish-component-skip-health: check-env ## Publish component package (skip health check)
+	@echo "$(YELLOW)Publishing component package (skipping health check)...$(NC)"
+	@cd $(DOCKER_DIR) && ./publish-component.sh --skip-health
+	@echo "$(GREEN)Component published!$(NC)"
+
 ##@ Git Operations
 git-init: ## Initialize git repository
 	@if [ ! -d .git ]; then \
@@ -529,4 +540,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env build build-lightweight up up-lightweight start start-lightweight up-build up-build-lightweight down down-lightweight stop stop-lightweight restart restart-lightweight status status-lightweight logs logs-lightweight logs-orchestration logs-execution logs-init logs-dapr logs-db logs-monitoring logs-prometheus logs-grafana health dev dev-lightweight shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats monitoring-up monitoring-down monitoring-restart monitoring-status prometheus-config-reload grafana-reset-password init-custom-components reload-components git-init info version
+.PHONY: help check-runtime setup create-env-files create-network check-env build build-lightweight up up-lightweight start start-lightweight up-build up-build-lightweight down down-lightweight stop stop-lightweight restart restart-lightweight status status-lightweight logs logs-lightweight logs-orchestration logs-execution logs-init logs-dapr logs-db logs-monitoring logs-prometheus logs-grafana health dev dev-lightweight shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats monitoring-up monitoring-down monitoring-restart monitoring-status prometheus-config-reload grafana-reset-password init-custom-components reload-components publish-component publish-component-skip-health git-init info version

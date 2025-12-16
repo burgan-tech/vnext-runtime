@@ -13,7 +13,7 @@ if [ "$SECRET_CHECK" -ne 200 ]; then
   -H "X-Vault-Token: admin" \
   -d '{
     "data": {
-      "ConnectionStrings:Default": "Host=localhost;Port=5432;Database=Aether_WorkflowDb;Username=postgres;Password=postgres;"
+      "ApiSecret": "LOCAL-TEST-08184500-TEST"
     }
   }'
 else

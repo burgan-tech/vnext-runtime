@@ -42,7 +42,7 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
 |-----------|-------|-----|---------|----------|
 | `domain` | Path | string | Evet | Domain adı |
 | `workflow` | Path | string | Evet | Workflow key |
-| `instance` | Path | string | Evet | Instance ID |
+| `instance` | Path | string | Evet | Instance ID or Key |
 
 ### Response
 
