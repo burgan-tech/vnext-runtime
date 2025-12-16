@@ -823,6 +823,13 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
 
 ### Mapping ile Transition Tanımı
 
+> **v0.0.23 Değişikliği**: Mapping şeması güncellenmiştir. `encoding` alanı eklenmiş ve Native C# kod desteği (NAT) sağlanmıştır.
+
+**Encoding Seçenekleri:**
+- `B64`: BASE64 kodlanmış kod (`location` alanı gereklidir)
+- `NAT`: Native C# kodu (`location` alanı gerekmez - daha okunabilir)
+
+**BASE64 Encoding Örneği (B64):**
 ```json
 {
   "key": "approve-order",
@@ -837,7 +844,28 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
   ],
   "mapping": {
     "location": "./src/OrderApprovalTransitionMapping.csx",
-    "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmc..."
+    "code": "dXNpbmcgU3lzdGVtLlRocmVhZGluZy5UYXNrczsKdXNpbmc...",
+    "encoding": "B64"
+  }
+}
+```
+
+**Native Encoding Örneği (NAT):**
+```json
+{
+  "key": "approve-order",
+  "source": "pending-approval",
+  "target": "approved",
+  "triggerType": 0,
+  "labels": [
+    {
+      "language": "tr-TR",
+      "label": "Siparişi Onayla"
+    }
+  ],
+  "mapping": {
+    "code": "public class OrderApprovalTransitionMapping : ScriptBase, ITransitionMapping { ... }",
+    "encoding": "NAT"
   }
 }
 ```

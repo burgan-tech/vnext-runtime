@@ -2,7 +2,7 @@ services:
 
   vnext-app:
     container_name: vnext-app
-    image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_ORCHESTRATOR_VERSION:-latest}"
+    image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_VERSION:-latest}"
     env_file:
       - .env.orchestration
     volumes:
@@ -22,18 +22,23 @@ services:
       - dapr-scheduler
       - postgres
 
-  # VNext Core Runtime Initializer - vnext-app loads system components after it is healthy
-  vnext-core-init:
-    container_name: vnext-core-init
+  vnext-init:
+    container_name: vnext-init
     image: "ghcr.io/burgan-tech/vnext/init:${VNEXT_VERSION:-latest}"
     environment:
-      VNEXT_COMPONENT_VERSION: "${VNEXT_COMPONENT_VERSION:-latest}"
       VNEXT_APP_URL: "http://vnext-app:5000"
-      APP_DOMAIN: "${APP_DOMAIN:-core}"
+      PACKAGE_API_PORT: 3000
+      NPM_REGISTRY: "https://registry.npmjs.org/"
     volumes:
       - npm-cache:/app/.npm-cache
-      # Custom components volume - users can mount their components here
-      - "${CUSTOM_COMPONENTS_PATH:-./custom-components}:/app/custom-components"
+    ports:
+      - "3005:3000"
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-init:3000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - vnext-development
     depends_on:
@@ -59,13 +64,9 @@ services:
     networks:
       - vnext-development
     depends_on:
-      vnext-app:
-        condition: service_healthy
       dapr-placement:
         condition: service_started
       dapr-scheduler:
-        condition: service_started
-      postgres:
         condition: service_started
 
   vnext-orchestration-dapr:
@@ -483,7 +484,6 @@ services:
       start_period: 10s
     networks:
       - vnext-development
-
 
   mockoon-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"

@@ -70,7 +70,7 @@ State'ler arasındaki geçişleri yöneten bileşen. Dört farklı tetikleme tü
 | **Veritabanı Mimarisi** | [`fundamentals/database-architecture.md`](./fundamentals/database-architecture.md) | Multi-schema yapısı, migration sistemi ve DB izolasyonu |
 | **Persistance** | [`principles/persistance.md`](./principles/persistance.md) | Veri saklama ve Dual-Write Pattern |
 | **Referans Şeması** | [`principles/reference.md`](./principles/reference.md) | Bileşenler arası referans yönetimi |
-| **Versiyon Yönetimi** | [`principles/versioning.md`](./principles/versioning.md) | Semantic versioning ve ETag kullanımı |
+| **Versiyon Yönetimi** | [`principles/versioning.md`](./principles/versioning.md) | Versiyonlama, paket yönetimi ve deployment stratejisi |
 
 ### 🌊 İş Akışı (Flow) Dokümantasyonu
 | Konu | Dosya | Açıklama |
@@ -82,7 +82,10 @@ State'ler arasındaki geçişleri yöneten bileşen. Dört farklı tetikleme tü
 | **Task Tanımları** | [`flow/task.md`](./flow/task.md) | Görev türleri ve kullanım alanları |
 | **Transition Yönetimi** | [`flow/transition.md`](./flow/transition.md) | Geçiş türleri ve tetikleme mekanizmaları |
 | **View Yönetimi** | [`flow/view.md`](./flow/view.md) | View tanımları, gösterim stratejileri ve platform override'ları |
+| **Schema Yönetimi** | [`flow/schema.md`](./flow/schema.md) | Schema tanımları, JSON Schema doğrulaması ve veri bütünlüğü |
 | **Function API'leri** | [`flow/function.md`](./flow/function.md) | Sistem function API'leri (State, Data, View) |
+| **Özel Fonksiyonlar** | [`flow/custom-function.md`](./flow/custom-function.md) | Task çalıştıran kullanıcı tanımlı fonksiyonlar |
+| **Extension Yönetimi** | [`flow/extension.md`](./flow/extension.md) | Instance response'ları için veri zenginleştirme bileşenleri |
 
 ### 📋 Görev (Task) Detayları
 | Görev Türü | Dosya | Kullanım Alanı |
@@ -330,7 +333,7 @@ Bu dokümantasyon sürekli güncellenmektedir. Sorularınız veya katkılarını
 - **[vNext Engine](https://github.com/burgan-tech/vnext)** - Ana workflow engine ve runtime
 - **[vNext Sys-Flows](https://github.com/burgan-tech/vnext-sys-flow)** - Sistem bileşen iş akışları
 - **[vNext Schema](https://github.com/burgan-tech/vnext-schema)** - Sistem bileşen şema yapısı
-- **[vNext CLI](https://github.com/burgan-tech/vnext-cli)** - Komut satırı araçları
+- **[vNext CLI](https://github.com/burgan-tech/vnext-workflow-cli)** - Komut satırı araçları
 
 ---
 

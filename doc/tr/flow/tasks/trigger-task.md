@@ -106,7 +106,7 @@ public class StartApprovalMapping : IMapping
         {
             response.Data = new
             {
-                approvalInstanceId = context.Body.data.instanceId,
+                approvalInstanceId = context.Body.data.id,
                 approvalStarted = true,
                 startedAt = DateTime.UtcNow,
                 status = "APPROVAL_INITIATED"
@@ -131,12 +131,8 @@ public class StartApprovalMapping : IMapping
 
 ```json
 {
-  "isSuccess": true,
-  "data": {
-    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-    "state": "initial-state",
-    "createdAt": "2025-11-19T10:30:00Z"
-  }
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "status": "A"
 }
 ```
 
@@ -233,7 +229,7 @@ public class TriggerApprovalMapping : IMapping
             {
                 transitionTriggered = true,
                 triggeredAt = DateTime.UtcNow,
-                newState = context.Body.data?.currentState,
+                status = context.Body.data?.status,
                 status = "TRANSITION_SUCCESS"
             };
         }
@@ -256,13 +252,8 @@ public class TriggerApprovalMapping : IMapping
 
 ```json
 {
-  "isSuccess": true,
-  "data": {
-    "instanceId": "550e8400-e29b-41d4-a716-446655440000",
-    "currentState": "approved",
-    "transitionExecuted": "approve",
-    "executedAt": "2025-11-19T10:30:00Z"
-  }
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "status": "A"
 }
 ```
 
@@ -413,7 +404,7 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
     "type": "14",
     "config": {
       "domain": "audit",
-      "key": "transaction-audit",
+      "flow": "transaction-audit",
       "version": "1.0.0",
       "body": {
         "transactionId": "txn-12345",
@@ -429,8 +420,10 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
 | Alan | Tür | Gerekli | Açıklama |
 |------|-----|---------|----------|
 | `domain` | string | Evet | Hedef iş akışı domain'i |
-| `key` | string | Evet | Hedef iş akışı key'i |
+| `flow` | string | Evet | Hedef iş akışı key'i |
 | `version` | string | Hayır | SubFlow versiyonu |
+| `key` | string | Hayır | SubFlow key değeri |
+| `tags` | Array<string> | Hayır | Etiket değerleri |
 | `body` | object | Hayır | İstekle gönderilecek veri |
 
 ### Kullanım Alanları
@@ -461,7 +454,7 @@ public class StartAuditSubProcessMapping : IMapping
         
         // Subprocess'i yapılandır
         subProcessTask.SetDomain("audit");
-        subProcessTask.SetKey("transaction-audit");
+        subProcessTask.SetFlow("transaction-audit");
         subProcessTask.SetVersion("1.0.0");
         
         // Subprocess başlangıç verilerini hazırla
@@ -495,7 +488,8 @@ public class StartAuditSubProcessMapping : IMapping
         // Sadece başlatıldığını onayla
         response.Data = new
         {
-            auditSubProcessId = context.Body.data?.instanceId,
+            auditSubProcessId = context.Body.data?.id,
+            auditSubProcessStatus = context.Body.data?.status,
             auditInitiated = true,
             initiatedAt = DateTime.UtcNow,
             status = "AUDIT_SUBPROCESS_LAUNCHED"
@@ -506,18 +500,6 @@ public class StartAuditSubProcessMapping : IMapping
 }
 ```
 
-### Başarılı Yanıt
-
-```json
-{
-  "isSuccess": true,
-  "data": {
-    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
-    "state": "initial-state",
-    "launched": true
-  }
-}
-```
 
 ## Property Erişimi
 
@@ -527,6 +509,10 @@ Her task türü kendi setter metodlarına sahiptir:
 
 - **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
 - **SetFlow(string flow)**: Hedef iş akışı flow adını ayarlar
+- **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır)
+- **SetSync(string key)**: Hedef instance nasıl başlatılacağını ayarlar
+- **SetTags(string[] tags)**: Hedef instance tags'ini ayarlar
+- **SetVersion(string version)**: SubFlow versiyonunu ayarlar
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
 
 ### DirectTriggerTask Setter Metodları
@@ -536,6 +522,9 @@ Her task türü kendi setter metodlarına sahiptir:
 - **SetTransitionName(string transitionName)**: Çalıştırılacak transition adını ayarlar
 - **SetInstance(string instanceId)**: Hedef instance ID'sini ayarlar
 - **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır)
+- **SetSync(string key)**: Hedef instance nasıl başlatılacağını ayarlar
+- **SetTags(string[] tags)**: Hedef instance tags'ini ayarlar
+- **SetVersion(string version)**: SubFlow versiyonunu ayarlar
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
 
 ### GetInstanceDataTask Setter Metodları
@@ -549,7 +538,9 @@ Her task türü kendi setter metodlarına sahiptir:
 ### SubProcessTask Setter Metodları
 
 - **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
-- **SetKey(string key)**: Hedef iş akışı key'ini ayarlar
+- **SetFlow(string key)**: Hedef iş akışı key'ini ayarlar
+- **SetKey(string key)**: Hedef instance key'ini ayarlar
+- **SetTags(string[] tags)**: Hedef instance tags'ini ayarlar
 - **SetVersion(string version)**: SubFlow versiyonunu ayarlar
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
 

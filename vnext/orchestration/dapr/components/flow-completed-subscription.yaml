@@ -1,8 +1,0 @@
-apiVersion: dapr.io/v1alpha1
-kind: Subscription
-metadata:
-  name: vnext-flow-completed-subscription
-spec:
-  topic: development.vnext.flow-completed
-  route: /api/v1/utilities/flow/completed
-  pubsubname: vnext-pubsub

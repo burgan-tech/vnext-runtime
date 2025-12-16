@@ -70,7 +70,7 @@ Independent components that perform specific operations within the workflow:
 | **Database Architecture** | [`fundamentals/database-architecture.md`](./fundamentals/database-architecture.md) | Multi-schema structure, migration system, and DB isolation |
 | **Persistence** | [`principles/persistance.md`](./principles/persistance.md) | Data storage and Dual-Write Pattern |
 | **Reference Schema** | [`principles/reference.md`](./principles/reference.md) | Inter-component reference management |
-| **Version Management** | [`principles/versioning.md`](./principles/versioning.md) | Semantic versioning and ETag usage |
+| **Version Management** | [`principles/versioning.md`](./principles/versioning.md) | Versioning, package management, and deployment strategy |
 
 ### 🌊 Workflow (Flow) Documentation
 | Topic | File | Description |
@@ -82,7 +82,10 @@ Independent components that perform specific operations within the workflow:
 | **Task Definitions** | [`flow/task.md`](./flow/task.md) | Task types and usage areas |
 | **Transition Management** | [`flow/transition.md`](./flow/transition.md) | Transition types and trigger mechanisms |
 | **View Management** | [`flow/view.md`](./flow/view.md) | View definitions, display strategies, and platform overrides |
+| **Schema Management** | [`flow/schema.md`](./flow/schema.md) | Schema definitions, JSON Schema validation, and data integrity |
 | **Function APIs** | [`flow/function.md`](./flow/function.md) | System function APIs (State, Data, View) |
+| **Custom Functions** | [`flow/custom-function.md`](./flow/custom-function.md) | User-defined functions with task execution |
+| **Extension Management** | [`flow/extension.md`](./flow/extension.md) | Data enrichment components for instance responses |
 
 ### 📋 Task Details
 | Task Type | File | Usage Area |
@@ -330,7 +333,7 @@ This documentation is continuously updated. For questions or contributions:
 - **[vNext Engine](https://github.com/burgan-tech/vnext)** - Main workflow engine and runtime
 - **[vNext Sys-Flows](https://github.com/burgan-tech/vnext-sys-flow)** - System component workflows
 - **[vNext Schema](https://github.com/burgan-tech/vnext-schema)** - System component schema structure
-- **[vNext CLI](https://github.com/burgan-tech/vnext-cli)** - Command line tools
+- **[vNext CLI](https://github.com/burgan-tech/vnext-workflow-cli)** - Command line tools
 
 ---
 

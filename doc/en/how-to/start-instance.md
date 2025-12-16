@@ -8,12 +8,30 @@ This documentation explains how to start an instance in the vNext Runtime system
 
 The `start` endpoint is always used to start a workflow. The system returns an `id` value as a response. This id value is the created instance id, and the subsequent transition process proceeds with this id.
 
+> **v0.0.23 Change**: The `key` field is no longer mandatory. It can be left empty at start and assigned during subsequent transitions.
+
 **Endpoint:**
 ```
 POST /:domain/workflows/:flow/instances/start?sync=true
 ```
 
-**Example Request:**
+**Payload Schema:**
+```json
+{
+    "key": "",
+    "tags": [],
+    "attributes": {}
+}
+```
+
+> **Note**: All fields are optional.
+
+**Key Behavior:**
+- If `key` value is provided and the current instance key is empty, it will be saved
+- During validation, the operation proceeds only if no active instance exists with that key
+- If key is not provided at start, it can be assigned during subsequent transitions
+
+**Example Request (With Key):**
 ```http
 POST /ecommerce/workflows/scheduled-payments/instances/start?sync=true
 Content-Type: application/json
@@ -41,6 +59,20 @@ Content-Type: application/json
 }
 ```
 
+**Example Request (Without Key):**
+```http
+POST /ecommerce/workflows/scheduled-payments/instances/start?sync=true
+Content-Type: application/json
+
+{
+    "tags": ["priority", "express"],
+    "attributes": {
+        "userId": 454,
+        "amount": 12000
+    }
+}
+```
+
 **Example Response:**
 ```json
 {
@@ -53,6 +85,8 @@ Content-Type: application/json
 
 The transition endpoint is used to advance the started instance. You can use either the instance ID (UUID) or the instance Key to reference the instance.
 
+> **v0.0.23 Change**: The transition payload schema has been updated. A structured format with `key`, `tags`, and `attributes` fields is now used.
+
 **Endpoint:**
 ```
 PATCH /:domain/workflows/:flow/instances/:instanceIdOrKey/transitions/:transition?sync=true
@@ -62,14 +96,31 @@ PATCH /:domain/workflows/:flow/instances/:instanceIdOrKey/transitions/:transitio
 > - **Instance ID**: The UUID returned when the instance was created (e.g., `18075ad5-e5b2-4437-b884-21d733339113`)
 > - **Instance Key**: The key value provided during instance creation (e.g., `99999999999`)
 
+**New Transition Payload Schema:**
+```json
+{
+    "key": "",
+    "tags": [],
+    "attributes": {}
+}
+```
+
+> **Note**: All fields are optional.
+
+**Key Assignment Behavior:**
+- If a `key` value is sent during transition and the current instance key is empty, it will be saved
+- This allows assigning keys to instances that were created without a key
+
 **Example Request (using Instance ID):**
 ```http
 PATCH /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113/transitions/activate?sync=true
 Content-Type: application/json
 
 {
-    "approvedBy": "admin",
-    "approvalDate": "2025-09-20T10:30:00Z"
+    "attributes": {
+        "approvedBy": "admin",
+        "approvalDate": "2025-09-20T10:30:00Z"
+    }
 }
 ```
 
@@ -79,8 +130,24 @@ PATCH /ecommerce/workflows/scheduled-payments/instances/99999999999/transitions/
 Content-Type: application/json
 
 {
-    "approvedBy": "admin",
-    "approvalDate": "2025-09-20T10:30:00Z"
+    "attributes": {
+        "approvedBy": "admin",
+        "approvalDate": "2025-09-20T10:30:00Z"
+    }
+}
+```
+
+**Example Request (Assigning Key During Transition):**
+```http
+PATCH /ecommerce/workflows/scheduled-payments/instances/18075ad5-e5b2-4437-b884-21d733339113/transitions/assign-key?sync=true
+Content-Type: application/json
+
+{
+    "key": "ORDER-2024-001",
+    "tags": ["assigned"],
+    "attributes": {
+        "assignedBy": "system"
+    }
 }
 ```
 
