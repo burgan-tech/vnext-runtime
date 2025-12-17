@@ -18,9 +18,16 @@ services:
     networks:
       - vnext-development
     depends_on:
-      - dapr-placement
-      - dapr-scheduler
-      - postgres
+      dapr-placement:
+        condition: service_started
+      dapr-scheduler:
+        condition: service_started
+      redis:
+        condition: service_started
+      vault:
+        condition: service_started
+      postgres:
+        condition: service_healthy
 
   vnext-init:
     container_name: vnext-init
@@ -34,7 +41,7 @@ services:
     ports:
       - "3005:3000"
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vnext-init:3000/health" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:3000/health || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -43,6 +50,28 @@ services:
       - vnext-development
     depends_on:
       vnext-app:
+        condition: service_healthy
+    restart: "no"
+
+  vnext-component-publisher:
+    container_name: vnext-component-publisher
+    image: "alpine/curl:${ALPINE_CURL_VERSION:-latest}"
+    env_file:
+      - .env
+    environment:
+      VNEXT_INIT_URL: "http://vnext-init:3000"
+    volumes:
+      - ./publish-component.sh:/scripts/publish-component.sh:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Publishing components to vnext-init..."
+        apk add --no-cache bash > /dev/null 2>&1
+        /bin/bash /scripts/publish-component.sh --skip-health --url "$$VNEXT_INIT_URL"
+    networks:
+      - vnext-development
+    depends_on:
+      vnext-init:
         condition: service_healthy
     restart: "no"
       
@@ -64,10 +93,10 @@ services:
     networks:
       - vnext-development
     depends_on:
-      dapr-placement:
-        condition: service_started
-      dapr-scheduler:
-        condition: service_started
+      - dapr-placement
+      - dapr-scheduler
+      - redis
+      - vault
 
   vnext-orchestration-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
@@ -133,14 +162,12 @@ services:
     networks:
       - vnext-development
     depends_on:
-      vnext-app:
-        condition: service_healthy
       dapr-placement:
         condition: service_started
       dapr-scheduler:
         condition: service_started
       postgres:
-        condition: service_started
+        condition: service_healthy
 
   vnext-worker-inbox-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
@@ -183,14 +210,12 @@ services:
     networks:
       - vnext-development
     depends_on:
-      vnext-app:
-        condition: service_healthy
       dapr-placement:
         condition: service_started
       dapr-scheduler:
         condition: service_started
       postgres:
-        condition: service_started
+        condition: service_healthy
 
   vnext-worker-outbox-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
@@ -258,17 +283,6 @@ services:
     networks:
       - vnext-development
 
-  redis-insight:
-    container_name: vnext-red-insight
-    image: "redislabs/redisinsight:${REDIS_INSIGHT_VERSION:-latest}"
-    ports:
-      - '5501:8001'
-    # volumes:
-    #   - redis-insight:/db
-    restart: unless-stopped
-    networks:
-      - vnext-development
-
   postgres:
     container_name: vnext-postgres
     image: "postgres:${POSTGRES_VERSION:-latest}"
@@ -278,23 +292,15 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
+      - ./config/postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     ports:
       - "5432:5432"
-    restart: unless-stopped
-    networks:
-      - vnext-development
-
-  pgadmin:
-    container_name: vnext-pgadmin
-    image: "dpage/pgadmin4:${PGADMIN_VERSION:-latest}"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "info@info.com"
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5502:80"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vNext_WorkflowDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
     networks:
       - vnext-development
@@ -376,97 +382,6 @@ services:
     networks:
       - vnext-development
 
-  prometheus:
-    container_name: vnext-prometheus
-    image: prom/prometheus:${PROMETHEUS_VERSION:-latest}
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/etc/prometheus/console_libraries"
-      - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=200h"
-      - "--web.enable-lifecycle"
-    volumes:
-      - ./config/prometheus:/etc/prometheus
-      - prometheus:/prometheus
-    ports:
-      - "9090:9090"
-    networks:
-      - vnext-development
-    restart: unless-stopped
-
-  grafana:
-    container_name: vnext-grafana
-    image: grafana/grafana:${GRAFANA_VERSION:-latest}
-    environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_USERS_ALLOW_SIGN_UP: 'false'
-    volumes:
-      - grafana:/var/lib/grafana
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
-      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
-    ports:
-      - "3000:3000"
-    networks:
-      - vnext-development
-    depends_on:
-      - prometheus
-    restart: unless-stopped
-
-  metabase:
-    container_name: vnext-metabase
-    image: metabase/metabase:${METABASE_VERSION:-latest}
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabase
-      MB_DB_PORT: 5432
-      MB_DB_USER: postgres
-      MB_DB_PASS: postgres
-      MB_DB_HOST: postgres
-      MB_ENCRYPTION_SECRET_KEY: "vnext-metabase-secret-key-change-this-in-production"
-      JAVA_OPTS: "-Xmx2g"
-    ports:
-      - "3002:3000"
-    volumes:
-      - metabase:/metabase.db
-      - ../../metabase-dashboards:/metabase-dashboards:ro
-    networks:
-      - vnext-development
-    depends_on:
-      - postgres
-    restart: unless-stopped
-    healthcheck:
-      test: curl --fail -I http://localhost:3000/api/health || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 5
-
-  clickhouse:
-    container_name: vnext-clickhouse
-    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION:-latest}
-    environment:
-      CLICKHOUSE_DB: workflow_analytics
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-    ports:
-      - "8123:8123"  # HTTP interface
-      - "9000:9000"  # Native interface
-    volumes:
-      - clickhouse:/var/lib/clickhouse
-      - ./config/clickhouse:/etc/clickhouse-server/config.d
-      - ./config/clickhouse/users.xml:/etc/clickhouse-server/users.xml
-      - ./config/clickhouse/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - vnext-development
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-
   # Mockoon API Mock Server
   mockoon:
     image: mockoon/cli:${MOCKOON_VERSION:-latest}
@@ -513,12 +428,6 @@ networks:
 
 volumes:
   # redis:
-  # redis-insight:
   postgres:
-  pgadmin:
   openobserve:
-  prometheus:
-  grafana:
-  metabase:
-  clickhouse:
   npm-cache: {}
