@@ -99,6 +99,40 @@ wait_for_health() {
     exit 1
 }
 
+# Function to extract JSON field value (simple parser without jq)
+extract_json_field() {
+    local json="$1"
+    local field="$2"
+    # Extract value for a given field from JSON
+    echo "$json" | sed -n "s/.*\"$field\":\s*\"\([^\"]*\)\".*/\1/p"
+}
+
+# Function to check if JSON contains "success":true
+check_json_success() {
+    local json="$1"
+    echo "$json" | grep -q '"success"\s*:\s*true'
+}
+
+# Function to check if JSON contains non-empty "failed" array
+has_failed_items() {
+    local json="$1"
+    # Check if "failed":[] is NOT present (meaning failed array has items)
+    if echo "$json" | grep -q '"failed"\s*:\s*\[\s*\]'; then
+        return 1  # Empty failed array
+    elif echo "$json" | grep -q '"failed"\s*:\s*\['; then
+        return 0  # Non-empty failed array
+    else
+        return 1  # No failed field
+    fi
+}
+
+# Function to extract failed items from JSON
+extract_failed_items() {
+    local json="$1"
+    # Extract the failed array content
+    echo "$json" | sed -n 's/.*"failed"\s*:\s*\[\([^]]*\)\].*/\1/p' | tr ',' '\n' | sed 's/[" ]//g'
+}
+
 # Function to publish the component
 publish_component() {
     log_info "Publishing component..."
@@ -119,11 +153,40 @@ publish_component() {
     body=$(echo "$response" | sed '$d')
     
     if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
-        log_success "Component published successfully! (HTTP $http_code)"
-        if [ -n "$body" ]; then
-            log_info "Response: $body"
+        # Check if response contains success: true
+        if check_json_success "$body"; then
+            local message
+            message=$(extract_json_field "$body" "message")
+            if [ -n "$message" ]; then
+                log_success "$message (HTTP $http_code)"
+            else
+                log_success "Component published successfully! (HTTP $http_code)"
+            fi
+            
+            # Check if there are any failed items
+            if has_failed_items "$body"; then
+                log_warning "Some components failed to load!"
+                local failed_items
+                failed_items=$(extract_failed_items "$body")
+                if [ -n "$failed_items" ]; then
+                    log_warning "Failed items:"
+                    echo "$failed_items" | while read -r item; do
+                        if [ -n "$item" ]; then
+                            echo -e "  ${YELLOW}• $item${NC}"
+                        fi
+                    done
+                fi
+            fi
+            
+            return 0
+        else
+            # HTTP 2xx but success is not true
+            log_error "Component publish failed (HTTP $http_code)"
+            if [ -n "$body" ]; then
+                log_error "Response: $body"
+            fi
+            exit 1
         fi
-        return 0
     else
         log_error "Failed to publish component (HTTP $http_code)"
         if [ -n "$body" ]; then

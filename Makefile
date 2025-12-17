@@ -34,7 +34,6 @@ COMPOSE_CMD := $(shell \
 
 # Variables
 DOCKER_COMPOSE_FILE = vnext/docker/docker-compose.yml
-DOCKER_COMPOSE_LIGHTWEIGHT_FILE = vnext/docker/docker-compose.lightweight.yml
 DOCKER_DIR = vnext/docker
 ENV_FILE = $(DOCKER_DIR)/.env
 ENV_ORCHESTRATION_FILE = $(DOCKER_DIR)/.env.orchestration
@@ -107,15 +106,12 @@ create-env-files: ## Create environment files from templates
 		echo "DAPR_PLACEMENT_VERSION=latest" >> $(ENV_FILE); \
 		echo "DAPR_SCHEDULER_VERSION=latest" >> $(ENV_FILE); \
 		echo "REDIS_VERSION=latest" >> $(ENV_FILE); \
-		echo "REDIS_INSIGHT_VERSION=latest" >> $(ENV_FILE); \
 		echo "POSTGRES_VERSION=latest" >> $(ENV_FILE); \
-		echo "PGADMIN_VERSION=latest" >> $(ENV_FILE); \
 		echo "VAULT_VERSION=1.13.3" >> $(ENV_FILE); \
 		echo "ALPINE_CURL_VERSION=latest" >> $(ENV_FILE); \
 		echo "OPENOBSERVE_VERSION=latest" >> $(ENV_FILE); \
 		echo "OTEL_COLLECTOR_VERSION=latest" >> $(ENV_FILE); \
-		echo "PROMETHEUS_VERSION=latest" >> $(ENV_FILE); \
-		echo "GRAFANA_VERSION=latest" >> $(ENV_FILE); \
+		echo "MOCKOON_VERSION=latest" >> $(ENV_FILE); \
 		echo "$(GREEN)Created $(ENV_FILE)$(NC)"; \
 	else \
 		echo "$(YELLOW)$(ENV_FILE) already exists$(NC)"; \
@@ -226,22 +222,10 @@ check-env: ## Check if environment files exist
 	fi
 
 ##@ Container Operations
-build-lightweight: check-env check-runtime ## Build container images (lightweight mode)
-	@echo "$(YELLOW)Building container images (lightweight mode)...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml build
-	@echo "$(GREEN)Build completed!$(NC)"
-
 build: check-env check-runtime ## Build container images
 	@echo "$(YELLOW)Building container images...$(NC)"
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) build
 	@echo "$(GREEN)Build completed!$(NC)"
-
-up-lightweight: check-env check-runtime ## Start all services (lightweight mode)
-	@echo "$(YELLOW)Starting VNext Runtime services (lightweight mode)...$(NC)"
-	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml up -d
-	@echo "$(GREEN)Services started (lightweight mode)!$(NC)"
-	@$(MAKE) status-lightweight
 
 up: check-env check-runtime ## Start all services
 	@echo "$(YELLOW)Starting VNext Runtime services...$(NC)"
@@ -250,16 +234,7 @@ up: check-env check-runtime ## Start all services
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
-start-lightweight: up-build-lightweight ## Start services with build (lightweight mode)
-
 start: up-build ## Start services with build
-
-up-build-lightweight: check-env check-runtime ## Start services with build (lightweight mode)
-	@echo "$(YELLOW)Starting VNext Runtime services with build (lightweight mode)...$(NC)"
-	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml up -d --build
-	@echo "$(GREEN)Services started (lightweight mode)!$(NC)"
-	@$(MAKE) status-lightweight
 
 up-build: check-env check-runtime ## Start services with build
 	@echo "$(YELLOW)Starting VNext Runtime services with build...$(NC)"
@@ -268,25 +243,12 @@ up-build: check-env check-runtime ## Start services with build
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
-down-lightweight: check-runtime ## Stop all services (lightweight mode)
-	@echo "$(YELLOW)Stopping VNext Runtime services (lightweight mode)...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml down
-	@echo "$(GREEN)Services stopped (lightweight mode)!$(NC)"
-
 down: check-runtime ## Stop all services
 	@echo "$(YELLOW)Stopping VNext Runtime services...$(NC)"
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down
 	@echo "$(GREEN)Services stopped!$(NC)"
 
-stop-lightweight: down-lightweight ## Alias for 'down' (lightweight mode)
-
 stop: down ## Alias for 'down'
-
-restart-lightweight: ## Restart all services (lightweight mode)
-	@echo "$(YELLOW)Restarting VNext Runtime services (lightweight mode)...$(NC)"
-	@$(MAKE) down-lightweight
-	@$(MAKE) up-lightweight
-	@echo "$(GREEN)Services restarted (lightweight mode)!$(NC)"
 
 restart: ## Restart all services
 	@echo "$(YELLOW)Restarting VNext Runtime services...$(NC)"
@@ -295,18 +257,10 @@ restart: ## Restart all services
 	@echo "$(GREEN)Services restarted!$(NC)"
 
 ##@ Service Management
-status-lightweight: check-runtime ## Show status of all services (lightweight mode)
-	@echo "$(BLUE)VNext Runtime Services Status (Lightweight):$(NC)"
-	@echo "================================================"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml ps
-
 status: check-runtime ## Show status of all services
 	@echo "$(BLUE)VNext Runtime Services Status:$(NC)"
 	@echo "================================="
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
-
-logs-lightweight: check-runtime ## Show logs for all services (lightweight mode)
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -f docker-compose.lightweight.yml logs -f
 
 logs: check-runtime ## Show logs for all services
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f
@@ -317,8 +271,8 @@ logs-orchestration: check-runtime ## Show logs for orchestration service
 logs-execution: check-runtime ## Show logs for execution service
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-execution-app
 
-logs-init: check-runtime ## Show logs for core init service
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-core-init
+logs-init: check-runtime ## Show logs for init service
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-init
 
 logs-dapr: check-runtime ## Show logs for DAPR services
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-orchestration-dapr vnext-execution-dapr
@@ -326,41 +280,45 @@ logs-dapr: check-runtime ## Show logs for DAPR services
 logs-db: check-runtime ## Show logs for database services
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f postgres redis
 
-logs-monitoring: check-runtime ## Show logs for monitoring services
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f prometheus grafana
-
-logs-prometheus: check-runtime ## Show logs for Prometheus service
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f prometheus
-
-logs-grafana: check-runtime ## Show logs for Grafana service
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f grafana
-
 health: ## Check health of services
 	@echo "$(BLUE)Service Health Check:$(NC)"
 	@echo "===================="
 	@echo "$(YELLOW)VNext Orchestration:$(NC)"
 	@curl -s http://localhost:4201/health || echo "$(RED)❌ Orchestration service not healthy$(NC)"
 	@echo ""
-	@echo "$(YELLOW)Waiting 3 seconds before checking VNext Execution...$(NC)"
-	@sleep 3
 	@echo "$(YELLOW)VNext Execution:$(NC)"
 	@curl -s http://localhost:4202/health || echo "$(RED)❌ Execution service not healthy$(NC)"
 	@echo ""
 	@echo "$(YELLOW)Management Interfaces:$(NC)"
-	@echo "• Redis Insight: http://localhost:5501"
-	@echo "• PgAdmin: http://localhost:5502"
 	@echo "• Vault: http://localhost:8200"
 	@echo "• OpenObserve: http://localhost:5080"
-	@echo "• Prometheus: http://localhost:9090"
-	@echo "• Grafana: http://localhost:3000"
+
+##@ Database Operations
+db-create: check-runtime ## Create vNext database in running postgres container
+	@echo "$(YELLOW)Creating vNext database...$(NC)"
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'vNext_WorkflowDb'" | grep -q 1 && \
+		echo "$(YELLOW)Database vNext_WorkflowDb already exists$(NC)" || \
+		($(COMPOSE_CMD) exec -T postgres psql -U postgres -f /docker-entrypoint-initdb.d/init-db.sql && \
+		echo "$(GREEN)Database vNext_WorkflowDb created successfully!$(NC)")
+
+db-drop: check-runtime ## Drop vNext database (WARNING: Destructive)
+	@echo "$(RED)WARNING: This will drop the vNext_WorkflowDb database!$(NC)"
+	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 5 seconds to continue...$(NC)"
+	@sleep 5
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS \"vNext_WorkflowDb\";"
+	@echo "$(GREEN)Database dropped!$(NC)"
+
+db-reset: db-drop db-create ## Reset vNext database (drop and recreate)
+
+db-status: check-runtime ## Check database status and list databases
+	@echo "$(BLUE)PostgreSQL Database Status:$(NC)"
+	@echo "=========================="
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "\l" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
+
+db-connect: check-runtime ## Connect to vNext database via psql
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec postgres psql -U postgres -d "vNext_WorkflowDb"
 
 ##@ Development
-dev-lightweight: ## Start development environment (lightweight mode)
-	@echo "$(YELLOW)Starting development environment (lightweight mode)...$(NC)"
-	@$(MAKE) setup
-	@$(MAKE) up-build-lightweight
-	@$(MAKE) health
-
 dev: ## Start development environment
 	@echo "$(YELLOW)Starting development environment...$(NC)"
 	@$(MAKE) setup
@@ -418,54 +376,7 @@ top: check-runtime ## Show container resource usage
 stats: check-runtime ## Show container statistics
 	$(CONTAINER_RUNTIME) stats $(shell cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps -q)
 
-monitoring-up: check-runtime ## Start only monitoring services (Prometheus & Grafana)
-	@echo "$(YELLOW)Starting monitoring services...$(NC)"
-	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d prometheus grafana
-	@echo "$(GREEN)Monitoring services started!$(NC)"
-	@echo "$(BLUE)Access URLs:$(NC)"
-	@echo "• Prometheus: http://localhost:9090"
-	@echo "• Grafana: http://localhost:3000 (admin/admin)"
-
-monitoring-down: check-runtime ## Stop monitoring services
-	@echo "$(YELLOW)Stopping monitoring services...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) stop prometheus grafana
-	@echo "$(GREEN)Monitoring services stopped!$(NC)"
-
-monitoring-restart: ## Restart monitoring services
-	@echo "$(YELLOW)Restarting monitoring services...$(NC)"
-	@$(MAKE) monitoring-down
-	@$(MAKE) monitoring-up
-	@echo "$(GREEN)Monitoring services restarted!$(NC)"
-
-monitoring-status: check-runtime ## Show status of monitoring services
-	@echo "$(BLUE)Monitoring Services Status:$(NC)"
-	@echo "=========================="
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps prometheus grafana
-
-prometheus-config-reload: ## Reload Prometheus configuration
-	@echo "$(YELLOW)Reloading Prometheus configuration...$(NC)"
-	@curl -X POST http://localhost:9090/-/reload || echo "$(RED)❌ Failed to reload Prometheus config$(NC)"
-	@echo "$(GREEN)Prometheus configuration reloaded!$(NC)"
-
-grafana-reset-password: check-runtime ## Reset Grafana admin password
-	@echo "$(YELLOW)Resetting Grafana admin password...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec grafana grafana-cli admin reset-admin-password admin
-	@echo "$(GREEN)Grafana admin password reset to 'admin'$(NC)"
-
 ##@ Custom Components
-init-custom-components: ## Initialize custom components directory
-	@echo "$(YELLOW)Initializing custom components directory...$(NC)"
-	@mkdir -p $(DOCKER_DIR)/custom-components/{Extensions,Functions,Schemas,Tasks,Views,Workflows}
-	@echo "$(GREEN)Custom components directory created!$(NC)"
-	@echo "$(BLUE)Directory structure:$(NC)"
-	@tree $(DOCKER_DIR)/custom-components 2>/dev/null || ls -la $(DOCKER_DIR)/custom-components
-
-reload-components: check-runtime ## Reload custom components
-	@echo "$(YELLOW)Reloading custom components...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) restart vnext-core-init
-	@echo "$(GREEN)Components reloaded!$(NC)"
-
 publish-component: check-env ## Publish component package (waits for vnext-init to be healthy)
 	@echo "$(YELLOW)Publishing component package...$(NC)"
 	@cd $(DOCKER_DIR) && ./publish-component.sh
@@ -475,6 +386,12 @@ publish-component-skip-health: check-env ## Publish component package (skip heal
 	@echo "$(YELLOW)Publishing component package (skipping health check)...$(NC)"
 	@cd $(DOCKER_DIR) && ./publish-component.sh --skip-health
 	@echo "$(GREEN)Component published!$(NC)"
+
+republish-component: check-runtime ## Re-run component publisher container
+	@echo "$(YELLOW)Re-publishing component via container...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) rm -f vnext-component-publisher
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up vnext-component-publisher
+	@echo "$(GREEN)Component re-published!$(NC)"
 
 ##@ Git Operations
 git-init: ## Initialize git repository
@@ -500,17 +417,11 @@ info: ## Show project information
 	@echo ""
 	@echo "$(BLUE)Services:$(NC)"
 	@echo "• VNext Orchestration: http://localhost:4201"
-	@echo "$(YELLOW)Waiting 3 seconds before checking VNext Execution...$(NC)"
-	@sleep 3
 	@echo "• VNext Execution: http://localhost:4202"
 	@echo ""
 	@echo "$(BLUE)Management Interfaces:$(NC)"
-	@echo "• Redis Insight: http://localhost:5501"
-	@echo "• PgAdmin: http://localhost:5502 (info@info.com / admin)"
 	@echo "• Vault: http://localhost:8200 (admin)"
 	@echo "• OpenObserve: http://localhost:5080 (root@example.com / Complexpass#@123)"
-	@echo "• Prometheus: http://localhost:9090"
-	@echo "• Grafana: http://localhost:3000 (admin / admin)"
 	@echo ""
 	@echo "$(BLUE)Quick Commands:$(NC)"
 	@echo "• make dev      - Start development environment"
@@ -540,4 +451,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env build build-lightweight up up-lightweight start start-lightweight up-build up-build-lightweight down down-lightweight stop stop-lightweight restart restart-lightweight status status-lightweight logs logs-lightweight logs-orchestration logs-execution logs-init logs-dapr logs-db logs-monitoring logs-prometheus logs-grafana health dev dev-lightweight shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats monitoring-up monitoring-down monitoring-restart monitoring-status prometheus-config-reload grafana-reset-password init-custom-components reload-components publish-component publish-component-skip-health git-init info version
+.PHONY: help check-runtime setup create-env-files create-network check-env build up start up-build down stop restart status logs logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect

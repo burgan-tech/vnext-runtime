@@ -40,9 +40,6 @@ The Makefile in the project provides the most comfortable running environment fo
 # Check environment files and start development environment
 make dev
 
-# Start lightweight development environment (without monitoring/analytics tools)
-make dev-lightweight
-
 # Display help menu
 make help
 
@@ -50,55 +47,21 @@ make help
 make setup
 ```
 
-### 🪶 Lightweight Mode
+### What `make dev` Does
 
-For resource-constrained environments or when you only need core functionality, use **lightweight mode**. This mode excludes heavy monitoring and analytics tools:
+When you run `make dev`, the following happens automatically:
 
-**Excluded Services:**
-- Prometheus (Metrics collection)
-- Grafana (Metrics visualization)
-- Metabase (BI Analytics)
-- ClickHouse (Analytics database)
-- PgAdmin (PostgreSQL GUI)
-- Redis Insight (Redis GUI)
+1. ✅ **Environment Setup** - Creates `.env` files and Docker network
+2. ✅ **PostgreSQL** starts → `vNext_WorkflowDb` database is automatically created
+3. ✅ **vnext-app** starts → after postgres is healthy
+4. ✅ **vnext-init** starts → after vnext-app is healthy
+5. ✅ **vnext-component-publisher** runs → automatically publishes components after vnext-init is healthy
+6. ✅ All other services start
 
-**Included Services:**
-- VNext Orchestration & Execution services
-- PostgreSQL, Redis, Vault
-- DAPR runtime components
-- OpenObserve & OpenTelemetry Collector
-- Mockoon API mock server
-
-**Usage:**
-
-```bash
-# Start in lightweight mode
-make dev-lightweight
-
-# Or start services directly
-make up-lightweight
-
-# Start with rebuild
-make up-build-lightweight
-
-# Stop lightweight services
-make down-lightweight
-
-# Restart lightweight services
-make restart-lightweight
-
-# View lightweight services status
-make status-lightweight
-
-# View lightweight services logs
-make logs-lightweight
-```
-
-**Benefits:**
-- ⚡ Faster startup time
-- 💾 Lower memory usage (~2GB vs ~4GB)
-- 🚀 Lighter resource footprint
-- 🎯 Focus on core workflow development
+This means with a single command, you get:
+- Database ready with schema
+- Components loaded
+- All infrastructure running
 
 ### Manual Setup
 
@@ -225,7 +188,7 @@ Reference the [vnext-schema repository](https://github.com/burgan-tech/vnext-sch
 
 ## VNext Core Runtime Initialization
 
-The `vnext-core-init` service automatically runs after the vnext-app service becomes healthy and performs the following operations:
+The `vnext-init` service automatically runs after the vnext-app service becomes healthy and performs the following operations:
 
 1. Downloads the `@burgan-tech/vnext-core-runtime` npm package (version controlled via `.env` file)
 2. Reads system components from the core folder within the package:
@@ -235,46 +198,52 @@ The `vnext-core-init` service automatically runs after the vnext-app service bec
    - Tasks
    - Views
    - Workflows
-3. **Merges custom components** (if mounted volume is available)
-4. **🆕 Domain Replacement**: Replaces all `"domain"` property values in JSON files with the `APP_DOMAIN` environment variable value
+3. **🆕 Domain Replacement**: Replaces all `"domain"` property values in JSON files with the `APP_DOMAIN` environment variable value
    - This allows each developer to work with their own domain locally
    - Default domain is `"core"`, but can be customized via `APP_DOMAIN=mydomain` in `.env` file
-   - Applies to both core system components and custom components
-5. Sends merged and domain-updated components as POST requests to the `vnext-app/api/admin` endpoint
+4. Sends merged and domain-updated components as POST requests to the `vnext-app/api/admin` endpoint
 
-This way, the vnext-app application becomes ready with both system and custom components.
+## Automatic Database Initialization
 
-## Custom Components
+When the Docker Compose starts, PostgreSQL automatically creates the `vNext_WorkflowDb` database using an init script. This ensures:
 
-You can add your own custom components by mounting a volume to the `vnext-core-init` container.
+- Database is ready before any service tries to connect
+- Services depending on postgres wait until the database is healthy
+- No manual database creation needed
 
-### Setup
+### Database Commands
 
-1. Create a custom components directory with the following structure:
-   ```
-   vnext/docker/custom-components/
-   ├── Extensions/    # Custom extension definitions
-   ├── Functions/     # Custom function definitions  
-   ├── Schemas/       # Custom JSON schema definitions
-   ├── Tasks/         # Custom task definitions
-   ├── Views/         # Custom view components
-   └── Workflows/     # Custom workflow definitions
-   ```
+```bash
+# Check database status
+make db-status
 
-2. Set the `CUSTOM_COMPONENTS_PATH` environment variable in the `.env` file:
-   ```bash
-   CUSTOM_COMPONENTS_PATH=./vnext/docker/custom-components
-   ```
+# Manually create database (if needed)
+make db-create
 
-3. If not set, it defaults to `./vnext/docker/custom-components` relative to the docker-compose.yml file.
+# Drop and recreate database
+make db-reset
 
-### How Custom Components Work
+# Connect to database via psql
+make db-connect
+```
 
-- **Merging**: When a custom component has the same filename as a core component, their `data` arrays are merged
-- **Custom-only**: Components that don't exist in core are uploaded as standalone components
-- **JSON Schema**: Each component must follow the same JSON schema format as core components
+## Automatic Component Publishing
 
-See `vnext/docker/custom-components/README.md` for detailed documentation and examples.
+The `vnext-component-publisher` service automatically runs after `vnext-init` becomes healthy:
+
+1. Waits for vnext-init to be ready
+2. Publishes components using the configured version and domain
+3. Completes and exits
+
+To manually republish components:
+
+```bash
+# Re-run the component publisher
+make republish-component
+
+# Or use the script directly
+make publish-component
+```
 
 ## Instance Filtering
 
@@ -479,33 +448,33 @@ make help
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `make up` | Starts services | `make up` |
-| `make up-lightweight` | Starts services (lightweight mode) | `make up-lightweight` |
 | `make up-build` | Starts services with build | `make up-build` |
-| `make up-build-lightweight` | Starts services with build (lightweight) | `make up-build-lightweight` |
 | `make down` | Stops services | `make down` |
-| `make down-lightweight` | Stops services (lightweight mode) | `make down-lightweight` |
 | `make restart` | Restarts services | `make restart` |
-| `make restart-lightweight` | Restarts services (lightweight mode) | `make restart-lightweight` |
 | `make build` | Builds Docker images | `make build` |
-| `make build-lightweight` | Builds Docker images (lightweight mode) | `make build-lightweight` |
 
 ### Service Management
 
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `make status` | Shows service status | `make status` |
-| `make status-lightweight` | Shows service status (lightweight mode) | `make status-lightweight` |
 | `make health` | Checks service health | `make health` |
 | `make logs` | Shows logs for all services | `make logs` |
-| `make logs-lightweight` | Shows logs for all services (lightweight) | `make logs-lightweight` |
 | `make logs-orchestration` | Shows only orchestration service logs | `make logs-orchestration` |
 | `make logs-execution` | Shows only execution service logs | `make logs-execution` |
-| `make logs-init` | Shows core init service logs | `make logs-init` |
+| `make logs-init` | Shows init service logs | `make logs-init` |
 | `make logs-dapr` | Shows DAPR service logs | `make logs-dapr` |
 | `make logs-db` | Shows database service logs | `make logs-db` |
-| `make logs-monitoring` | Shows monitoring service logs | `make logs-monitoring` |
-| `make logs-prometheus` | Shows Prometheus service logs | `make logs-prometheus` |
-| `make logs-grafana` | Shows Grafana service logs | `make logs-grafana` |
+
+### Database Operations
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `make db-status` | Shows database status and lists databases | `make db-status` |
+| `make db-create` | Creates vNext database | `make db-create` |
+| `make db-drop` | Drops vNext database (destructive!) | `make db-drop` |
+| `make db-reset` | Drops and recreates database | `make db-reset` |
+| `make db-connect` | Connects to database via psql | `make db-connect` |
 
 ### Development Tools
 
@@ -523,22 +492,13 @@ make help
 | `make ps` | Lists running containers | `make ps` |
 | `make top` | Shows container resource usage | `make top` |
 | `make stats` | Shows container statistics | `make stats` |
-| `make monitoring-up` | Start only monitoring services (Prometheus & Grafana) | `make monitoring-up` |
-| `make monitoring-down` | Stop monitoring services | `make monitoring-down` |
-| `make monitoring-restart` | Restart monitoring services | `make monitoring-restart` |
-| `make monitoring-status` | Show status of monitoring services | `make monitoring-status` |
-| `make logs-monitoring` | Show logs for monitoring services | `make logs-monitoring` |
-| `make logs-prometheus` | Show logs for Prometheus service | `make logs-prometheus` |
-| `make logs-grafana` | Show logs for Grafana service | `make logs-grafana` |
-| `make prometheus-config-reload` | Reload Prometheus configuration | `make prometheus-config-reload` |
-| `make grafana-reset-password` | Reset Grafana admin password to 'admin' | `make grafana-reset-password` |
 
 ### Custom Components
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `make init-custom-components` | Creates custom components directory structure | `make init-custom-components` |
-| `make reload-components` | Reloads custom components | `make reload-components` |
+| `make publish-component` | Publishes component package | `make publish-component` |
+| `make republish-component` | Re-runs component publisher container | `make republish-component` |
 
 ### Maintenance
 
@@ -555,77 +515,60 @@ make help
 # Running project for the first time
 make dev
 
-# Running project in lightweight mode (recommended for development)
-make dev-lightweight
-
 # Following logs only
 make logs-orchestration
-make logs-lightweight  # All logs in lightweight mode
 
 # Checking service status
 make status
-make status-lightweight  # Status in lightweight mode
 make health
+
+# Database operations
+make db-status
+make db-reset
 
 # Restarting during development
 make restart
-make restart-lightweight  # Restart in lightweight mode
 
 # Reloading after adding custom components
 make reload-components
 
+# Re-publishing components
+make republish-component
+
 # Cleanup and reinstall
 make reset
 make dev
-# or for lightweight
-make down-lightweight
-make dev-lightweight
 
 # Container access
 make shell-orchestration
 make shell-postgres
-
-# Monitoring specific operations (not available in lightweight mode)
-make monitoring-up          # Start only monitoring services
-make logs-monitoring        # Monitor Prometheus & Grafana logs
-make monitoring-status      # Check monitoring service status
-make prometheus-config-reload  # Reload Prometheus config
-make grafana-reset-password    # Reset Grafana password
 ```
 
 ## Services and Ports
 
-| Service | Description | Port | Access URL | Lightweight Mode |
-|---------|-------------|------|------------|------------------|
-| **vnext-app** | Main orchestration application | 4201 | http://localhost:4201 | ✅ Available |
-| **vnext-execution-app** | Execution service application | 4202 | http://localhost:4202 | ✅ Available |
-| **vnext-core-init** | Init container that loads system components | - | - | ✅ Available |
-| **vnext-orchestration-dapr** | Dapr sidecar for orchestration service | 42110/42111 | - | ✅ Available |
-| **vnext-execution-dapr** | Dapr sidecar for execution service | 43110/43111 | - | ✅ Available |
-| **dapr-placement** | Dapr placement service | 50005 | - | ✅ Available |
-| **dapr-scheduler** | Dapr scheduler service | 50007 | - | ✅ Available |
-| **vnext-redis** | Redis cache | 6379 | - | ✅ Available |
-| **vnext-postgres** | PostgreSQL database | 5432 | - | ✅ Available |
-| **vnext-vault** | HashiCorp Vault (optional) | 8200 | http://localhost:8200 | ✅ Available |
-| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 | ✅ Available |
-| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - | ✅ Available |
-| **mockoon** | API Mock Server | 3001 | http://localhost:3001 | ✅ Available |
-| **prometheus** | Metrics collection and storage | 9090 | http://localhost:9090 | ❌ Not included |
-| **grafana** | Metrics visualization and dashboards | 3000 | http://localhost:3000 | ❌ Not included |
-| **metabase** | BI Analytics Platform | 3002 | http://localhost:3002 | ❌ Not included |
-| **clickhouse** | Analytics database | 8123, 9000 | http://localhost:8123 | ❌ Not included |
+| Service | Description | Port | Access URL |
+|---------|-------------|------|------------|
+| **vnext-app** | Main orchestration application | 4201 | http://localhost:4201 |
+| **vnext-execution-app** | Execution service application | 4202 | http://localhost:4202 |
+| **vnext-init** | Init container that loads system components | - | - |
+| **vnext-component-publisher** | Publishes components after init | - | - |
+| **vnext-orchestration-dapr** | Dapr sidecar for orchestration service | 42110/42111 | - |
+| **vnext-execution-dapr** | Dapr sidecar for execution service | 43110/43111 | - |
+| **dapr-placement** | Dapr placement service | 50005 | - |
+| **dapr-scheduler** | Dapr scheduler service | 50007 | - |
+| **vnext-redis** | Redis cache | 6379 | - |
+| **vnext-postgres** | PostgreSQL database | 5432 | - |
+| **vnext-vault** | HashiCorp Vault | 8200 | http://localhost:8200 |
+| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
+| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
+| **mockoon** | API Mock Server | 3001 | http://localhost:3001 |
 
 ## Management Tools
 
-| Tool | URL | Username | Password | Lightweight Mode |
-|------|-----|----------|----------|------------------|
-| **Redis Insight** | http://localhost:5501 | - | - | ❌ Not included |
-| **PgAdmin** | http://localhost:5502 | info@info.com | admin | ❌ Not included |
-| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 | ✅ Available |
-| **Vault UI** | http://localhost:8200 | - | admin (token) | ✅ Available |
-| **Prometheus** | http://localhost:9090 | - | - | ❌ Not included |
-| **Grafana** | http://localhost:3000 | admin | admin | ❌ Not included |
-| **Metabase** | http://localhost:3002 | - | - | ❌ Not included |
+| Tool | URL | Username | Password |
+|------|-----|----------|----------|
+| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 |
+| **Vault UI** | http://localhost:8200 | - | admin (token) |
 
 ## Development Tips
 
@@ -710,18 +653,19 @@ docker-compose ps
    - Increase memory limit in Docker Desktop (min 4GB recommended)
    - Check container resource usage: `make stats`
 
-3. **Volume mount issues**: 
-   ```bash
-   # Create custom components directory
-   make init-custom-components
-   # Check and fix path
-   ```
-
-4. **Missing environment files**:
+3. **Missing environment files**:
    ```bash
    # Environment check
    make check-env
    # Ensure files exist in vnext/docker/ directory
+   ```
+
+4. **Database not created**:
+   ```bash
+   # Check database status
+   make db-status
+   # Manually create if needed
+   make db-create
    ```
 
 ### Performance Tuning
@@ -763,122 +707,3 @@ For comprehensive documentation about the VNext Runtime platform, workflows, and
 | **Task Types** | [flow/task.md](doc/en/flow/task.md) | [flow/task.md](doc/tr/flow/task.md) |
 | **Mapping Guide** | [flow/mapping.md](doc/en/flow/mapping.md) | [flow/mapping.md](doc/tr/flow/mapping.md) |
 | **How to Start Instance** | [how-to/start-instance.md](doc/en/how-to/start-instance.md) | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) |
-
-## 📊 Monitoring and Metrics
-
-VNext Runtime includes comprehensive monitoring capabilities with Prometheus and Grafana integration for real-time system observability.
-
-### 🚀 Quick Start for Monitoring
-
-```bash
-# Start monitoring services along with the main application
-make dev
-
-# Or start only monitoring services
-cd vnext/docker
-docker-compose up -d prometheus grafana
-```
-
-### 📈 Metrics Dashboard Access
-
-- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
-- **Prometheus**: http://localhost:9090
-
-### 🎯 Available Metrics
-
-#### Counter Metrics
-- `workflow_state_transitions_total` - State transitions
-- `workflow_errors_total` - Total errors by type/severity  
-- `workflow_exceptions_total` - Unhandled exceptions
-- `workflow_validation_failures_total` - Validation failures
-- `http_requests_total` - HTTP requests
-- `workflow_db_queries_total` - Database queries
-- `script_executions_total` - Script executions
-- `background_jobs_scheduled_total` - Background jobs
-- `external_service_calls_total` - External service calls
-- `dapr_service_invocations_total` - DAPR invocations
-
-#### Gauge Metrics
-- `workflow_health_status` - System health (0=unhealthy, 1=healthy)
-- `workflow_error_rate` - Current error rate %
-- `workflow_instances_by_status` - Instance count by status
-- `task_factory_pool_size` - Object pool metrics
-- `workflow_cache_size_bytes` - Cache size
-- `background_jobs_pending` - Pending job count
-
-#### Histogram Metrics
-- `workflow_state_duration_seconds` - Time in each state
-- `workflow_db_query_duration_seconds` - Database query time
-- `http_request_duration_seconds` - HTTP request time
-- `background_job_duration_seconds` - Job execution time
-- `script_execution_duration_seconds` - Script execution time
-- `external_service_duration_seconds` - External call time
-
-### 📊 Dashboard Features
-
-#### System Health Overview
-- Overall System Health Status (Healthy/Unhealthy)
-- Overall Error Rate (%)
-- Real-time Error Rate by Type/Severity
-
-#### Workflow State Metrics
-- State Transitions (per minute)
-- Instance Status Distribution (pie chart)
-- State Duration P95 (seconds)
-
-#### Database Metrics
-- Database Queries by Type/Table (per minute)
-- Query Duration P95/P50
-
-#### HTTP API Metrics
-- HTTP Requests by Endpoint/Status (per minute)
-- Request Duration P95
-- HTTP Errors by Type
-
-#### Background Jobs & Script Engine
-- Background Jobs Status (Pending/Running)
-- Script Executions by Type/Language
-
-#### Cache & External Services
-- Cache Hit/Miss Rates
-- External Service Calls by Status
-- DAPR Integration Metrics
-
-### 📈 Metrics Endpoints
-
-Workflow applications expose metrics at the following endpoints:
-- **Orchestration API**: http://vnext-app:5000/metrics
-- **Execution API**: http://vnext-execution-app:5000/metrics
-
-### 🔧 Configuration Files
-
-#### Prometheus Configuration
-- `vnext/docker/config/prometheus/prometheus.yml` - Prometheus scraping configuration
-
-#### Grafana Configuration
-- `vnext/docker/config/grafana/provisioning/datasources/` - Auto-configured Prometheus datasource
-- `vnext/docker/config/grafana/provisioning/dashboards/` - Dashboard provisioning
-- `vnext/docker/config/grafana/dashboards/workflow-metrics.json` - Main workflow dashboard
-
-### 🛠 Troubleshooting Monitoring
-
-#### Grafana Dashboard Not Showing?
-1. Check if containers are running:
-   ```bash
-   docker ps | grep -E "(grafana|prometheus)"
-   ```
-
-2. Check Prometheus targets:
-   - Visit http://localhost:9090/targets
-
-#### Metrics Not Coming?
-1. Check workflow application `/metrics` endpoint
-2. Verify Prometheus configuration targets are correct
-3. Check network connectivity
-
-### 📝 Customizing Dashboards
-
-To customize the dashboard:
-1. Edit in Grafana UI
-2. Export in JSON format
-3. Update `vnext/docker/config/grafana/dashboards/workflow-metrics.json`

@@ -40,9 +40,6 @@ Projede bulunan Makefile, geliştiriciler için en konforlu çalıştırma ortam
 # Environment dosyalarını kontrol et ve development ortamını başlat
 make dev
 
-# Lightweight development ortamını başlat (monitoring/analytics araçları olmadan)
-make dev-lightweight
-
 # Yardım menüsünü görüntüle
 make help
 
@@ -50,55 +47,21 @@ make help
 make setup
 ```
 
-### 🪶 Lightweight Modu
+### `make dev` Ne Yapar?
 
-Kaynak kısıtlı ortamlar için veya sadece temel işlevselliğe ihtiyacınız olduğunda **lightweight modu** kullanın. Bu mod, ağır monitoring ve analytics araçlarını hariç tutar:
+`make dev` çalıştırdığınızda otomatik olarak şunlar gerçekleşir:
 
-**Hariç Tutulan Servisler:**
-- Prometheus (Metrics toplama)
-- Grafana (Metrics görselleştirme)
-- Metabase (BI Analytics)
-- ClickHouse (Analytics veritabanı)
-- PgAdmin (PostgreSQL GUI)
-- Redis Insight (Redis GUI)
+1. ✅ **Environment Kurulumu** - `.env` dosyaları ve Docker network oluşturulur
+2. ✅ **PostgreSQL** başlar → `vNext_WorkflowDb` veritabanı otomatik oluşturulur
+3. ✅ **vnext-app** başlar → postgres healthy olduktan sonra
+4. ✅ **vnext-init** başlar → vnext-app healthy olduktan sonra
+5. ✅ **vnext-component-publisher** çalışır → vnext-init healthy olduktan sonra component'leri otomatik publish eder
+6. ✅ Diğer tüm servisler başlar
 
-**Dahil Olan Servisler:**
-- VNext Orchestration & Execution servisleri
-- PostgreSQL, Redis, Vault
-- DAPR runtime bileşenleri
-- OpenObserve & OpenTelemetry Collector
-- Mockoon API mock server
-
-**Kullanım:**
-
-```bash
-# Lightweight modda başlat
-make dev-lightweight
-
-# Veya servisleri doğrudan başlat
-make up-lightweight
-
-# Rebuild ile başlat
-make up-build-lightweight
-
-# Lightweight servisleri durdur
-make down-lightweight
-
-# Lightweight servisleri yeniden başlat
-make restart-lightweight
-
-# Lightweight servis durumunu görüntüle
-make status-lightweight
-
-# Lightweight servis loglarını görüntüle
-make logs-lightweight
-```
-
-**Avantajlar:**
-- ⚡ Daha hızlı başlangıç süresi
-- 💾 Daha düşük bellek kullanımı (~2GB vs ~4GB)
-- 🚀 Daha hafif kaynak ayak izi
-- 🎯 Temel workflow geliştirmeye odaklanma
+Bu sayede tek bir komutla:
+- Veritabanı şema ile hazır
+- Component'ler yüklü
+- Tüm altyapı çalışır durumda
 
 ### Manuel Kurulum
 
@@ -225,7 +188,7 @@ Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema r
 
 ## VNext Core Runtime Initialization
 
-`vnext-core-init` servisi, vnext-app servisi healthy olduktan sonra otomatik olarak çalışır ve aşağıdaki işlemleri gerçekleştirir:
+`vnext-init` servisi, vnext-app servisi healthy olduktan sonra otomatik olarak çalışır ve aşağıdaki işlemleri gerçekleştirir:
 
 1. `@burgan-tech/vnext-core-runtime` npm paketini indirir (versiyon `.env` dosyasından kontrol edilir)
 2. Paket içindeki core klasöründen sistem bileşenlerini okur:
@@ -235,46 +198,51 @@ Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema r
    - Tasks (Görevler)
    - Views (Görünümler)
    - Workflows (İş Akışları)
-3. **Custom component'leri birleştirir** (eğer mount edilmiş volume varsa)
-4. **🆕 Domain Değiştirme**: JSON dosyalarındaki tüm `"domain"` property değerlerini `APP_DOMAIN` environment variable değeri ile değiştirir
+3. **🆕 Domain Değiştirme**: JSON dosyalarındaki tüm `"domain"` property değerlerini `APP_DOMAIN` environment variable değeri ile değiştirir
    - Bu sayede her geliştirici kendi domain'inde lokal ortamda çalışabilir
    - Varsayılan domain `"core"`'dur, ancak `.env` dosyasında `APP_DOMAIN=mydomain` ile özelleştirilebilir
-   - Hem core sistem bileşenlerine hem de custom component'lere uygulanır
-5. Birleştirilmiş ve domain güncellenmiş component'leri `vnext-app/api/admin` endpoint'ine POST request'leri olarak gönderir
 
-Bu şekilde vnext-app uygulaması hem sistem hem de custom component'lerle hazır hale gelir.
+## Otomatik Veritabanı Başlatma
 
-## Custom Components
+Docker Compose başladığında, PostgreSQL init script kullanarak `vNext_WorkflowDb` veritabanını otomatik olarak oluşturur. Bu sayede:
 
-`vnext-core-init` container'ına volume mount ederek kendi custom component'lerinizi ekleyebilirsiniz.
+- Herhangi bir servis bağlanmaya çalışmadan önce veritabanı hazır olur
+- Postgres'e bağımlı servisler, veritabanı healthy olana kadar bekler
+- Manuel veritabanı oluşturma gerekmez
 
-### Kurulum
+### Veritabanı Komutları
 
-1. Aşağıdaki yapıda custom components dizini oluşturun:
-   ```
-   vnext/docker/custom-components/
-   ├── Extensions/    # Custom extension tanımları
-   ├── Functions/     # Custom function tanımları  
-   ├── Schemas/       # Custom JSON schema tanımları
-   ├── Tasks/         # Custom task tanımları
-   ├── Views/         # Custom view component'leri
-   └── Workflows/     # Custom workflow tanımları
-   ```
+```bash
+# Veritabanı durumunu kontrol et
+make db-status
 
-2. `.env` dosyasında `CUSTOM_COMPONENTS_PATH` environment variable'ını ayarlayın:
-   ```bash
-   CUSTOM_COMPONENTS_PATH=./vnext/docker/custom-components
-   ```
+# Manuel olarak veritabanı oluştur (gerekirse)
+make db-create
 
-3. Eğer set edilmezse, varsayılan olarak `./vnext/docker/custom-components` docker-compose.yml dosyasına göreceli olarak kullanılır.
+# Veritabanını sil ve yeniden oluştur
+make db-reset
 
-### Custom Component'ler Nasıl Çalışır
+# psql ile veritabanına bağlan
+make db-connect
+```
 
-- **Birleştirme**: Custom component ile core component aynı dosya adına sahipse, `data` array'leri birleştirilir
-- **Sadece Custom**: Core'da bulunmayan component'ler standalone component olarak yüklenir
-- **JSON Schema**: Her component, core component'lerle aynı JSON schema formatını takip etmelidir
+## Otomatik Component Publishing
 
-Detaylı dokümantasyon ve örnekler için `vnext/docker/custom-components/README.md` dosyasına bakın.
+`vnext-component-publisher` servisi, `vnext-init` healthy olduktan sonra otomatik olarak çalışır:
+
+1. vnext-init'in hazır olmasını bekler
+2. Yapılandırılmış versiyon ve domain ile component'leri publish eder
+3. Tamamlar ve çıkar
+
+Component'leri manuel olarak yeniden publish etmek için:
+
+```bash
+# Component publisher'ı yeniden çalıştır
+make republish-component
+
+# Veya doğrudan script'i kullan
+make publish-component
+```
 
 ## Instance Filtreleme
 
@@ -479,33 +447,33 @@ make help
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
 | `make up` | Servisleri başlatır | `make up` |
-| `make up-lightweight` | Servisleri başlatır (lightweight mod) | `make up-lightweight` |
 | `make up-build` | Servisleri build ederek başlatır | `make up-build` |
-| `make up-build-lightweight` | Servisleri build ederek başlatır (lightweight) | `make up-build-lightweight` |
 | `make down` | Servisleri durdurur | `make down` |
-| `make down-lightweight` | Servisleri durdurur (lightweight mod) | `make down-lightweight` |
 | `make restart` | Servisleri yeniden başlatır | `make restart` |
-| `make restart-lightweight` | Servisleri yeniden başlatır (lightweight mod) | `make restart-lightweight` |
 | `make build` | Docker image'larını build eder | `make build` |
-| `make build-lightweight` | Docker image'larını build eder (lightweight mod) | `make build-lightweight` |
 
 ### Service Management
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
 | `make status` | Servislerin durumunu gösterir | `make status` |
-| `make status-lightweight` | Servislerin durumunu gösterir (lightweight mod) | `make status-lightweight` |
 | `make health` | Servislerin sağlık durumunu kontrol eder | `make health` |
 | `make logs` | Tüm servislerin loglarını gösterir | `make logs` |
-| `make logs-lightweight` | Tüm servislerin loglarını gösterir (lightweight) | `make logs-lightweight` |
 | `make logs-orchestration` | Sadece orchestration servis logları | `make logs-orchestration` |
 | `make logs-execution` | Sadece execution servis logları | `make logs-execution` |
-| `make logs-init` | Core init servis logları | `make logs-init` |
+| `make logs-init` | Init servis logları | `make logs-init` |
 | `make logs-dapr` | DAPR servislerin logları | `make logs-dapr` |
 | `make logs-db` | Database servislerin logları | `make logs-db` |
-| `make logs-monitoring` | Monitoring servislerin logları | `make logs-monitoring` |
-| `make logs-prometheus` | Prometheus servis logları | `make logs-prometheus` |
-| `make logs-grafana` | Grafana servis logları | `make logs-grafana` |
+
+### Database Operations
+
+| Komut | Açıklama | Kullanım |
+|-------|----------|----------|
+| `make db-status` | Veritabanı durumunu ve listesini gösterir | `make db-status` |
+| `make db-create` | vNext veritabanını oluşturur | `make db-create` |
+| `make db-drop` | vNext veritabanını siler (yıkıcı!) | `make db-drop` |
+| `make db-reset` | Veritabanını silip yeniden oluşturur | `make db-reset` |
+| `make db-connect` | psql ile veritabanına bağlanır | `make db-connect` |
 
 ### Development Tools
 
@@ -523,22 +491,13 @@ make help
 | `make ps` | Çalışan container'ları listeler | `make ps` |
 | `make top` | Container resource kullanımını gösterir | `make top` |
 | `make stats` | Container istatistiklerini gösterir | `make stats` |
-| `make monitoring-up` | Sadece monitoring servislerini başlatır (Prometheus & Grafana) | `make monitoring-up` |
-| `make monitoring-down` | Monitoring servislerini durdurur | `make monitoring-down` |
-| `make monitoring-restart` | Monitoring servislerini yeniden başlatır | `make monitoring-restart` |
-| `make monitoring-status` | Monitoring servislerinin durumunu gösterir | `make monitoring-status` |
-| `make logs-monitoring` | Monitoring servislerinin loglarını gösterir | `make logs-monitoring` |
-| `make logs-prometheus` | Prometheus servisinin loglarını gösterir | `make logs-prometheus` |
-| `make logs-grafana` | Grafana servisinin loglarını gösterir | `make logs-grafana` |
-| `make prometheus-config-reload` | Prometheus konfigürasyonunu yeniden yükler | `make prometheus-config-reload` |
-| `make grafana-reset-password` | Grafana admin şifresini 'admin' olarak resetler | `make grafana-reset-password` |
 
 ### Custom Components
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
-| `make init-custom-components` | Custom components dizin yapısını oluşturur | `make init-custom-components` |
-| `make reload-components` | Custom components'leri yeniden yükler | `make reload-components` |
+| `make publish-component` | Component paketi publish eder | `make publish-component` |
+| `make republish-component` | Component publisher container'ını yeniden çalıştırır | `make republish-component` |
 
 ### Maintenance
 
@@ -555,77 +514,60 @@ make help
 # İlk kez projeyi çalıştırma
 make dev
 
-# Projeyi lightweight modda çalıştırma (geliştirme için önerilir)
-make dev-lightweight
-
 # Sadece logları takip etme
 make logs-orchestration
-make logs-lightweight  # Lightweight moddaki tüm loglar
 
 # Servis durumunu kontrol etme
 make status
-make status-lightweight  # Lightweight moddaki durum
 make health
+
+# Veritabanı işlemleri
+make db-status
+make db-reset
 
 # Development sırasında yeniden başlatma
 make restart
-make restart-lightweight  # Lightweight modda restart
 
 # Custom component ekledikten sonra yeniden yükleme
 make reload-components
 
+# Component'leri yeniden publish etme
+make republish-component
+
 # Temizlik ve yeniden kurulum
 make reset
 make dev
-# veya lightweight için
-make down-lightweight
-make dev-lightweight
 
 # Container'lara erişim
 make shell-orchestration
 make shell-postgres
-
-# Monitoring özel işlemleri (lightweight modda mevcut değil)
-make monitoring-up          # Sadece monitoring servislerini başlat
-make logs-monitoring        # Prometheus & Grafana loglarını takip et
-make monitoring-status      # Monitoring servis durumunu kontrol et
-make prometheus-config-reload  # Prometheus config'i yeniden yükle
-make grafana-reset-password    # Grafana şifresini resetle
 ```
 
 ## Servisler ve Portlar
 
-| Servis | Açıklama | Port | Erişim URL | Lightweight Mod |
-|--------|----------|------|------------|-----------------|
-| **vnext-app** | Ana orchestration uygulaması | 4201 | http://localhost:4201 | ✅ Mevcut |
-| **vnext-execution-app** | Execution servis uygulaması | 4202 | http://localhost:4202 | ✅ Mevcut |
-| **vnext-core-init** | Sistem component'lerini yükleyen init container | - | - | ✅ Mevcut |
-| **vnext-orchestration-dapr** | Orchestration servisi için Dapr sidecar | 42110/42111 | - | ✅ Mevcut |
-| **vnext-execution-dapr** | Execution servisi için Dapr sidecar | 43110/43111 | - | ✅ Mevcut |
-| **dapr-placement** | Dapr placement servisi | 50005 | - | ✅ Mevcut |
-| **dapr-scheduler** | Dapr scheduler servisi | 50007 | - | ✅ Mevcut |
-| **vnext-redis** | Redis cache | 6379 | - | ✅ Mevcut |
-| **vnext-postgres** | PostgreSQL veritabanı | 5432 | - | ✅ Mevcut |
-| **vnext-vault** | HashiCorp Vault (opsiyonel) | 8200 | http://localhost:8200 | ✅ Mevcut |
-| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 | ✅ Mevcut |
-| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - | ✅ Mevcut |
-| **mockoon** | API Mock Server | 3001 | http://localhost:3001 | ✅ Mevcut |
-| **prometheus** | Metrics toplama ve depolama | 9090 | http://localhost:9090 | ❌ Yok |
-| **grafana** | Metrics görselleştirme ve dashboard | 3000 | http://localhost:3000 | ❌ Yok |
-| **metabase** | BI Analytics Platform | 3002 | http://localhost:3002 | ❌ Yok |
-| **clickhouse** | Analytics veritabanı | 8123, 9000 | http://localhost:8123 | ❌ Yok |
+| Servis | Açıklama | Port | Erişim URL |
+|--------|----------|------|------------|
+| **vnext-app** | Ana orchestration uygulaması | 4201 | http://localhost:4201 |
+| **vnext-execution-app** | Execution servis uygulaması | 4202 | http://localhost:4202 |
+| **vnext-init** | Sistem component'lerini yükleyen init container | - | - |
+| **vnext-component-publisher** | Init sonrası component'leri publish eder | - | - |
+| **vnext-orchestration-dapr** | Orchestration servisi için Dapr sidecar | 42110/42111 | - |
+| **vnext-execution-dapr** | Execution servisi için Dapr sidecar | 43110/43111 | - |
+| **dapr-placement** | Dapr placement servisi | 50005 | - |
+| **dapr-scheduler** | Dapr scheduler servisi | 50007 | - |
+| **vnext-redis** | Redis cache | 6379 | - |
+| **vnext-postgres** | PostgreSQL veritabanı | 5432 | - |
+| **vnext-vault** | HashiCorp Vault | 8200 | http://localhost:8200 |
+| **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
+| **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
+| **mockoon** | API Mock Server | 3001 | http://localhost:3001 |
 
 ## Management Tools
 
-| Tool | URL | Kullanıcı Adı | Şifre | Lightweight Mod |
-|------|-----|---------------|-------|-----------------|
-| **Redis Insight** | http://localhost:5501 | - | - | ❌ Yok |
-| **PgAdmin** | http://localhost:5502 | info@info.com | admin | ❌ Yok |
-| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 | ✅ Mevcut |
-| **Vault UI** | http://localhost:8200 | - | admin (token) | ✅ Mevcut |
-| **Prometheus** | http://localhost:9090 | - | - | ❌ Yok |
-| **Grafana** | http://localhost:3000 | admin | admin | ❌ Yok |
-| **Metabase** | http://localhost:3002 | - | - | ❌ Yok |
+| Tool | URL | Kullanıcı Adı | Şifre |
+|------|-----|---------------|-------|
+| **OpenObserve** | http://localhost:5080 | root@example.com | Complexpass#@123 |
+| **Vault UI** | http://localhost:8200 | - | admin (token) |
 
 ## Development İpuçları
 
@@ -710,18 +652,19 @@ docker-compose ps
    - Docker Desktop'ta memory limitini artırın (min 4GB önerilir)
    - Container resource kullanımını kontrol edin: `make stats`
 
-3. **Volume mount sorunları**: 
-   ```bash
-   # Custom components dizinini oluştur
-   make init-custom-components
-   # Path'i kontrol et ve düzelt
-   ```
-
-4. **Environment dosyaları eksik**:
+3. **Environment dosyaları eksik**:
    ```bash
    # Environment kontrolü
    make check-env
    # Dosyaların vnext/docker/ dizininde mevcut olduğundan emin olun
+   ```
+
+4. **Veritabanı oluşturulmadı**:
+   ```bash
+   # Veritabanı durumunu kontrol et
+   make db-status
+   # Gerekirse manuel oluştur
+   make db-create
    ```
 
 ### Performance Tuning
@@ -763,122 +706,3 @@ VNext Runtime platformu, iş akışları ve geliştirme rehberleri hakkında kap
 | **Görev Türleri** | [flow/task.md](doc/tr/flow/task.md) | [flow/task.md](doc/en/flow/task.md) |
 | **Haritalama Rehberi** | [flow/mapping.md](doc/tr/flow/mapping.md) | [flow/mapping.md](doc/en/flow/mapping.md) |
 | **Instance Nasıl Başlatılır** | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) | [how-to/start-instance.md](doc/en/how-to/start-instance.md) |
-
-## 📊 Monitoring ve Metrics
-
-VNext Runtime, gerçek zamanlı sistem gözlemlenebilirliği için Prometheus ve Grafana entegrasyonu ile kapsamlı monitoring yetenekleri içerir.
-
-### 🚀 Monitoring için Hızlı Başlangıç
-
-```bash
-# Ana uygulama ile birlikte monitoring servislerini başlat
-make dev
-
-# Veya sadece monitoring servislerini başlat
-cd vnext/docker
-docker-compose up -d prometheus grafana
-```
-
-### 📈 Metrics Dashboard Erişimi
-
-- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
-- **Prometheus**: http://localhost:9090
-
-### 🎯 Kullanılabilir Metrics
-
-#### Counter Metrics
-- `workflow_state_transitions_total` - State geçişleri
-- `workflow_errors_total` - Tip/önem derecesine göre toplam hatalar  
-- `workflow_exceptions_total` - İşlenmemiş exception'lar
-- `workflow_validation_failures_total` - Validation hataları
-- `http_requests_total` - HTTP istekleri
-- `workflow_db_queries_total` - Veritabanı sorguları
-- `script_executions_total` - Script çalıştırmaları
-- `background_jobs_scheduled_total` - Arka plan işleri
-- `external_service_calls_total` - Harici servis çağrıları
-- `dapr_service_invocations_total` - DAPR çağrıları
-
-#### Gauge Metrics
-- `workflow_health_status` - Sistem sağlığı (0=sağlıksız, 1=sağlıklı)
-- `workflow_error_rate` - Mevcut hata oranı %
-- `workflow_instances_by_status` - Duruma göre instance sayısı
-- `task_factory_pool_size` - Object pool metrikleri
-- `workflow_cache_size_bytes` - Cache boyutu
-- `background_jobs_pending` - Bekleyen iş sayısı
-
-#### Histogram Metrics
-- `workflow_state_duration_seconds` - Her state'te geçen süre
-- `workflow_db_query_duration_seconds` - Veritabanı sorgu süresi
-- `http_request_duration_seconds` - HTTP istek süresi
-- `background_job_duration_seconds` - İş çalıştırma süresi
-- `script_execution_duration_seconds` - Script çalıştırma süresi
-- `external_service_duration_seconds` - Harici çağrı süresi
-
-### 📊 Dashboard Özellikleri
-
-#### Sistem Sağlık Genel Bakış
-- Genel Sistem Sağlık Durumu (Sağlıklı/Sağlıksız)
-- Genel Hata Oranı (%)
-- Tip/Önem Derecesine Göre Gerçek Zamanlı Hata Oranı
-
-#### Workflow State Metrics
-- State Geçişleri (dakika başına)
-- Instance Durum Dağılımı (pasta grafiği)
-- State Süresi P95 (saniye)
-
-#### Veritabanı Metrikleri
-- Tip/Tablo Bazında Veritabanı Sorguları (dakika başına)
-- Sorgu Süresi P95/P50
-
-#### HTTP API Metrikleri
-- Endpoint/Durum Bazında HTTP İstekleri (dakika başına)
-- İstek Süresi P95
-- Tip Bazında HTTP Hataları
-
-#### Arka Plan İşleri & Script Engine
-- Arka Plan İşleri Durumu (Bekleyen/Çalışan)
-- Tip/Dil Bazında Script Çalıştırmaları
-
-#### Cache & Harici Servisler
-- Cache Hit/Miss Oranları
-- Durum Bazında Harici Servis Çağrıları
-- DAPR Entegrasyon Metrikleri
-
-### 📈 Metrics Endpoint'leri
-
-Workflow uygulamaları şu endpoint'lerden metrics sağlar:
-- **Orchestration API**: http://vnext-app:5000/metrics
-- **Execution API**: http://vnext-execution-app:5000/metrics
-
-### 🔧 Konfigürasyon Dosyaları
-
-#### Prometheus Konfigürasyonu
-- `vnext/docker/config/prometheus/prometheus.yml` - Prometheus scraping konfigürasyonu
-
-#### Grafana Konfigürasyonu
-- `vnext/docker/config/grafana/provisioning/datasources/` - Otomatik yapılandırılmış Prometheus datasource
-- `vnext/docker/config/grafana/provisioning/dashboards/` - Dashboard provisioning
-- `vnext/docker/config/grafana/dashboards/workflow-metrics.json` - Ana workflow dashboard
-
-### 🛠 Monitoring Sorun Giderme
-
-#### Grafana Dashboard Görünmüyor?
-1. Container'ların çalışıp çalışmadığını kontrol edin:
-   ```bash
-   docker ps | grep -E "(grafana|prometheus)"
-   ```
-
-2. Prometheus targets'ı kontrol edin:
-   - http://localhost:9090/targets adresini ziyaret edin
-
-#### Metrics Gelmiyor?
-1. Workflow uygulamasının `/metrics` endpoint'ini kontrol edin
-2. Prometheus konfigürasyonunda target'ların doğru olduğunu doğrulayın
-3. Network bağlantısını kontrol edin
-
-### 📝 Dashboard'ları Özelleştirme
-
-Dashboard'u özelleştirmek için:
-1. Grafana UI'da düzenleyin
-2. JSON formatında export edin
-3. `vnext/docker/config/grafana/dashboards/workflow-metrics.json` dosyasını güncelleyin
