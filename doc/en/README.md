@@ -103,6 +103,11 @@ Independent components that perform specific operations within the workflow:
 |-------|------|-------------|
 | **Instance Startup** | [`how-to/start-instance.md`](./how-to/start-instance.md) | Instance lifecycle and component management |
 
+### 🚀 Services
+| Topic | File | Description |
+|-------|------|-------------|
+| **Init Service** | [`services/init-service.md`](./services/init-service.md) | Package deployment, versioning and component management service |
+
 ---
 
 ## 🚀 Quick Start
