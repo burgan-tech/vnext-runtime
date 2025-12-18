@@ -103,6 +103,11 @@ State'ler arasındaki geçişleri yöneten bileşen. Dört farklı tetikleme tü
 |------|-------|----------|
 | **Instance Başlatma** | [`how-to/start-instance.md`](./how-to/start-instance.md) | Instance yaşam döngüsü ve bileşen yönetimi |
 
+### 🚀 Servisler
+| Konu | Dosya | Açıklama |
+|------|-------|----------|
+| **Init Service** | [`services/init-service.md`](./services/init-service.md) | Paket deployment, versiyonlama ve bileşen yönetimi servisi |
+
 ---
 
 ## 🚀 Hızlı Başlangıç
