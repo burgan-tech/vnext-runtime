@@ -41,6 +41,53 @@ Sistem tarafından otomatik olarak çalıştırılan koşullu transition'dır.
 - Durum kontrolü sonrası otomatik ilerlemeler
 - Veri validasyonu sonrası geçişler
 
+#### Varsayılan Otomatik Geçiş (Default Auto Transition) (v0.0.29+)
+
+Birden fazla otomatik transition tanımlandığında ve hiçbirinin koşulu sağlanmadığında, yedek olarak bir **Varsayılan Otomatik Geçiş** tetiklenebilir.
+
+**Yapılandırma:**
+```json
+{
+  "triggerKind": 10
+}
+```
+
+**TriggerKind Değerleri:**
+| Değer | Açıklama |
+|-------|----------|
+| 0 | Uygulanamaz (standart auto transition) |
+| 10 | Varsayılan Otomatik Geçiş (Default Auto Transition) |
+
+**Örnek Kullanım:**
+```json
+{
+  "transitions": [
+    {
+      "key": "approve",
+      "target": "approved",
+      "triggerType": 1,
+      "rule": { "ref": "Mappings/check-approval.cs" }
+    },
+    {
+      "key": "reject",
+      "target": "rejected",
+      "triggerType": 1,
+      "rule": { "ref": "Mappings/check-rejection.cs" }
+    },
+    {
+      "key": "pending-review",
+      "target": "pending",
+      "triggerType": 1,
+      "triggerKind": 10
+    }
+  ]
+}
+```
+
+Bu örnekte, `approve` veya `reject` koşullarından hiçbiri sağlanmazsa, `pending-review` geçişi varsayılan yedek olarak çalıştırılır.
+
+> **Not:** Her state için sadece bir adet `triggerKind: 10` tanımlanmalıdır. Hiçbir koşul eşleşmezse ve varsayılan tanımlı değilse, otomatik geçiş gerçekleşmez.
+
 ### Scheduled (2)
 Zamanlanmış transition'dır. Belirli bir zamanda veya cron benzeri periyodik olarak çalışması istendiğinde kullanılır. Sadece sistem tarafından çalıştırılır.
 

@@ -144,7 +144,11 @@ publish_component() {
     local http_code
     
     # Make the POST request and capture both response body and HTTP status code
+    # --max-time 600: total operation timeout (10 minutes)
+    # --connect-timeout 30: connection establishment timeout
     response=$(curl -s -w "\n%{http_code}" -X POST "$PUBLISH_ENDPOINT" \
+        --max-time 600 \
+        --connect-timeout 30 \
         -H "Content-Type: application/json" \
         -d "{\"version\": \"$VNEXT_COMPONENT_VERSION\", \"appDomain\": \"$APP_DOMAIN\"}")
     

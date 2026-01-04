@@ -28,8 +28,18 @@ POST /:domain/workflows/:flow/instances/start?sync=true
 
 **Key Behavior:**
 - If `key` value is provided and the current instance key is empty, it will be saved
-- During validation, the operation proceeds only if no active instance exists with that key
 - If key is not provided at start, it can be assigned during subsequent transitions
+
+> **v0.0.29 Change - Idempotent Start:** When starting a workflow with a key that already exists, the system now returns the existing instance information instead of an error. This enables safe retry scenarios.
+
+**Idempotent Behavior:**
+- **Previous behavior (before v0.0.29):** Returns `409 Conflict` error when key already exists
+- **New behavior (v0.0.29+):** Returns the existing instance's current status and ID
+
+This change allows:
+- Safe retry scenarios for network failures
+- Clients to retrieve the original start response on repeated calls
+- No need for separate "check if exists" calls before starting
 
 **Example Request (With Key):**
 ```http
@@ -80,6 +90,28 @@ Content-Type: application/json
   "status": "A"
 }
 ```
+
+**Example Response (Idempotent - When Key Already Exists):**
+
+When you call the start endpoint with a key that already has an active instance, you receive the existing instance information:
+
+```http
+POST /ecommerce/workflows/scheduled-payments/instances/start?sync=true
+Content-Type: application/json
+
+{
+    "key": "99999999999"
+}
+```
+
+```json
+{
+  "id": "18075ad5-e5b2-4437-b884-21d733339113",
+  "status": "A"
+}
+```
+
+> **Note:** The response returns the existing instance's ID and current status. No new instance is created, and no error is returned.
 
 ### 2. Instance Transition
 

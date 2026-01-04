@@ -393,6 +393,81 @@ republish-component: check-runtime ## Re-run component publisher container
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up vnext-component-publisher
 	@echo "$(GREEN)Component re-published!$(NC)"
 
+##@ Domain Configuration
+change-domain: ## Change domain for all services (usage: make change-domain DOMAIN=mydomain)
+	@if [ -z "$(DOMAIN)" ]; then \
+		echo "$(RED)❌ DOMAIN parameter is required!$(NC)"; \
+		echo "$(YELLOW)Usage: make change-domain DOMAIN=mydomain$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
+	@echo "$(BLUE)     VNext Domain Configuration Change$(NC)"
+	@echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
+	@echo ""
+	@echo "$(YELLOW)📌 New Domain: $(DOMAIN)$(NC)"
+	@# Normalize domain for database name (replace non-alphanumeric with underscore, capitalize first letter of each word)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{for(i=1;i<=NF;i++){$$i=toupper(substr($$i,1,1)) tolower(substr($$i,2))}}1' FS='_' OFS='_'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(YELLOW)📌 Database Name: $${DB_NAME}$(NC)"; \
+	echo ""; \
+	echo "$(PURPLE)Updating environment files...$(NC)"; \
+	echo "────────────────────────────────────────────────────────────"; \
+	for envfile in $(DOCKER_DIR)/.env $(DOCKER_DIR)/.env.orchestration $(DOCKER_DIR)/.env.execution $(DOCKER_DIR)/.env.inbox $(DOCKER_DIR)/.env.outbox; do \
+		if [ -f "$$envfile" ]; then \
+			if grep -q "^APP_DOMAIN=" "$$envfile"; then \
+				sed -i.bak 's/^APP_DOMAIN=.*/APP_DOMAIN=$(DOMAIN)/' "$$envfile" && rm -f "$$envfile.bak"; \
+				echo "$(GREEN)  ✅ Updated APP_DOMAIN in $$envfile$(NC)"; \
+			else \
+				echo "APP_DOMAIN=$(DOMAIN)" >> "$$envfile"; \
+				echo "$(GREEN)  ✅ Added APP_DOMAIN to $$envfile$(NC)"; \
+			fi \
+		else \
+			echo "$(YELLOW)  ⚠️  File not found: $$envfile (skipped)$(NC)"; \
+		fi \
+	done; \
+	echo ""; \
+	echo "$(PURPLE)Updating appsettings files (ConnectionStrings:Default)...$(NC)"; \
+	echo "────────────────────────────────────────────────────────────"; \
+	for appsettings in $(DOCKER_DIR)/appsettings.Development.json $(DOCKER_DIR)/appsettings.WorkerInbox.Development.json $(DOCKER_DIR)/appsettings.WorkerOutbox.Development.json; do \
+		if [ -f "$$appsettings" ]; then \
+			sed -i.bak "s/Database=vNext_[^;]*/Database=$${DB_NAME}/" "$$appsettings" && rm -f "$$appsettings.bak"; \
+			echo "$(GREEN)  ✅ Updated database name in $$appsettings$(NC)"; \
+		else \
+			echo "$(YELLOW)  ⚠️  File not found: $$appsettings (skipped)$(NC)"; \
+		fi \
+	done; \
+	echo ""; \
+	echo "$(PURPLE)Updating PostgreSQL init script...$(NC)"; \
+	echo "────────────────────────────────────────────────────────────"; \
+	INIT_SQL="$(DOCKER_DIR)/config/postgres/init-db.sql"; \
+	if [ -f "$$INIT_SQL" ]; then \
+		sed -i.bak "s/vNext_[a-zA-Z0-9_]*/$${DB_NAME}/g" "$$INIT_SQL" && rm -f "$$INIT_SQL.bak"; \
+		echo "$(GREEN)  ✅ Updated database name in $$INIT_SQL$(NC)"; \
+	else \
+		echo "$(RED)  ❌ File not found: $$INIT_SQL$(NC)"; \
+	fi; \
+	echo ""; \
+	echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+	echo "$(GREEN)✅ Domain configuration completed!$(NC)"; \
+	echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"; \
+	echo ""; \
+	echo "$(YELLOW)📋 Summary of Changes:$(NC)"; \
+	echo "  • APP_DOMAIN set to: $(DOMAIN)"; \
+	echo "  • Database name set to: $${DB_NAME}"; \
+	echo ""; \
+	echo "$(YELLOW)⚠️  Important: You need to reset your environment for changes to take effect:$(NC)"; \
+	echo ""; \
+	echo "  $(PURPLE)1. Stop all services:$(NC)"; \
+	echo "     make down"; \
+	echo ""; \
+	echo "  $(PURPLE)2. Reset database (WARNING: This will delete all data!):$(NC)"; \
+	echo "     make db-reset"; \
+	echo ""; \
+	echo "  $(PURPLE)3. Start fresh environment:$(NC)"; \
+	echo "     make dev"; \
+	echo ""; \
+	echo "$(BLUE)════════════════════════════════════════════════════════════$(NC)"
+
 ##@ Git Operations
 git-init: ## Initialize git repository
 	@if [ ! -d .git ]; then \
@@ -451,4 +526,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env build up start up-build down stop restart status logs logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect
+.PHONY: help check-runtime setup create-env-files create-network check-env build up start up-build down stop restart status logs logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect change-domain

@@ -28,8 +28,18 @@ POST /:domain/workflows/:flow/instances/start?sync=true
 
 **Key Davranışı:**
 - `key` değeri dolu gelirse ve mevcut instance'da key boş ise kaydedilir
-- Validasyonda, o key'de aktif bir instance yoksa işlem yapılır
 - Key değeri başlangıçta verilmezse, sonraki transition'larda atanabilir
+
+> **v0.0.29 Değişikliği - Idempotent Başlatma:** Aynı key ile bir workflow başlatıldığında, sistem artık hata yerine mevcut instance bilgilerini döner. Bu, güvenli yeniden deneme senaryolarını mümkün kılar.
+
+**Idempotent Davranış:**
+- **Eski davranış (v0.0.29 öncesi):** Key zaten varsa `409 Conflict` hatası döner
+- **Yeni davranış (v0.0.29+):** Mevcut instance'ın güncel durumu ve ID bilgisi döner
+
+Bu değişiklik şunları sağlar:
+- Ağ hataları için güvenli yeniden deneme senaryoları
+- İstemcilerin tekrarlanan çağrılarda orijinal başlatma yanıtını alabilmesi
+- Başlatmadan önce ayrı "var mı kontrol et" çağrılarına gerek kalmaması
 
 **Örnek İstek (Key ile):**
 ```http
@@ -80,6 +90,28 @@ Content-Type: application/json
   "status": "A"
 }
 ```
+
+**Örnek Response (Idempotent - Key Zaten Varsa):**
+
+Zaten aktif bir instance'ı olan bir key ile start endpoint'ini çağırdığınızda, mevcut instance bilgilerini alırsınız:
+
+```http
+POST /ecommerce/workflows/scheduled-payments/instances/start?sync=true
+Content-Type: application/json
+
+{
+    "key": "99999999999"
+}
+```
+
+```json
+{
+  "id": "18075ad5-e5b2-4437-b884-21d733339113",
+  "status": "A"
+}
+```
+
+> **Not:** Yanıt, mevcut instance'ın ID ve güncel durumunu döner. Yeni instance oluşturulmaz ve hata döndürülmez.
 
 ### 2. Instance Transition
 

@@ -16,12 +16,52 @@ Repo, `vnext/docker/` dizininde hazır environment dosyaları (`.env`, `.env.orc
 
 ## 🎯 Domain Konfigürasyonu (Önemli!)
 
-**Domain konfigürasyonu, vNext Runtime'da kritik bir kavramdır.** Her geliştiricinin platform ile çalışabilmesi için kendi domain'ini yapılandırması gerekir. Domain'inizi ayarlamak için aşağıdaki dosyalardaki `APP_DOMAIN` değerini güncellemelisiniz:
+**Domain konfigürasyonu, vNext Runtime'da kritik bir kavramdır.** Her geliştiricinin platform ile çalışabilmesi için kendi domain'ini yapılandırması gerekir. Her domain, kendine ait bir veritabanı ile kendi runtime ortamında çalışır.
+
+### Otomatik Domain Konfigürasyonu (Önerilen)
+
+Tüm domain ayarlarını otomatik olarak yapılandırmak için `change-domain` komutunu kullanın:
+
+```bash
+# Domain'i istediğiniz isimle değiştirin
+make change-domain DOMAIN=sirketim
+```
+
+Bu komut otomatik olarak şunları günceller:
+- **Environment dosyaları**: `.env`, `.env.orchestration`, `.env.execution`, `.env.inbox`, `.env.outbox` dosyalarındaki `APP_DOMAIN`
+- **Veritabanı adı**: Tüm appsettings dosyalarındaki `ConnectionStrings:Default`
+- **PostgreSQL init script**: `init-db.sql` dosyasındaki veritabanı adı
+
+Veritabanı adı, domain adınızdan otomatik olarak oluşturulur:
+- `sirketim` → `vNext_Sirketim`
+- `e-ticaret` → `vNext_E_Ticaret`
+- `kullanici-yonetimi` → `vNext_Kullanici_Yonetimi`
+
+### Domain Değiştirdikten Sonra
+
+`make change-domain` çalıştırdıktan sonra ortamınızı sıfırlamanız gerekir:
+
+```bash
+# Tüm servisleri durdur
+make down
+
+# Veritabanını sıfırla (UYARI: Bu tüm verileri silecek!)
+make db-reset
+
+# Temiz ortamı başlat
+make dev
+```
+
+### Manuel Domain Konfigürasyonu
+
+Manuel yapılandırmayı tercih ediyorsanız, aşağıdaki dosyalardaki `APP_DOMAIN` değerini güncelleyin:
 
 1. **`vnext/docker/.env`** - Runtime domain konfigürasyonu
 2. **`vnext/docker/.env.orchestration`** - Orchestration servis domain'i
 3. **`vnext/docker/.env.execution`** - Execution servis domain'i
-4. **`vnext.config.json`** - Proje domain konfigürasyonu (kendi workflow repository'nizde)
+4. **`vnext/docker/.env.inbox`** - Worker inbox servis domain'i
+5. **`vnext/docker/.env.outbox`** - Worker outbox servis domain'i
+6. **`vnext.config.json`** - Proje domain konfigürasyonu (kendi workflow repository'nizde)
 
 ```bash
 # Örnek: Varsayılan "core" değerini kendi domain'inize değiştirin
@@ -434,6 +474,12 @@ make help
 | `make dev` | Development ortamını kurar ve başlatır | `make dev` |
 | `make setup` | Environment dosyalarını kontrol eder ve network'ü oluşturur | `make setup` |
 | `make info` | Proje bilgilerini ve erişim URL'lerini gösterir | `make info` |
+
+### Domain Konfigürasyonu
+
+| Komut | Açıklama | Kullanım |
+|-------|----------|----------|
+| `make change-domain` | Tüm servisler için domain'i değiştirir | `make change-domain DOMAIN=sirketim` |
 
 ### Environment Setup
 
