@@ -16,12 +16,52 @@ The repository includes ready-made environment files (`.env`, `.env.orchestratio
 
 ## 🎯 Domain Configuration (Important!)
 
-**Domain configuration is a critical concept** in vNext Runtime. Each developer must configure their own domain to work with the platform. To set up your domain, update the `APP_DOMAIN` value in the following files:
+**Domain configuration is a critical concept** in vNext Runtime. Each developer must configure their own domain to work with the platform. Each domain runs in its own runtime environment with a dedicated database.
+
+### Automatic Domain Configuration (Recommended)
+
+Use the `change-domain` command to automatically configure all domain-related settings:
+
+```bash
+# Change domain to your desired name
+make change-domain DOMAIN=my-company
+```
+
+This command automatically updates:
+- **Environment files**: `APP_DOMAIN` in `.env`, `.env.orchestration`, `.env.execution`, `.env.inbox`, `.env.outbox`
+- **Database name**: Updates `ConnectionStrings:Default` in all appsettings files
+- **PostgreSQL init script**: Updates the database name in `init-db.sql`
+
+The database name is automatically generated from your domain name:
+- `my-company` → `vNext_My_Company`
+- `ecommerce` → `vNext_Ecommerce`
+- `user-management` → `vNext_User_Management`
+
+### After Changing Domain
+
+After running `make change-domain`, you need to reset your environment:
+
+```bash
+# Stop all services
+make down
+
+# Reset database (WARNING: This will delete all data!)
+make db-reset
+
+# Start fresh environment
+make dev
+```
+
+### Manual Domain Configuration
+
+If you prefer manual configuration, update the `APP_DOMAIN` value in the following files:
 
 1. **`vnext/docker/.env`** - Runtime domain configuration
 2. **`vnext/docker/.env.orchestration`** - Orchestration service domain
 3. **`vnext/docker/.env.execution`** - Execution service domain
-4. **`vnext.config.json`** - Project domain configuration (in your own workflow repository)
+4. **`vnext/docker/.env.inbox`** - Worker inbox service domain
+5. **`vnext/docker/.env.outbox`** - Worker outbox service domain
+6. **`vnext.config.json`** - Project domain configuration (in your own workflow repository)
 
 ```bash
 # Example: Change from default "core" to your domain
@@ -435,6 +475,12 @@ make help
 | `make dev` | Sets up and starts development environment | `make dev` |
 | `make setup` | Checks environment files and creates network | `make setup` |
 | `make info` | Shows project information and access URLs | `make info` |
+
+### Domain Configuration
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `make change-domain` | Change domain for all services | `make change-domain DOMAIN=mydomain` |
 
 ### Environment Setup
 

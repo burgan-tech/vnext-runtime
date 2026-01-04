@@ -124,12 +124,74 @@
       ]
     },
     {
-      "uuid": "23f855b3-1df8-4eff-922c-3da82ed371f1",
+      "uuid": "fb3934f2-4587-470e-a75c-054eb7f4b45d",
       "name": "task-test",
       "children": [
         {
           "type": "route",
+          "uuid": "73691013-0ade-4d97-8dba-98848fb35e76"
+        },
+        {
+          "type": "route",
+          "uuid": "d767c310-4aa8-451c-b736-2f76728c7037"
+        },
+        {
+          "type": "route",
+          "uuid": "75c69f59-d442-44ce-bc38-65efabeb2ee3"
+        },
+        {
+          "type": "route",
           "uuid": "30ce347c-8b04-44e4-8d50-da46d7ab04c7"
+        }
+      ]
+    },
+    {
+      "uuid": "ad23cdc9-2552-4503-bead-579cff0ec274",
+      "name": "notification",
+      "children": [
+        {
+          "type": "route",
+          "uuid": "52f44c97-9b96-4d7e-8f6a-63457637d466"
+        }
+      ]
+    },
+    {
+      "uuid": "eb01a2c3-d4e5-4f67-8901-2345abcdef01",
+      "name": "error-boundary",
+      "children": [
+        {
+          "type": "route",
+          "uuid": "eb01a2c3-0001-4f67-8901-2345abcdef01"
+        },
+        {
+          "type": "route",
+          "uuid": "eb01a2c3-0002-4f67-8901-2345abcdef02"
+        },
+        {
+          "type": "route",
+          "uuid": "eb01a2c3-0003-4f67-8901-2345abcdef03"
+        },
+        {
+          "type": "route",
+          "uuid": "eb01a2c3-0004-4f67-8901-2345abcdef04"
+        },
+        {
+          "type": "route",
+          "uuid": "eb01a2c3-0005-4f67-8901-2345abcdef05"
+        }
+      ]
+    },
+    {
+      "uuid": "eb6d81ee-d6f6-434e-b825-c2f838480945",
+      "name": "discovery",
+      "children": [
+        {
+          "type": "route",
+          "uuid": "d417072e-9a13-49ff-9a4e-8ef223c1fae6"
+        },
+        {
+          "type": "route",
+          "uuid": "8fad1195-a086-405e-97ce-2979d66133d9"
         }
       ]
     }
@@ -1565,6 +1627,574 @@
       "responseMode": null,
       "streamingMode": null,
       "streamingInterval": 0
+    },
+    {
+      "uuid": "73691013-0ade-4d97-8dba-98848fb35e76",
+      "type": "http",
+      "documentation": "Task Test Consume Endpoint - Test for PubSub type",
+      "method": "post",
+      "endpoint": "api/task-test/consume",
+      "responses": [
+        {
+          "uuid": "3da94bc4-8996-4852-9f9d-c051a050ff5d",
+          "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"data\": {\n    \"taskType\": \"DaprPubsub\",\n    \"message\": \"HTTP task test successful\",\n    \"receivedData\": {{body}},\n    \"processedAt\": \"{{now}}\",\n    \"requestId\": \"{{faker 'string.uuid'}}\"\n  },\n  \"metadata\": {\n    \"endpoint\": \"api/task-test/consume\",\n    \"method\": \"POST\",\n    \"responseTime\": {{faker 'number.int' min=50 max=200}}\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Task-Type",
+              "value": "DaprPubSub"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "485b5259-27df-4ce8-80f5-a3b76afc054c",
+          "body": "{\n  \"statusCode\": 500,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"INTERNAL_ERROR\",\n    \"message\": \"Task test HTTP endpoint error\",\n    \"timestamp\": \"{{now}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Error Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "d767c310-4aa8-451c-b736-2f76728c7037",
+      "type": "http",
+      "documentation": "Task Test HTTP Endpoint - Test for DaprService type",
+      "method": "post",
+      "endpoint": "api/task-test/dapr-endpoint",
+      "responses": [
+        {
+          "uuid": "24f42129-e879-49de-84b2-65825a45018d",
+          "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"data\": {\n    \"taskType\": \"DaprService\",\n    \"message\": \"HTTP task test successful\",\n    \"receivedData\": {{body}},\n    \"processedAt\": \"{{now}}\",\n    \"requestId\": \"{{faker 'string.uuid'}}\"\n  },\n  \"metadata\": {\n    \"endpoint\": \"api/task-test/dapr-endpoint\",\n    \"method\": \"POST\",\n    \"responseTime\": {{faker 'number.int' min=50 max=200}}\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Task-Type",
+              "value": "DaprService"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "1ba077d4-6d3e-4209-af3c-b7d5734a3e90",
+          "body": "{\n  \"statusCode\": 500,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"INTERNAL_ERROR\",\n    \"message\": \"Task test HTTP endpoint error\",\n    \"timestamp\": \"{{now}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Error Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "75c69f59-d442-44ce-bc38-65efabeb2ee3",
+      "type": "http",
+      "documentation": "Task Test HTTP Endpoint - Test for HttpTask type",
+      "method": "post",
+      "endpoint": "api/task-test/list-items",
+      "responses": [
+        {
+          "uuid": "163ea29b-0661-463d-a116-a57758be033e",
+          "body": "[\n  {\n    \"id\": \"{{faker 'string.uuid'}}\",\n    \"name\": \"item_{{faker 'string.alphanumeric' 10}}\",\n    \"isActive\": true\n  },\n  {\n    \"id\": \"{{faker 'string.uuid'}}\",\n    \"name\": \"item_{{faker 'string.alphanumeric' 10}}\",\n    \"isActive\": true\n  },\n  {\n    \"id\": \"{{faker 'string.uuid'}}\",\n    \"name\": \"item_{{faker 'string.alphanumeric' 10}}\",\n    \"isActive\": true\n  },\n  {\n    \"id\": \"{{faker 'string.uuid'}}\",\n    \"name\": \"item_{{faker 'string.alphanumeric' 10}}\",\n    \"isActive\": true\n  }\n]",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "X-Task-Type",
+              "value": "HttpTasks"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "afdc2ca6-ceb3-40ee-a7b9-c91a3697aa25",
+          "body": "{\n  \"statusCode\": 500,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"INTERNAL_ERROR\",\n    \"message\": \"Task test HTTP endpoint error\",\n    \"timestamp\": \"{{now}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Error Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "52f44c97-9b96-4d7e-8f6a-63457637d466",
+      "type": "http",
+      "documentation": "Task Test HTTP Endpoint - Test for NotificationTask type",
+      "method": "post",
+      "endpoint": "api/notification/send",
+      "responses": [
+        {
+          "uuid": "01c4b612-de94-44a9-992c-34f9e1c70821",
+          "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"data\": {\n    \"taskType\": \"NotificationTask\",\n    \"message\": \"HTTP task test successful\",\n    \"receivedData\": {{body}},\n    \"processedAt\": \"{{now}}\",\n    \"requestId\": \"{{faker 'string.uuid'}}\"\n  },\n  \"metadata\": {\n    \"endpoint\": \"api/notification/send\",\n    \"method\": \"POST\",\n    \"responseTime\": {{faker 'number.int' min=50 max=200}}\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Success Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "6a6a1054-a070-4cce-99d6-2631a898c43a",
+          "body": "{\n  \"statusCode\": 500,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"INTERNAL_ERROR\",\n    \"message\": \"Task test HTTP endpoint error\",\n    \"timestamp\": \"{{now}}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 500,
+          "label": "Error Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "eb01a2c3-0001-4f67-8901-2345abcdef01",
+      "type": "http",
+      "documentation": "ErrorBoundary Test - Simulate 503 Service Unavailable for Retry testing",
+      "method": "post",
+      "endpoint": "api/error-boundary/simulate-503",
+      "responses": [
+        {
+          "uuid": "3a2db3d9-f08b-4978-a645-681fe94ba529",
+          "body": "{\n  \"statusCode\": 503,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"SERVICE_UNAVAILABLE\",\n    \"message\": \"Service temporarily unavailable\",\n    \"description\": \"The service is currently undergoing maintenance or is overloaded\",\n    \"retryAfter\": 5\n  },\n  \"timestamp\": \"{{now}}\",\n  \"requestId\": \"{{faker 'string.uuid'}}\"\n}",
+          "latency": 500,
+          "statusCode": 503,
+          "label": "Service Unavailable - Retry Test",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Retry-After",
+              "value": "5"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "eb01a2c3-0002-4f67-8901-2345abcdef02",
+      "type": "http",
+      "documentation": "ErrorBoundary Test - Simulate 500 Internal Server Error for Abort testing",
+      "method": "post",
+      "endpoint": "api/error-boundary/simulate-500",
+      "responses": [
+        {
+          "uuid": "c5864a01-4ae8-45c8-b99e-c658c442e177",
+          "body": "{\n  \"statusCode\": 500,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"INTERNAL_SERVER_ERROR\",\n    \"message\": \"An unexpected error occurred\",\n    \"description\": \"Critical system failure - operation cannot be completed\",\n    \"errorType\": \"HttpRequestException\"\n  },\n  \"timestamp\": \"{{now}}\",\n  \"requestId\": \"{{faker 'string.uuid'}}\"\n}",
+          "latency": 200,
+          "statusCode": 500,
+          "label": "Internal Server Error - Abort Test",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "eb01a2c3-0003-4f67-8901-2345abcdef03",
+      "type": "http",
+      "documentation": "ErrorBoundary Test - Simulate 400 Bad Request for Ignore testing",
+      "method": "post",
+      "endpoint": "api/error-boundary/simulate-400",
+      "responses": [
+        {
+          "uuid": "6df197a0-25a2-4740-8288-850e70204d12",
+          "body": "{\n  \"statusCode\": 400,\n  \"success\": false,\n  \"error\": {\n    \"code\": \"BAD_REQUEST\",\n    \"message\": \"Invalid request parameters\",\n    \"description\": \"The request contains invalid or missing parameters\",\n    \"validationErrors\": [\n      {\n        \"field\": \"testField\",\n        \"message\": \"Field is required\"\n      }\n    ]\n  },\n  \"timestamp\": \"{{now}}\",\n  \"requestId\": \"{{faker 'string.uuid'}}\"\n}",
+          "latency": 100,
+          "statusCode": 400,
+          "label": "Bad Request - Ignore Test",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "eb01a2c3-0004-4f67-8901-2345abcdef04",
+      "type": "http",
+      "documentation": "ErrorBoundary Test - Simulate timeout with delayed response",
+      "method": "post",
+      "endpoint": "api/error-boundary/simulate-timeout",
+      "responses": [
+        {
+          "uuid": "0fa74f43-09bd-4c80-b9f3-aa581b25fd9e",
+          "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"data\": {\n    \"message\": \"This response is intentionally delayed to trigger timeout\",\n    \"delayedBy\": \"30 seconds\"\n  },\n  \"timestamp\": \"{{now}}\",\n  \"requestId\": \"{{faker 'string.uuid'}}\"\n}",
+          "latency": 30000,
+          "statusCode": 200,
+          "label": "Delayed Response - Timeout Test",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "eb01a2c3-0005-4f67-8901-2345abcdef05",
+      "type": "http",
+      "documentation": "ErrorBoundary Test - Successful response for happy path testing",
+      "method": "post",
+      "endpoint": "api/error-boundary/simulate-success",
+      "responses": [
+        {
+          "uuid": "5a01fa25-1f85-48fd-a016-13cc1b78cb22",
+          "body": "{\n  \"statusCode\": 200,\n  \"success\": true,\n  \"data\": {\n    \"message\": \"Operation completed successfully\",\n    \"result\": {\n      \"operationId\": \"{{faker 'string.uuid'}}\",\n      \"status\": \"completed\",\n      \"processedAt\": \"{{now}}\"\n    }\n  },\n  \"timestamp\": \"{{now}}\",\n  \"requestId\": \"{{faker 'string.uuid'}}\"\n}",
+          "latency": 200,
+          "statusCode": 200,
+          "label": "Success Response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "d417072e-9a13-49ff-9a4e-8ef223c1fae6",
+      "type": "http",
+      "documentation": "Domain Resolver",
+      "method": "get",
+      "endpoint": "api/v1/discovery/workflows/domain/instances/:domain/functions/data",
+      "responses": [
+        {
+          "uuid": "7198d479-8589-4487-a458-d9454d94f398",
+          "body": "{{setVar 'eTag' (faker 'string.alphanumeric' 32)}}\n\n{{#if (eq (urlParam 'domain') 'core')}}\n  {{setVar 'port' 4201}}\n{{else}}\n  {{setVar 'port' (faker 'number.int' min=4200 max=5000)}}\n{{/if}}\n\n{\n    \"data\": {\n        \"eTag\": \"\\\"{{@eTag}}\\\"\",\n        \"appId\": \"vnext-{{urlParam 'domain'}}.test-vnext-{{urlParam 'domain'}}\",\n        \"baseUrl\": \"http://localhost:{{@port}}\",\n        \"healthUrl\": \"https://localhost:{{@port}}/health\",\n        \"domainName\": \"{{urlParam 'domain'}}\"\n    },\n    \"etag\":  \"\\\"{{@eTag}}\\\"\",\n    \"extensions\": {}\n}\n ",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "Domain servis bilgisini döner",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "x-change-port",
+              "value": "true"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "bf780c37-a1db-438a-a73d-b14967243c6f",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 404,
+          "label": "Domain bulunamadı",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        },
+        {
+          "uuid": "67e4407e-b6cf-4a0b-a8d3-60addf435143",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 304,
+          "label": "Değişiklik bulunamadı",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "header",
+              "modifier": "If-None-Match",
+              "value": "",
+              "invert": true,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
+    },
+    {
+      "uuid": "8fad1195-a086-405e-97ce-2979d66133d9",
+      "type": "http",
+      "documentation": "Domain Registration",
+      "method": "post",
+      "endpoint": "api/v1/discovery/workflows/domain-registration/instances/start",
+      "responses": [
+        {
+          "uuid": "a75c2b51-b7fa-43ef-b7d5-bc1a51d9c5d6",
+          "body": "{\n  \"id\": \"{{faker 'string.uuid'}}\",\n  \"status\": \"C\"\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": "id",
+          "callbacks": []
+        }
+      ],
+      "responseMode": null,
+      "streamingMode": null,
+      "streamingInterval": 0
     }
   ],
   "rootChildren": [
@@ -1590,7 +2220,19 @@
     },
     {
       "type": "folder",
-      "uuid": "23f855b3-1df8-4eff-922c-3da82ed371f1"
+      "uuid": "eb01a2c3-d4e5-4f67-8901-2345abcdef01"
+    },
+    {
+      "type": "folder",
+      "uuid": "fb3934f2-4587-470e-a75c-054eb7f4b45d"
+    },
+    {
+      "type": "folder",
+      "uuid": "ad23cdc9-2552-4503-bead-579cff0ec274"
+    },
+    {
+      "type": "folder",
+      "uuid": "eb6d81ee-d6f6-434e-b825-c2f838480945"
     }
   ],
   "proxyMode": false,
