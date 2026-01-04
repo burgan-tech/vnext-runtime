@@ -19,8 +19,79 @@ The following standard schema is used to create references between all component
 
 - **key**: Unique identifier of the component
 - **domain**: Domain information where the component will run (e.g., "core", "account", "payment")
-- **version**: Version information of the component (e.g., "1.0.0", "2.1.3")
+- **version**: Version information of the component (e.g., "1.0.0", "2.1.3", "latest", "1", "1.1")
 - **flow**: Which module the component belongs to (e.g., "sys-flows", "sys-tasks", "sys-functions")
+
+## Version Strategies
+
+vNext Platform supports flexible version definitions in references. You can dynamically resolve component versions using different version strategies.
+
+### 1. Explicit Version
+
+Use the full version number to target a specific version:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "1.2.3",
+  "flow": "sys-tasks"
+}
+```
+
+### 2. Latest (Most Recent Version)
+
+When `"latest"` value is used, the most recently published version of the component is automatically resolved:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "latest",
+  "flow": "sys-tasks"
+}
+```
+
+> ⚠️ **Warning:** Using `latest` in production environments is not recommended. Unexpected version changes may cause issues.
+
+### 3. Major Version
+
+When only the major version number is provided, the highest version within that major series is selected:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "1",
+  "flow": "sys-tasks"
+}
+```
+
+**Example:** `"version": "1"` → Available versions: 1.0.0, 1.1.0, 1.2.5, 2.0.0 → Selected: **1.2.5**
+
+### 4. Major.Minor Version
+
+When major and minor versions are provided together, the highest patch version within that series is selected:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "1.2",
+  "flow": "sys-tasks"
+}
+```
+
+**Example:** `"version": "1.2"` → Available versions: 1.2.0, 1.2.3, 1.2.5, 1.3.0 → Selected: **1.2.5**
+
+### Version Strategy Summary
+
+| Strategy | Format | Description | Example Result |
+|----------|--------|-------------|----------------|
+| Explicit | `"1.2.3"` | Exact version match | 1.2.3 |
+| Latest | `"latest"` | Most recent version | 2.1.0 (newest) |
+| Major | `"1"` | Highest within major series | 1.9.5 |
+| Major.Minor | `"1.2"` | Highest within major.minor series | 1.2.8 |
 
 ## Usage Areas
 
@@ -180,3 +251,7 @@ When reference cannot be resolved:
 2. **Domain separation**: Collect related components in the same domain
 3. **Circular dependency**: Do not create loops in reference chains
 4. **Backward compatibility**: Maintain API compatibility in version changes
+5. **Version strategy selection**:
+   - **Production environments**: Use full version (`"1.2.3"`)
+   - **Development environments**: You can use `"latest"` or major version (`"1"`)
+   - **Test environments**: Use Major.Minor (`"1.2"`) to automatically receive patch updates

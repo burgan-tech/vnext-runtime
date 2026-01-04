@@ -19,8 +19,79 @@ Tüm bileşenler (workflows, tasks, functions, extensions, schemas, views) aras�
 
 - **key**: Bileşenin benzersiz tanımlayıcısı
 - **domain**: Bileşenin çalışacağı domain bilgisi (örn: "core", "account", "payment")
-- **version**: Bileşenin versiyon bilgisi (örn: "1.0.0", "2.1.3")
+- **version**: Bileşenin versiyon bilgisi (örn: "1.0.0", "2.1.3", "latest", "1", "1.1")
 - **flow**: Bileşenin hangi modülde yer aldığı (örn: "sys-flows", "sys-tasks", "sys-functions")
+
+## Versiyon Stratejileri
+
+vNext Platform, referanslarda esnek versiyon tanımlamayı destekler. Farklı versiyon stratejileri kullanarak bileşen versiyonlarını dinamik olarak çözümleyebilirsiniz.
+
+### 1. Tam Versiyon (Explicit)
+
+Belirli bir versiyonu hedeflemek için tam versiyon numarası kullanılır:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "1.2.3",
+  "flow": "sys-tasks"
+}
+```
+
+### 2. Latest (En Son Versiyon)
+
+`"latest"` değeri kullanıldığında, bileşenin en son yayınlanmış versiyonu otomatik olarak çözümlenir:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "latest",
+  "flow": "sys-tasks"
+}
+```
+
+> ⚠️ **Dikkat:** Üretim ortamlarında `latest` kullanımı önerilmez. Beklenmeyen versiyon değişiklikleri sorunlara yol açabilir.
+
+### 3. Major Versiyon
+
+Sadece major versiyon numarası verildiğinde, o major serisi içindeki en yüksek versiyon seçilir:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "1",
+  "flow": "sys-tasks"
+}
+```
+
+**Örnek:** `"version": "1"` → Mevcut versiyonlar: 1.0.0, 1.1.0, 1.2.5, 2.0.0 → Seçilen: **1.2.5**
+
+### 4. Major.Minor Versiyon
+
+Major ve minor versiyon birlikte verildiğinde, o seri içindeki en yüksek patch versiyonu seçilir:
+
+```json
+{
+  "key": "validate-client",
+  "domain": "core",
+  "version": "1.2",
+  "flow": "sys-tasks"
+}
+```
+
+**Örnek:** `"version": "1.2"` → Mevcut versiyonlar: 1.2.0, 1.2.3, 1.2.5, 1.3.0 → Seçilen: **1.2.5**
+
+### Versiyon Stratejisi Özeti
+
+| Strateji | Format | Açıklama | Örnek Sonuç |
+|----------|--------|----------|-------------|
+| Explicit | `"1.2.3"` | Tam versiyon eşleşmesi | 1.2.3 |
+| Latest | `"latest"` | En son versiyon | 2.1.0 (en yeni) |
+| Major | `"1"` | Major seri içinde en yüksek | 1.9.5 |
+| Major.Minor | `"1.2"` | Major.Minor seri içinde en yüksek | 1.2.8 |
 
 ## Kullanım Alanları
 
@@ -180,3 +251,7 @@ Referans çözümlenemediğinde:
 2. **Domain ayrımı**: İlgili bileşenleri aynı domain'de toplayın
 3. **Döngüsel bağımlılık**: Referans zincirlerinde döngü oluşturmayın
 4. **Geriye uyumluluk**: Versiyon değişikliklerinde API uyumluluğu koruyun
+5. **Versiyon stratejisi seçimi**:
+   - **Üretim ortamları**: Tam versiyon (`"1.2.3"`) kullanın
+   - **Geliştirme ortamları**: `"latest"` veya major versiyon (`"1"`) kullanabilirsiniz
+   - **Test ortamları**: Major.Minor (`"1.2"`) ile patch güncellemelerini otomatik alın

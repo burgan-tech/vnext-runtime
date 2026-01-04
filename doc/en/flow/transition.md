@@ -41,6 +41,53 @@ Conditional transition automatically executed by the system.
 - Automatic progressions after status checks
 - Transitions after data validation
 
+#### Default Auto Transition (v0.0.29+)
+
+When multiple automatic transitions are defined and none of their conditions are met, a **Default Auto Transition** can be triggered as a fallback.
+
+**Configuration:**
+```json
+{
+  "triggerKind": 10
+}
+```
+
+**TriggerKind Values:**
+| Value | Description |
+|-------|-------------|
+| 0 | Not applicable (standard auto transition) |
+| 10 | Default Auto Transition |
+
+**Example Usage:**
+```json
+{
+  "transitions": [
+    {
+      "key": "approve",
+      "target": "approved",
+      "triggerType": 1,
+      "rule": { "ref": "Mappings/check-approval.cs" }
+    },
+    {
+      "key": "reject",
+      "target": "rejected",
+      "triggerType": 1,
+      "rule": { "ref": "Mappings/check-rejection.cs" }
+    },
+    {
+      "key": "pending-review",
+      "target": "pending",
+      "triggerType": 1,
+      "triggerKind": 10
+    }
+  ]
+}
+```
+
+In this example, if neither `approve` nor `reject` conditions are met, the `pending-review` transition will be executed as the default fallback.
+
+> **Note:** Only one transition with `triggerKind: 10` should be defined per state. If no conditions match and no default is defined, no automatic transition occurs.
+
 ### Scheduled (2)
 Scheduled transition. Used when it is desired to run at a specific time or periodically like cron. Only executed by the system.
 
