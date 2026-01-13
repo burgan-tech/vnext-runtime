@@ -111,6 +111,76 @@ Transition called by Pub/Sub systems. Provides event-based triggering.
 - Asynchronous operation triggers
 - Event-driven architecture implementations
 
+## Update Parent Data Transition (v0.0.31+)
+
+A special transition type for updating parent workflow instance data from SubFlow states. This transition does not change the state; it only updates the parent instance's data.
+
+### Key Features
+
+- **Target**: Always `$self` - No state change occurs
+- **Usage**: Only available in `subflow-state` type states
+- **Behavior**: Does not advance to SubFlow, only performs data update
+- **Well-Known Key**: `update-parent-data`
+
+### Configuration
+
+The transition is defined as `updateData` configuration in the workflow definition:
+
+```json
+{
+  "updateData": {
+    "key": "update-parent",
+    "target": "$self",
+    "triggerType": 0,
+    "versionStrategy": "None",
+    "labels": [
+      { "language": "en", "label": "Update Parent Data" },
+      { "language": "tr", "label": "Parent Veri Güncelle" }
+    ]
+  }
+}
+```
+
+### Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `key` | Unique key for the transition (e.g., `"update-parent"`) |
+| `target` | Must be `"$self"` - No state change |
+| `triggerType` | `0` (Manual) - Triggered by user |
+| `versionStrategy` | Data versioning strategy |
+| `labels` | Labels for multi-language support |
+
+### What It Does
+
+| Operation | Performed? |
+|-----------|------------|
+| Data mapping (according to transition rules) | Yes |
+| Instance data update | Yes |
+| Instance key validation and setting | Yes |
+| Transition record creation | Yes |
+| Tag addition (if any) | Yes |
+
+### What It Does NOT Do
+
+| Operation | Performed? |
+|-----------|------------|
+| State change (target is `$self`) | No |
+| SubFlow advancement | No |
+| Auto transition invocation | No |
+| OnExit/OnEntry task execution | No |
+| State change event publishing | No |
+
+### Important Notes
+
+1. **State Type Restriction**: Only usable in SubFlow states. In other state types, the normal transition pipeline runs.
+
+2. **Target Restriction**: Target must be `"$self"`. If a different target is specified, normal transition behavior is exhibited.
+
+3. **Instance Status**: Cannot be executed on completed instances. Returns an error in this case.
+
+---
+
 ## Shared Transitions
 Thanks to the `AvailableIn` property, a transition can be made available in multiple states. In this case, this list determines in which states the transition can be executed.
 

@@ -8,8 +8,8 @@ Function API'leri, workflow instance'ları için sistem seviyesi operasyonlar sa
 2. [State Fonksiyonu](#state-fonksiyonu)
 3. [Data Fonksiyonu](#data-fonksiyonu)
 4. [View Fonksiyonu](#view-fonksiyonu)
-5. [Kullanım Örnekleri](#kullanım-örnekleri)
-6. [En İyi Uygulamalar](#en-iyi-uygulamalar)
+5. [En İyi Uygulamalar](#en-iyi-uygulamalar)
+6. [İlgili Dökümanlar](#ilgili-dökümanlar)
 
 ## Genel Bakış
 
@@ -20,6 +20,8 @@ vNext Runtime platformu, her workflow instance'ı için otomatik olarak kullanı
 | **State** | Instance durumu için long-polling | `GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state` |
 | **Data** | Instance verisini alma | `GET /{domain}/workflows/{workflow}/instances/{instance}/functions/data` |
 | **View** | View içeriğini alma | `GET /{domain}/workflows/{workflow}/instances/{instance}/functions/view` |
+
+> **Not:** Schema Fonksiyonu ve kullanıcı tanımlı fonksiyonlar için bkz. [Custom Functions](./custom-function.md).
 
 Bu fonksiyonlar şunları sağlar:
 - Gerçek zamanlı durum izleme (long-polling)
@@ -75,11 +77,17 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
   "transitions": [
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/approve",
-      "name": "approve"
+      "name": "approve",
+      "schema": {
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=approve"
+      }
     },
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/reject",
-      "name": "reject"
+      "name": "reject",
+      "schema": {
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=reject"
+      }
     }
   ],
   "eTag": "W/\"abc123def456\""
@@ -99,6 +107,8 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
 | `status` | `string` | Instance durum kodu (A=Active, C=Completed, vb.) |
 | `activeCorrelations` | `array` | Aktif sub-flow'lar ve correlation'lar |
 | `transitions` | `array` | Mevcut durumdan kullanılabilir transition'lar |
+| `transitions[].schema` | `object` | Transition için şema linki (tanımlıysa) |
+| `transitions[].schema.href` | `string` | transitionKey ile Schema fonksiyon endpoint URL'i |
 | `eTag` | `string` | Cache doğrulama için ETag |
 
 ### Aktif Correlation'lar
@@ -136,6 +146,8 @@ Accept: application/json
 ## Data Fonksiyonu
 
 Data fonksiyonu, bir workflow instance'ının mevcut verisini alır. Verimli veri senkronizasyonu için ETag tabanlı önbellekleme destekler.
+
+> **Filtreleme:** GraphQL-stil sorgular, mantıksal operatörler ve aggregation'lar dahil gelişmiş filtreleme yetenekleri için bkz. [Instance Filtreleme Kılavuzu](./instance-filtering.md).
 
 ### Endpoint
 
@@ -526,8 +538,10 @@ Accept: application/json
 - Client tarafında rate limiting uygulayın
 - İstek takibi için correlation ID'leri kullanın
 
-## İlgili Dokümantasyon
+## İlgili Dökümanlar
 
+- [Custom Functions](./custom-function.md) - Kullanıcı tanımlı fonksiyonlar ve Schema Fonksiyonu
+- [Instance Filtreleme](./instance-filtering.md) - GraphQL-stil filtreleme kılavuzu
 - [View Yönetimi](./view.md) - View tanımları ve gösterim stratejileri
 - [State Yönetimi](./state.md) - Workflow state'lerini anlama
 - [Transition Yönetimi](./transition.md) - Transition'ları yürütme

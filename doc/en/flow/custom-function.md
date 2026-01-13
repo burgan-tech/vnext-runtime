@@ -506,8 +506,9 @@ public class GetUserInfoMapping : IMapping
 
 ## Related Documentation
 
-- [📄 Function APIs](./function.md) - Built-in system functions (State, Data, View)
-- [📄 Extension Management](./extension.md) - Data enrichment components
-- [📄 Task Management](./task.md) - Task types and usage
-- [📄 Mapping Guide](./mapping.md) - Comprehensive mapping guide
+- [Function APIs](./function.md) - Built-in system functions (State, Data, View)
+- [Instance Filtering](./instance-filtering.md) - GraphQL-style filtering guide
+- [Extension Management](./extension.md) - Data enrichment components
+- [Task Management](./task.md) - Task types and usage
+- [Mapping Guide](./mapping.md) - Comprehensive mapping guide
 

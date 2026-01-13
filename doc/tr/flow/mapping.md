@@ -821,6 +821,51 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
 }
 ```
 
+### Script Engine
+
+Platform, mapping script'leri için [Roslyn](https://github.com/dotnet/roslyn) derleyicisini kullanır.
+
+#### C# Versiyon Desteği
+
+> **v0.0.31+**: Mapping script engine artık **C# 12** özelliklerini desteklemektedir:
+
+- Collection expressions (`[1, 2, 3]`)
+- Primary constructors
+- Inline arrays
+- Lambda ifadelerinde opsiyonel parametreler
+- `required` üyeler
+
+#### Varsayılan Using'ler
+
+Aşağıdaki namespace'ler tüm mapping script'lerinde otomatik olarak kullanılabilir:
+
+| Namespace | Açıklama | Versiyon |
+|-----------|----------|----------|
+| `System` | Temel sistem tipleri | - |
+| `System.Collections.Generic` | Generic koleksiyonlar | - |
+| `System.Linq` | LINQ operasyonları | - |
+| `System.Threading.Tasks` | Async/await desteği | - |
+| `System.Text.Json` | JSON serileştirme | v0.0.31+ |
+
+**Örnek - System.Text.Json Kullanımı:**
+```csharp
+public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+{
+    var response = context.Body;
+    
+    // JsonSerializer doğrudan kullanılabilir (using gerekmez)
+    var json = JsonSerializer.Serialize(response);
+    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    
+    return new ScriptResponse
+    {
+        Data = new { serialized = json }
+    };
+}
+```
+
+---
+
 ### Mapping ile Transition Tanımı
 
 > **v0.0.23 Değişikliği**: Mapping şeması güncellenmiştir. `encoding` alanı eklenmiş ve Native C# kod desteği (NAT) sağlanmıştır.

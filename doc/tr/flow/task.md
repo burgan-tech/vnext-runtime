@@ -9,7 +9,7 @@ Her bir etki alanı dağıtımında `tasks` adında bir iş akışı oluşur. Do
 
 ## Görev Türleri
 
-Sistem şu anda 10 farklı görev türünü desteklemektedir:
+Sistem şu anda 11 farklı görev türünü desteklemektedir:
 
 | Görev Türü | Açıklama | Detay Belge |
 |-------------|----------|-------------|
@@ -20,6 +20,7 @@ Sistem şu anda 10 farklı görev türünü desteklemektedir:
 | **Condition** | Koşul kontrolü (sadece sistem) | [📄 Condition README](./tasks/condition-task.md) |
 | **Timer** | Zamanlayıcı görevleri (sadece sistem) | [📄 Timer README](./tasks/timer-task.md) |
 | **Trigger** | İş akışı instance yönetimi ve orkestrasyon | [📄 Trigger README](./tasks/trigger-task.md) |
+| **GetInstances** | Başka bir workflow'dan instance'ları çek | [📄 GetInstances README](./tasks/get-instances-task.md) |
 
 ## Görev Kullanımı
 

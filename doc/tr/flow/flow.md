@@ -152,6 +152,43 @@ Alt korelasyonların iptal edilebilmesi için, alt akış tanımlarında da **ca
 - İş akışında çalışan aktif task'lar
 - Aktif korelasyonlar (SubFlow'lar ve SubProcess'ler)
 
+#### ErrorBoundary
+İş akışı için hata yönetim politikaları. Öncelik tabanlı kural değerlendirmesi ile çok seviyeli error boundary'leri (Global, State, Task) destekler:
+```json
+"errorBoundary": {
+  "onError": [
+    {
+      "action": 1,
+      "errorCodes": ["Task:503", "Task:504"],
+      "priority": 10,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "initialDelay": "PT5S",
+        "backoffType": 1
+      }
+    },
+    {
+      "action": 0,
+      "errorCodes": ["*"],
+      "transition": "error-state",
+      "priority": 999
+    }
+  ]
+}
+```
+
+**Hata Aksiyonları:**
+| Kod | Aksiyon | Açıklama |
+|-----|---------|----------|
+| 0 | Abort | Yürütmeyi durdur, isteğe bağlı olarak error transition tetikle |
+| 1 | Retry | Yapılandırılmış retry policy ile yeniden dene |
+| 2 | Rollback | Compensation state'e geri al |
+| 3 | Ignore | Hatayı yoksay ve devam et |
+| 4 | Notify | Bildirim gönder ve isteğe bağlı olarak transition yap |
+| 5 | Log | Sadece logla, akışı etkilemez |
+
+> **Detaylı Dokümantasyon:** [Error Boundary Kılavuzu](./error-boundary.md)
+
 ## Başlangıç Geçişi (Start Transition)
 
 :::warning Zorunlu Bileşen

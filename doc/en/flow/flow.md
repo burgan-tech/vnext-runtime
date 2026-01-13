@@ -152,6 +152,43 @@ For sub-correlations to be cancelled, the child flow definitions **must also hav
 - Active tasks running in the workflow
 - Active correlations (SubFlows and SubProcesses)
 
+#### ErrorBoundary
+Error handling policies for the workflow. Supports multi-level error boundaries (Global, State, Task) with priority-based rule evaluation:
+```json
+"errorBoundary": {
+  "onError": [
+    {
+      "action": 1,
+      "errorCodes": ["Task:503", "Task:504"],
+      "priority": 10,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "initialDelay": "PT5S",
+        "backoffType": 1
+      }
+    },
+    {
+      "action": 0,
+      "errorCodes": ["*"],
+      "transition": "error-state",
+      "priority": 999
+    }
+  ]
+}
+```
+
+**Error Actions:**
+| Code | Action | Description |
+|------|--------|-------------|
+| 0 | Abort | Abort execution, optionally trigger error transition |
+| 1 | Retry | Retry with configured retry policy |
+| 2 | Rollback | Rollback to compensation state |
+| 3 | Ignore | Ignore error and continue |
+| 4 | Notify | Send notification and optionally transition |
+| 5 | Log | Log only, does not affect flow |
+
+> **Detailed Documentation:** [Error Boundary Guide](./error-boundary.md)
+
 ## Start Transition
 
 :::warning Required Component

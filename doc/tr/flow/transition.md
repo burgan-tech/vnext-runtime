@@ -111,6 +111,77 @@ Pub/Sub sistemleri tarafından çağrılan transition'dır. Olay tabanlı tetikl
 - Asenkron işlem tetiklemeleri
 - Event-driven architecture implementasyonları
 
+## Update Parent Data Transition (v0.0.31+)
+
+SubFlow state'lerinde bulunan parent workflow instance'ının data değerlerini güncellemek için kullanılan özel bir transition türüdür. Bu transition, normal state değişimi yapmaz; sadece parent instance'ın data'sını günceller.
+
+### Temel Özellikler
+
+- **Target**: Her zaman `$self` - State değişikliği yapılmaz
+- **Kullanım Alanı**: Sadece `subflow-state` tipindeki state'lerde kullanılabilir
+- **Davranış**: SubFlow'a ilerlemez, sadece data güncellemesi yapar
+- **Well-Known Key**: `update-parent-data`
+
+### Konfigürasyon
+
+Workflow tanımında `updateData` konfigürasyonu olarak tanımlanır:
+
+```json
+{
+  "updateData": {
+    "key": "update-parent",
+    "target": "$self",
+    "triggerType": 0,
+    "versionStrategy": "None",
+    "labels": [
+      { "language": "en", "label": "Update Parent Data" },
+      { "language": "tr", "label": "Parent Veri Güncelle" }
+    ]
+  }
+}
+```
+
+### Parametreler
+
+| Parametre | Açıklama |
+|-----------|----------|
+| `key` | Transition'ın benzersiz anahtarı (örn: `"update-parent"`) |
+| `target` | Mutlaka `"$self"` olmalıdır - State değişikliği yapılmaz |
+| `triggerType` | `0` (Manual) - Kullanıcı tarafından tetiklenir |
+| `versionStrategy` | Data versiyonlama stratejisi |
+| `labels` | Çoklu dil desteği için etiketler |
+
+
+### Yapılan İşlemler
+
+| İşlem | Yapılır mı? |
+|-------|-------------|
+| Data mapping (transition data mapping kurallarına göre) | Evet |
+| Instance data güncelleme | Evet |
+| Instance key validasyonu ve set etme | Evet |
+| Transition record oluşturma | Evet |
+| Tag ekleme (varsa) | Evet |
+
+### Yapılmayan İşlemler
+
+| İşlem | Yapılır mı? |
+|-------|-------------|
+| State değişikliği (target `$self` olduğu için) | Hayır |
+| SubFlow'a ilerleme | Hayır |
+| Auto transition çağırımı | Hayır |
+| OnExit/OnEntry task'larının çalıştırılması | Hayır |
+| State change event'lerinin yayınlanması | Hayır |
+
+### Önemli Notlar
+
+1. **State Tipi Kısıtlaması**: Sadece SubFlow state'lerinde kullanılabilir. Diğer state tiplerinde normal transition pipeline'ı çalışır.
+
+2. **Target Kısıtlaması**: Target mutlaka `"$self"` olmalıdır. Farklı bir target belirtilirse, normal transition davranışı sergilenir.
+
+3. **Instance Durumu**: Tamamlanmış (completed) instance'lar üzerinde çalıştırılamaz. Bu durumda hata döner.
+
+---
+
 ## Shared Transitions
 `AvailableIn` özelliği sayesinde, bir transition birden fazla state'de kullanılabilir hale getirilebilir. Bu durumda transition hangi state'lerde çalıştırılabileceği bu liste ile belirlenir.
 
