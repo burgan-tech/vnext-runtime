@@ -821,6 +821,51 @@ public class ConditionalTransitionMapping : ScriptBase, ITransitionMapping
 }
 ```
 
+### Script Engine
+
+The platform uses the [Roslyn](https://github.com/dotnet/roslyn) compiler for mapping scripts.
+
+#### C# Version Support
+
+> **v0.0.31+**: The mapping script engine now supports **C# 12** features including:
+
+- Collection expressions (`[1, 2, 3]`)
+- Primary constructors
+- Inline arrays
+- Optional parameters in lambda expressions
+- `required` members
+
+#### Default Usings
+
+The following namespaces are automatically available in all mapping scripts:
+
+| Namespace | Description | Since |
+|-----------|-------------|-------|
+| `System` | Core system types | - |
+| `System.Collections.Generic` | Generic collections | - |
+| `System.Linq` | LINQ operations | - |
+| `System.Threading.Tasks` | Async/await support | - |
+| `System.Text.Json` | JSON serialization | v0.0.31+ |
+
+**Example - Using System.Text.Json:**
+```csharp
+public async Task<ScriptResponse> OutputHandler(ScriptContext context)
+{
+    var response = context.Body;
+    
+    // JsonSerializer is available directly (no using required)
+    var json = JsonSerializer.Serialize(response);
+    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    
+    return new ScriptResponse
+    {
+        Data = new { serialized = json }
+    };
+}
+```
+
+---
+
 ### Transition Definition with Mapping
 
 > **v0.0.23 Change**: The mapping schema has been updated. The `encoding` field has been added and Native C# code support (NAT) is now available.

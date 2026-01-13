@@ -324,6 +324,58 @@ Returned when the same version already exists.
 
 ---
 
+---
+
+## Server Timeout Configuration (v0.0.31+)
+
+For long-running publish operations (large packages, many components), you can configure server timeouts using environment variables.
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SERVER_TIMEOUT_MS` | Total request timeout in milliseconds | `600000` (10 min) |
+| `SERVER_KEEP_ALIVE_TIMEOUT_MS` | Keep-alive connection timeout in milliseconds | `600000` (10 min) |
+| `SERVER_HEADERS_TIMEOUT_MS` | Headers timeout in milliseconds (must be > keep-alive) | `610000` (10 min + 10 sec) |
+
+### Configuration Examples
+
+**Docker Compose (30 minute timeout):**
+
+```yaml
+services:
+  vnext-init:
+    environment:
+      SERVER_TIMEOUT_MS: 1800000        # 30 minutes
+      SERVER_KEEP_ALIVE_TIMEOUT_MS: 1800000
+      SERVER_HEADERS_TIMEOUT_MS: 1810000
+```
+
+**Docker Run:**
+
+```bash
+docker run -e SERVER_TIMEOUT_MS=1800000 \
+           -e SERVER_KEEP_ALIVE_TIMEOUT_MS=1800000 \
+           -e SERVER_HEADERS_TIMEOUT_MS=1810000 \
+           your-image
+```
+
+> **Tip:** If you're experiencing timeout errors during package publishing, try increasing these values. The `SERVER_HEADERS_TIMEOUT_MS` should always be slightly larger than `SERVER_KEEP_ALIVE_TIMEOUT_MS`.
+
+---
+
+## Automatic Cache Invalidation (v0.0.31+)
+
+After each component deployment, the platform automatically triggers a re-initialize operation to clear the cache. This ensures that:
+
+- Cached workflow definitions are refreshed
+- Updated components are immediately available
+- No stale cache issues occur after deployment
+
+> **Note:** This behavior is automatic and requires no additional configuration.
+
+---
+
 ## Related Documentation
 
 - [Version Management](../principles/versioning.md) - Versioning strategy

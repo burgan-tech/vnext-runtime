@@ -225,6 +225,32 @@ If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 }
 ```
 
+### 4. Instance'ları Filtreleme
+
+Çeşitli kriterlere göre instance'ları sorgulamak için filtreleme özelliğini kullanın.
+
+**Endpoint:**
+```http
+GET /{domain}/workflows/{workflow}/functions/data?filter={...}
+```
+
+**Örnek - Status'e Göre Filtrele:**
+```http
+GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"status":{"eq":"Active"}}
+```
+
+**Örnek - JSON Veri Alanına Göre Filtrele:**
+```http
+GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"attributes":{"amount":{"gt":"1000"}}}
+```
+
+**Örnek - Mantıksal OR ile Kombine Filtre:**
+```http
+GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
+```
+
+> **Detaylı Dokümantasyon:** Tüm filtreleme sözdizimi, operatörler ve aggregation'lar için bkz. [Instance Filtreleme Kılavuzu](../flow/instance-filtering.md).
+
 ## Sistem Bileşenleri ve Register İşlemi
 
 ### Bileşen Türleri

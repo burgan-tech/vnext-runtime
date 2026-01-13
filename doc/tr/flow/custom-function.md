@@ -504,10 +504,11 @@ public class GetUserInfoMapping : IMapping
 
 ---
 
-## İlgili Dokümantasyon
+## İlgili Dökümanlar
 
-- [📄 Function API'leri](./function.md) - Yerleşik sistem fonksiyonları (State, Data, View)
-- [📄 Extension Yönetimi](./extension.md) - Veri zenginleştirme bileşenleri
-- [📄 Task Yönetimi](./task.md) - Görev türleri ve kullanımı
-- [📄 Mapping Rehberi](./mapping.md) - Kapsamlı haritalama rehberi
+- [Function API'leri](./function.md) - Yerleşik sistem fonksiyonları (State, Data, View)
+- [Instance Filtreleme](./instance-filtering.md) - GraphQL-stil filtreleme kılavuzu
+- [Extension Yönetimi](./extension.md) - Veri zenginleştirme bileşenleri
+- [Task Yönetimi](./task.md) - Görev türleri ve kullanımı
+- [Mapping Rehberi](./mapping.md) - Kapsamlı haritalama rehberi
 

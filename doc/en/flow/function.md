@@ -8,8 +8,8 @@ Function APIs provide system-level operations for workflow instances. These buil
 2. [State Function](#state-function)
 3. [Data Function](#data-function)
 4. [View Function](#view-function)
-5. [Usage Examples](#usage-examples)
-6. [Best Practices](#best-practices)
+5. [Best Practices](#best-practices)
+6. [Related Documentation](#related-documentation)
 
 ## Overview
 
@@ -20,6 +20,8 @@ The vNext Runtime platform provides three core function APIs that are automatica
 | **State** | Long-polling for instance state | `GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state` |
 | **Data** | Retrieve instance data | `GET /{domain}/workflows/{workflow}/instances/{instance}/functions/data` |
 | **View** | Get view content | `GET /{domain}/workflows/{workflow}/instances/{instance}/functions/view` |
+
+> **Note:** For Schema Function and custom user-defined functions, see [Custom Functions](./custom-function.md).
 
 These functions enable:
 - Real-time state monitoring (long-polling)
@@ -75,11 +77,17 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
   "transitions": [
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/approve",
-      "name": "approve"
+      "name": "approve",
+      "schema": {
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=approve"
+      }
     },
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/reject",
-      "name": "reject"
+      "name": "reject",
+      "schema": {
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=reject"
+      }
     }
   ],
   "eTag": "W/\"abc123def456\""
@@ -99,6 +107,8 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
 | `status` | `string` | Instance status code (A=Active, C=Completed, etc.) |
 | `activeCorrelations` | `array` | Active sub-flows and correlations |
 | `transitions` | `array` | Available transitions from current state |
+| `transitions[].schema` | `object` | Schema link for the transition (if defined) |
+| `transitions[].schema.href` | `string` | Schema function endpoint URL with transitionKey |
 | `eTag` | `string` | ETag for cache validation |
 
 ### Active Correlations
@@ -136,6 +146,8 @@ Accept: application/json
 ## Data Function
 
 The Data function retrieves the current data of a workflow instance. It supports ETag-based caching for efficient data synchronization.
+
+> **Filtering:** For advanced filtering capabilities including GraphQL-style queries, logical operators, and aggregations, see [Instance Filtering Guide](./instance-filtering.md).
 
 ### Endpoint
 
@@ -528,6 +540,8 @@ Track metrics for:
 
 ## Related Documentation
 
+- [Custom Functions](./custom-function.md) - User-defined functions and Schema Function
+- [Instance Filtering](./instance-filtering.md) - GraphQL-style filtering guide
 - [View Management](./view.md) - View definitions and display strategies
 - [State Management](./state.md) - Understanding workflow states
 - [Transition Management](./transition.md) - Executing transitions

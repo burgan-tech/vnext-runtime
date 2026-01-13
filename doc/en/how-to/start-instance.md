@@ -225,6 +225,32 @@ If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 }
 ```
 
+### 4. Filtering Instances
+
+Use the filtering capability to query instances based on various criteria.
+
+**Endpoint:**
+```http
+GET /{domain}/workflows/{workflow}/functions/data?filter={...}
+```
+
+**Example - Filter by Status:**
+```http
+GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"status":{"eq":"Active"}}
+```
+
+**Example - Filter by JSON Data Field:**
+```http
+GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"attributes":{"amount":{"gt":"1000"}}}
+```
+
+**Example - Combined Filter with Logical OR:**
+```http
+GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
+```
+
+> **Detailed Documentation:** For complete filtering syntax, operators, and aggregations, see [Instance Filtering Guide](../flow/instance-filtering.md).
+
 ## System Components and Registration Process
 
 ### Component Types

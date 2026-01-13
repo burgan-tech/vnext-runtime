@@ -9,7 +9,7 @@ A workflow named `tasks` is created in each domain deployment. All tasks used wi
 
 ## Task Types
 
-The system currently supports 10 different task types:
+The system currently supports 11 different task types:
 
 | Task Type | Description | Detail Document |
 |-----------|-------------|-----------------|
@@ -20,6 +20,7 @@ The system currently supports 10 different task types:
 | **Condition** | Condition checking (system only) | [📄 Condition README](./tasks/condition-task.md) |
 | **Timer** | Timer tasks (system only) | [📄 Timer README](./tasks/timer-task.md) |
 | **Trigger** | Workflow instance management and orchestration | [📄 Trigger README](./tasks/trigger-task.md) |
+| **GetInstances** | Fetch instances from another workflow | [📄 GetInstances README](./tasks/get-instances-task.md) |
 
 ## Task Usage
 
