@@ -10,65 +10,140 @@ This project is designed to enable developers to set up and run the VNext Runtim
 
 ## Environment Configuration
 
-The repository includes ready-made environment files (`.env`, `.env.orchestration`, `.env.execution`) in the `vnext/docker/` directory. These files control system versions, database connections, Redis configuration, telemetry settings, and other runtime parameters.
+The repository includes template files in the `vnext/docker/templates/` directory that are used to generate domain-specific configurations. When you create a domain using `make create-domain`, these templates are processed and the resulting configuration files are placed in `vnext/docker/domains/<domain_name>/`.
 
-**Purpose:** You can customize these environment files to match your infrastructure and development needs. All available environment variables and their default values can be found in the respective files within the repository.
+**Template Files:**
+- `.env` - Main environment with versions and ports
+- `.env.orchestration` - Orchestration service configuration
+- `.env.execution` - Execution service configuration
+- `.env.worker-inbox` - Worker inbox service configuration
+- `.env.worker-outbox` - Worker outbox service configuration
+- `appsettings.*.Development.json` - Application settings
 
-## 🎯 Domain Configuration (Important!)
+**Purpose:** You can customize template files in `vnext/docker/templates/` to change default values for all new domains, or edit domain-specific files in `vnext/docker/domains/<domain_name>/` for individual domain customization.
 
-**Domain configuration is a critical concept** in vNext Runtime. Each developer must configure their own domain to work with the platform. Each domain runs in its own runtime environment with a dedicated database.
+## 🎯 Multi-Domain Support (New!)
 
-### Automatic Domain Configuration (Recommended)
+**VNext Runtime now supports running multiple domains simultaneously** on the same infrastructure. This allows teams to run isolated domain environments (e.g., `core`, `sales`, `hr`) sharing the same PostgreSQL, Redis, Vault, and Dapr services.
 
-Use the `change-domain` command to automatically configure all domain-related settings:
+### Folder Structure
+
+```
+vnext/docker/
+├── templates/                              # Template files for new domains
+│   ├── .env                                # Main env template with {{PLACEHOLDERS}}
+│   ├── .env.orchestration                  # Orchestration template
+│   ├── .env.execution                      # Execution template
+│   ├── .env.worker-inbox                   # Inbox worker template
+│   ├── .env.worker-outbox                  # Outbox worker template
+│   └── appsettings.*.Development.json      # App settings templates
+├── domains/                                # Domain configurations (created per domain)
+│   ├── core/                               # Domain: core
+│   ├── sales/                              # Domain: sales
+│   └── <domain_name>/                      # Your domain
+│       ├── .env
+│       ├── .env.orchestration
+│       ├── .env.execution
+│       ├── .env.worker-inbox
+│       ├── .env.worker-outbox
+│       └── appsettings.*.Development.json
+├── config/                                 # Shared infrastructure config
+├── docker-compose.yml
+└── create-domain.sh                        # Script to create domains from templates
+```
+
+### Creating a New Domain
+
+Use the `create-domain` command to generate domain configuration from templates:
 
 ```bash
-# Change domain to your desired name
+# Create domain with port offset (to avoid port conflicts)
+make create-domain DOMAIN=core PORT_OFFSET=0
+make create-domain DOMAIN=sales PORT_OFFSET=10
+make create-domain DOMAIN=hr PORT_OFFSET=20
+```
+
+The database name is automatically generated from your domain name:
+- `core` → `vNext_Core`
+- `sales` → `vNext_Sales`
+- `user-management` → `vNext_User_Management`
+
+### Port Allocation
+
+Each domain uses unique ports based on the `PORT_OFFSET`:
+
+| Offset | App Port | Execution | Inbox | Outbox | Init |
+|--------|----------|-----------|-------|--------|------|
+| 0      | 4201     | 4202      | 4203  | 4204   | 3005 |
+| 10     | 4211     | 4212      | 4213  | 4214   | 3015 |
+| 20     | 4221     | 4222      | 4223  | 4224   | 3025 |
+
+Dapr ports use `offset * 100` to avoid conflicts.
+
+### Running Multiple Domains
+
+```bash
+# 1. Start shared infrastructure
+make up-infra
+
+# 2. Create and start first domain
+make create-domain DOMAIN=core PORT_OFFSET=0
+make db-create-domain DOMAIN=core
+make up-vnext DOMAIN=core
+
+# 3. Create and start second domain
+make create-domain DOMAIN=sales PORT_OFFSET=10
+make db-create-domain DOMAIN=sales
+make up-vnext DOMAIN=sales
+
+# 4. View all running services
+make status-all-domains
+
+# 5. Check health of a specific domain
+make health DOMAIN=core
+make health DOMAIN=sales
+```
+
+### Managing Domains
+
+```bash
+# List all configured domains
+make list-domains
+
+# Stop a specific domain
+make down-vnext DOMAIN=sales
+
+# Restart a specific domain
+make restart-vnext DOMAIN=sales
+
+# Stop all domains but keep infrastructure
+make down-all-vnext
+
+# View logs for a specific domain
+make logs-vnext DOMAIN=core
+```
+
+### Customizing Templates
+
+Templates are located in `vnext/docker/templates/`. You can customize them to change default values. Templates use `{{PLACEHOLDER}}` syntax:
+
+| Placeholder | Description |
+|-------------|-------------|
+| `{{DOMAIN_NAME}}` | Domain name (e.g., `core`, `sales`) |
+| `{{PORT_OFFSET}}` | Port offset value |
+| `{{DB_NAME}}` | Database name (e.g., `vNext_Core`) |
+| `{{VNEXT_APP_PORT}}` | Orchestration port |
+| `{{DAPR_*_PORT}}` | Dapr sidecar ports |
+
+### Legacy Single Domain Mode
+
+For backward compatibility, the legacy `change-domain` command is still available:
+
+```bash
 make change-domain DOMAIN=my-company
 ```
 
-This command automatically updates:
-- **Environment files**: `APP_DOMAIN` in `.env`, `.env.orchestration`, `.env.execution`, `.env.inbox`, `.env.outbox`
-- **Database name**: Updates `ConnectionStrings:Default` in all appsettings files
-- **PostgreSQL init script**: Updates the database name in `init-db.sql`
-
-The database name is automatically generated from your domain name:
-- `my-company` → `vNext_My_Company`
-- `ecommerce` → `vNext_Ecommerce`
-- `user-management` → `vNext_User_Management`
-
-### After Changing Domain
-
-After running `make change-domain`, you need to reset your environment:
-
-```bash
-# Stop all services
-make down
-
-# Reset database (WARNING: This will delete all data!)
-make db-reset
-
-# Start fresh environment
-make dev
-```
-
-### Manual Domain Configuration
-
-If you prefer manual configuration, update the `APP_DOMAIN` value in the following files:
-
-1. **`vnext/docker/.env`** - Runtime domain configuration
-2. **`vnext/docker/.env.orchestration`** - Orchestration service domain
-3. **`vnext/docker/.env.execution`** - Execution service domain
-4. **`vnext/docker/.env.inbox`** - Worker inbox service domain
-5. **`vnext/docker/.env.outbox`** - Worker outbox service domain
-6. **`vnext.config.json`** - Project domain configuration (in your own workflow repository)
-
-```bash
-# Example: Change from default "core" to your domain
-APP_DOMAIN=my-company
-```
-
-This ensures all workflow components, tasks, and system resources are properly scoped to your domain namespace.
+This updates all domain-related settings but doesn't support running multiple domains simultaneously.
 
 ## Quick Start
 
@@ -476,11 +551,36 @@ make help
 | `make setup` | Checks environment files and creates network | `make setup` |
 | `make info` | Shows project information and access URLs | `make info` |
 
-### Domain Configuration
+### Multi-Domain Management
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `make change-domain` | Change domain for all services | `make change-domain DOMAIN=mydomain` |
+| `make create-domain` | Create domain from templates | `make create-domain DOMAIN=mydom PORT_OFFSET=10` |
+| `make list-domains` | List all configured domains | `make list-domains` |
+| `make up-vnext` | Start vnext services for a domain | `make up-vnext DOMAIN=mydom` |
+| `make down-vnext` | Stop vnext services for a domain | `make down-vnext DOMAIN=mydom` |
+| `make restart-vnext` | Restart vnext services for a domain | `make restart-vnext DOMAIN=mydom` |
+| `make status-vnext` | Show status for a domain | `make status-vnext DOMAIN=mydom` |
+| `make logs-vnext` | Show logs for a domain | `make logs-vnext DOMAIN=mydom` |
+| `make status-all-domains` | Show all running vnext services | `make status-all-domains` |
+| `make down-all-vnext` | Stop all domain services (keep infra) | `make down-all-vnext` |
+| `make db-create-domain` | Create database for a domain | `make db-create-domain DOMAIN=mydom` |
+| `make health` | Check health (with optional DOMAIN) | `make health DOMAIN=mydom` |
+
+### Infrastructure Management
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `make up-infra` | Start only infrastructure services | `make up-infra` |
+| `make down-infra` | Stop only infrastructure services | `make down-infra` |
+| `make status-infra` | Show infrastructure status | `make status-infra` |
+| `make logs-infra` | Show infrastructure logs | `make logs-infra` |
+
+### Legacy Domain Configuration
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `make change-domain` | Change domain (legacy single-domain mode) | `make change-domain DOMAIN=mydomain` |
 
 ### Environment Setup
 
@@ -592,14 +692,10 @@ make shell-postgres
 
 ## Services and Ports
 
+### Infrastructure Services (Shared)
+
 | Service | Description | Port | Access URL |
 |---------|-------------|------|------------|
-| **vnext-app** | Main orchestration application | 4201 | http://localhost:4201 |
-| **vnext-execution-app** | Execution service application | 4202 | http://localhost:4202 |
-| **vnext-init** | Init container that loads system components | - | - |
-| **vnext-component-publisher** | Publishes components after init | - | - |
-| **vnext-orchestration-dapr** | Dapr sidecar for orchestration service | 42110/42111 | - |
-| **vnext-execution-dapr** | Dapr sidecar for execution service | 43110/43111 | - |
 | **dapr-placement** | Dapr placement service | 50005 | - |
 | **dapr-scheduler** | Dapr scheduler service | 50007 | - |
 | **vnext-redis** | Redis cache | 6379 | - |
@@ -608,6 +704,22 @@ make shell-postgres
 | **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
 | **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
 | **mockoon** | API Mock Server | 3001 | http://localhost:3001 |
+
+### VNext Domain Services (Per Domain)
+
+Ports vary by domain based on `PORT_OFFSET`. Default (offset 0):
+
+| Service | Description | Port | Container Name |
+|---------|-------------|------|----------------|
+| **vnext-app** | Orchestration application | 4201 | vnext-app-{domain} |
+| **vnext-execution-app** | Execution service | 4202 | vnext-execution-app-{domain} |
+| **vnext-worker-inbox** | Worker inbox service | 4203 | vnext-worker-inbox-{domain} |
+| **vnext-worker-outbox** | Worker outbox service | 4204 | vnext-worker-outbox-{domain} |
+| **vnext-init** | Init container | 3005 | vnext-init-{domain} |
+| **vnext-orchestration-dapr** | Dapr sidecar for orchestration | 42110/42111 | vnext-orchestration-dapr-{domain} |
+| **vnext-execution-dapr** | Dapr sidecar for execution | 43110/43111 | vnext-execution-dapr-{domain} |
+
+For domains with `PORT_OFFSET=10`, ports become 4211, 4212, 4213, 4214, 3015, etc.
 
 ## Management Tools
 
