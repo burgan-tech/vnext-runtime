@@ -224,29 +224,67 @@ check-env: ## Check if environment files exist
 ##@ Container Operations
 build: check-env check-runtime ## Build container images
 	@echo "$(YELLOW)Building container images...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) build
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext build
 	@echo "$(GREEN)Build completed!$(NC)"
 
-up: check-env check-runtime ## Start all services
+up: check-env check-runtime ## Start all services (infra + vnext)
 	@echo "$(YELLOW)Starting VNext Runtime services...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext up -d
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
+
+up-infra: check-env check-runtime ## Start only infrastructure services
+	@echo "$(YELLOW)Starting infrastructure services...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra up -d
+	@echo "$(GREEN)Infrastructure services started!$(NC)"
+	@$(MAKE) status-infra
+
+up-vnext: check-env check-runtime ## Start only vnext application services (requires infra)
+	@echo "$(YELLOW)Starting VNext application services...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext up -d
+	@echo "$(GREEN)VNext application services started!$(NC)"
+	@$(MAKE) status-vnext
 
 start: up-build ## Start services with build
 
-up-build: check-env check-runtime ## Start services with build
+up-build: check-env check-runtime ## Start all services with build
 	@echo "$(YELLOW)Starting VNext Runtime services with build...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d --build
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext up -d --build
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
+up-infra-build: check-env check-runtime ## Start infrastructure services with build
+	@echo "$(YELLOW)Starting infrastructure services with build...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra up -d --build
+	@echo "$(GREEN)Infrastructure services started!$(NC)"
+	@$(MAKE) status-infra
+
+up-vnext-build: check-env check-runtime ## Start vnext services with build (requires infra)
+	@echo "$(YELLOW)Starting VNext application services with build...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext up -d --build
+	@echo "$(GREEN)VNext application services started!$(NC)"
+	@$(MAKE) status-vnext
+
 down: check-runtime ## Stop all services
 	@echo "$(YELLOW)Stopping VNext Runtime services...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext down
 	@echo "$(GREEN)Services stopped!$(NC)"
+
+down-infra: check-runtime ## Stop only infrastructure services
+	@echo "$(YELLOW)Stopping infrastructure services...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra down
+	@echo "$(GREEN)Infrastructure services stopped!$(NC)"
+
+down-vnext: check-runtime ## Stop only vnext application services
+	@echo "$(YELLOW)Stopping VNext application services...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext down
+	@echo "$(GREEN)VNext application services stopped!$(NC)"
 
 stop: down ## Alias for 'down'
 
@@ -256,14 +294,42 @@ restart: ## Restart all services
 	@$(MAKE) up
 	@echo "$(GREEN)Services restarted!$(NC)"
 
+restart-infra: ## Restart infrastructure services
+	@echo "$(YELLOW)Restarting infrastructure services...$(NC)"
+	@$(MAKE) down-infra
+	@$(MAKE) up-infra
+	@echo "$(GREEN)Infrastructure services restarted!$(NC)"
+
+restart-vnext: ## Restart vnext application services
+	@echo "$(YELLOW)Restarting VNext application services...$(NC)"
+	@$(MAKE) down-vnext
+	@$(MAKE) up-vnext
+	@echo "$(GREEN)VNext application services restarted!$(NC)"
+
 ##@ Service Management
 status: check-runtime ## Show status of all services
 	@echo "$(BLUE)VNext Runtime Services Status:$(NC)"
 	@echo "================================="
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext ps
+
+status-infra: check-runtime ## Show status of infrastructure services
+	@echo "$(BLUE)Infrastructure Services Status:$(NC)"
+	@echo "================================="
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra ps
+
+status-vnext: check-runtime ## Show status of vnext application services
+	@echo "$(BLUE)VNext Application Services Status:$(NC)"
+	@echo "================================="
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext ps
 
 logs: check-runtime ## Show logs for all services
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext logs -f
+
+logs-infra: check-runtime ## Show logs for infrastructure services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra logs -f
+
+logs-vnext: check-runtime ## Show logs for vnext application services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext logs -f
 
 logs-orchestration: check-runtime ## Show logs for orchestration service
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-app
@@ -349,7 +415,7 @@ clean-all: check-runtime ## Remove all containers, images, and volumes (WARNING:
 	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 10 seconds to continue...$(NC)"
 	@sleep 10
 	@$(MAKE) down
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down -v --rmi all
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext down -v --rmi all
 	$(CONTAINER_RUNTIME) system prune -a -f
 	@echo "$(GREEN)Complete cleanup finished!$(NC)"
 
@@ -362,19 +428,19 @@ reset: ## Reset environment (stop, clean, and setup)
 
 update: check-runtime ## Pull latest images and restart
 	@echo "$(YELLOW)Updating VNext Runtime images...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) pull
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext pull
 	@$(MAKE) restart
 	@echo "$(GREEN)Update completed!$(NC)"
 
 ##@ Monitoring
 ps: check-runtime ## Show running containers
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext ps
 
 top: check-runtime ## Show container resource usage
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) top
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext top
 
 stats: check-runtime ## Show container statistics
-	$(CONTAINER_RUNTIME) stats $(shell cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps -q)
+	$(CONTAINER_RUNTIME) stats $(shell cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext ps -q)
 
 ##@ Custom Components
 publish-component: check-env ## Publish component package (waits for vnext-init to be healthy)
@@ -389,8 +455,8 @@ publish-component-skip-health: check-env ## Publish component package (skip heal
 
 republish-component: check-runtime ## Re-run component publisher container
 	@echo "$(YELLOW)Re-publishing component via container...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) rm -f vnext-component-publisher
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up vnext-component-publisher
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext rm -f vnext-component-publisher
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile vnext up vnext-component-publisher
 	@echo "$(GREEN)Component re-published!$(NC)"
 
 ##@ Domain Configuration
@@ -526,4 +592,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env build up start up-build down stop restart status logs logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect change-domain
+.PHONY: help check-runtime setup create-env-files create-network check-env build up up-infra up-vnext start up-build up-infra-build up-vnext-build down down-infra down-vnext stop restart restart-infra restart-vnext status status-infra status-vnext logs logs-infra logs-vnext logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect change-domain

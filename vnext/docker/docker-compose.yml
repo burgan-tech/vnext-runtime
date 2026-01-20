@@ -1,8 +1,14 @@
 services:
 
+  # ============================================================================
+  # VNEXT APPLICATIONS - Profile: vnext
+  # ============================================================================
+
   vnext-app:
     container_name: vnext-app
     image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_VERSION:-latest}"
+    profiles:
+      - vnext
     env_file:
       - .env.orchestration
     volumes:
@@ -32,6 +38,8 @@ services:
   vnext-init:
     container_name: vnext-init
     image: "ghcr.io/burgan-tech/vnext/init:${VNEXT_VERSION:-latest}"
+    profiles:
+      - vnext
     environment:
       VNEXT_APP_URL: "http://vnext-app:5000"
       PACKAGE_API_PORT: 3000
@@ -56,6 +64,8 @@ services:
   vnext-component-publisher:
     container_name: vnext-component-publisher
     image: "alpine/curl:${ALPINE_CURL_VERSION:-latest}"
+    profiles:
+      - vnext
     env_file:
       - .env
     environment:
@@ -78,6 +88,8 @@ services:
   vnext-execution-app:
     container_name: vnext-execution-app
     image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_VERSION:-latest}"
+    profiles:
+      - vnext
     env_file:
       - .env.execution
     volumes:
@@ -101,6 +113,8 @@ services:
   vnext-orchestration-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-orchestration-dapr
+    profiles:
+      - vnext
     command: [
       "./daprd",
       "--app-id", "vnext-app",
@@ -124,6 +138,8 @@ services:
   vnext-execution-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-execution-dapr
+    profiles:
+      - vnext
     command: [
       "./daprd",
       "--app-id", "vnext-execution-app",
@@ -147,6 +163,8 @@ services:
   vnext-worker-inbox:
     container_name: vnext-worker-inbox
     image: "ghcr.io/burgan-tech/vnext/inbox:${VNEXT_VERSION:-latest}"
+    profiles:
+      - vnext
     env_file:
       - .env.worker-inbox
     volumes:
@@ -172,6 +190,8 @@ services:
   vnext-worker-inbox-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-worker-inbox-dapr
+    profiles:
+      - vnext
     command: [
       "./daprd",
       "--app-id", "vnext-worker-inbox",
@@ -195,6 +215,8 @@ services:
   vnext-worker-outbox:
     container_name: vnext-worker-outbox
     image: "ghcr.io/burgan-tech/vnext/outbox:${VNEXT_VERSION:-latest}"
+    profiles:
+      - vnext
     env_file:
       - .env.worker-outbox
     volumes:
@@ -220,6 +242,8 @@ services:
   vnext-worker-outbox-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-worker-outbox-dapr
+    profiles:
+      - vnext
     command: [
       "./daprd",
       "--app-id", "vnext-worker-outbox",
@@ -240,9 +264,15 @@ services:
       - redis
       - vault
 
+  # ============================================================================
+  # INFRASTRUCTURE - Profile: infra
+  # ============================================================================
+
   dapr-placement:
     image: "daprio/dapr:${DAPR_PLACEMENT_VERSION:-latest}"
     container_name: dapr-placement
+    profiles:
+      - infra
     command: ["./placement"]
     ports:
       - "50005:50005"
@@ -252,6 +282,8 @@ services:
   dapr-scheduler:
     image: "daprio/scheduler:${DAPR_SCHEDULER_VERSION:-latest}"
     container_name: dapr-scheduler
+    profiles:
+      - infra
     user: "0:0"
     command: [
       "./scheduler",
@@ -274,6 +306,8 @@ services:
   redis:
     container_name: vnext-redis
     image: "redis:${REDIS_VERSION:-latest}"
+    profiles:
+      - infra
     restart: always
     ports:
       - '6379:6379'
@@ -286,6 +320,8 @@ services:
   postgres:
     container_name: vnext-postgres
     image: "postgres:${POSTGRES_VERSION:-latest}"
+    profiles:
+      - infra
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -308,6 +344,8 @@ services:
   vault:
     container_name: vnext-vault
     image: "vault:${VAULT_VERSION:-1.13.3}"
+    profiles:
+      - infra
     restart: on-failure:10
     ports:
       - "8200:8200"
@@ -340,6 +378,8 @@ services:
 
   vault-prepopulate:
     image: "alpine/curl:${ALPINE_CURL_VERSION:-latest}"
+    profiles:
+      - infra
     depends_on:
       - vault
     volumes:
@@ -352,6 +392,8 @@ services:
   openobserve:
     container_name: vnext-openobserve
     image: "public.ecr.aws/zinclabs/openobserve:${OPENOBSERVE_VERSION:-latest}"
+    profiles:
+      - infra
     environment:
       ZO_ROOT_USER_EMAIL: "root@example.com"
       ZO_ROOT_USER_PASSWORD: "Complexpass#@123"
@@ -367,6 +409,8 @@ services:
   otel-collector:
     container_name: vnext-otel-collector
     image: "otel/opentelemetry-collector-contrib:${OTEL_COLLECTOR_VERSION:-latest}"
+    profiles:
+      - infra
     volumes:
       - ./config/otel/otel-config.yaml:/etc/otelcol-contrib/config.yaml
     ports:
@@ -386,6 +430,8 @@ services:
   mockoon:
     image: mockoon/cli:${MOCKOON_VERSION:-latest}
     container_name: migration-mockoon
+    profiles:
+      - infra
     command: ["--data", "/data/migration-api.json", "--port", "3001", "--hostname", "0.0.0.0"]
     ports:
       - "3001:3001"
@@ -403,6 +449,8 @@ services:
   mockoon-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: mockoon-dapr
+    profiles:
+      - infra
     command:
       [
         "./daprd",
