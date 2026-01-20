@@ -48,8 +48,6 @@ services:
       PACKAGE_API_PORT: 3000
       NPM_REGISTRY: "https://registry.npmjs.org/"
       DOMAIN_NAME: ${DOMAIN_NAME:-core}
-    volumes:
-      - npm-cache-${DOMAIN_NAME:-core}:/app/.npm-cache
     ports:
       - "${VNEXT_INIT_PORT:-3005}:3000"
     healthcheck:
@@ -416,10 +414,3 @@ networks:
 volumes:
   postgres:
   openobserve:
-  npm-cache-core: {}
-  npm-cache-domain1: {}
-  npm-cache-domain2: {}
-  npm-cache-domain3: {}
-  npm-cache-sales: {}
-  npm-cache-hr: {}
-  npm-cache-morph-idm: {}

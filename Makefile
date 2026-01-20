@@ -337,30 +337,43 @@ health: ## Check health of services (usage: make health or make health DOMAIN=my
 	@echo "• Vault: http://localhost:8200"
 	@echo "• OpenObserve: http://localhost:5080"
 
-##@ Database Operations
-db-create: check-runtime ## Create vNext database in running postgres container
-	@echo "$(YELLOW)Creating vNext database...$(NC)"
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'vNext_WorkflowDb'" | grep -q 1 && \
-		echo "$(YELLOW)Database vNext_WorkflowDb already exists$(NC)" || \
-		($(COMPOSE_CMD) exec -T postgres psql -U postgres -f /docker-entrypoint-initdb.d/init-db.sql && \
-		echo "$(GREEN)Database vNext_WorkflowDb created successfully!$(NC)")
+##@ Database Operations (Domain-Specific)
+db-create: check-runtime ## Create database for domain (usage: make db-create DOMAIN=core)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(YELLOW)Creating database $$DB_NAME for domain: $(DOMAIN)...$(NC)"; \
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = '$$DB_NAME'" | grep -q 1 && \
+		echo "$(YELLOW)Database $$DB_NAME already exists$(NC)" || \
+		($(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "CREATE DATABASE \"$$DB_NAME\";" && \
+		echo "$(GREEN)Database $$DB_NAME created successfully!$(NC)")
 
-db-drop: check-runtime ## Drop vNext database (WARNING: Destructive)
-	@echo "$(RED)WARNING: This will drop the vNext_WorkflowDb database!$(NC)"
-	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 5 seconds to continue...$(NC)"
-	@sleep 5
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS \"vNext_WorkflowDb\";"
-	@echo "$(GREEN)Database dropped!$(NC)"
+db-drop: check-runtime ## Drop database for domain (WARNING: Destructive) (usage: make db-drop DOMAIN=core)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(RED)WARNING: This will drop the $$DB_NAME database!$(NC)"; \
+	echo "$(YELLOW)Press Ctrl+C to cancel, or wait 5 seconds to continue...$(NC)"; \
+	sleep 5; \
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS \"$$DB_NAME\";"; \
+	echo "$(GREEN)Database $$DB_NAME dropped!$(NC)"
 
-db-reset: db-drop db-create ## Reset vNext database (drop and recreate)
+db-reset: ## Reset database for domain (drop and recreate) (usage: make db-reset DOMAIN=core)
+	@$(MAKE) db-drop DOMAIN=$(DOMAIN)
+	@$(MAKE) db-create DOMAIN=$(DOMAIN)
 
-db-status: check-runtime ## Check database status and list databases
+db-status: check-runtime ## Check database status and list all databases
 	@echo "$(BLUE)PostgreSQL Database Status:$(NC)"
 	@echo "=========================="
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "\l" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "\l" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
 
-db-connect: check-runtime ## Connect to vNext database via psql
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec postgres psql -U postgres -d "vNext_WorkflowDb"
+db-connect: check-runtime ## Connect to domain database via psql (usage: make db-connect DOMAIN=core)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(YELLOW)Connecting to database $$DB_NAME...$(NC)"; \
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec postgres psql -U postgres -d "$$DB_NAME"
+
+db-list: check-runtime ## List all vNext databases
+	@echo "$(BLUE)VNext Databases:$(NC)"
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "SELECT datname FROM pg_database WHERE datname LIKE 'vNext_%';" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
 
 ##@ Development
 dev: ## Start development environment
@@ -496,15 +509,6 @@ down-all-vnext: check-runtime ## Stop all vnext domain services (keeps infra run
 		done; \
 	fi
 	@echo "$(GREEN)All VNext domain services stopped!$(NC)"
-
-db-create-domain: check-runtime ## Create database for a domain (usage: make db-create-domain DOMAIN=mydom)
-	@echo "$(YELLOW)Creating database for domain: $(DOMAIN)...$(NC)"
-	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
-	DB_NAME="vNext_$${NORMALIZED}"; \
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = '$$DB_NAME'" | grep -q 1 && \
-		echo "$(YELLOW)Database $$DB_NAME already exists$(NC)" || \
-		($(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "CREATE DATABASE \"$$DB_NAME\";" && \
-		echo "$(GREEN)Database $$DB_NAME created successfully!$(NC)")
 
 ##@ Legacy Domain Configuration (single domain)
 change-domain: ## Change domain for all services (usage: make change-domain DOMAIN=mydomain)
@@ -652,4 +656,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env check-env-infra build up up-infra up-vnext start up-build up-infra-build up-vnext-build down down-infra down-vnext stop restart restart-infra restart-vnext status status-infra status-vnext logs logs-infra logs-vnext logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect change-domain create-domain list-domains status-all-domains down-all-vnext db-create-domain
+.PHONY: help check-runtime setup create-env-files create-network check-env check-env-infra build up up-infra up-vnext start up-build up-infra-build up-vnext-build down down-infra down-vnext stop restart restart-infra restart-vnext status status-infra status-vnext logs logs-infra logs-vnext logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect db-list change-domain create-domain list-domains status-all-domains down-all-vnext

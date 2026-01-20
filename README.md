@@ -93,12 +93,12 @@ make up-infra
 
 # 2. Create and start first domain
 make create-domain DOMAIN=core PORT_OFFSET=0
-make db-create-domain DOMAIN=core
+make db-create DOMAIN=core
 make up-vnext DOMAIN=core
 
 # 3. Create and start second domain
 make create-domain DOMAIN=sales PORT_OFFSET=10
-make db-create-domain DOMAIN=sales
+make db-create DOMAIN=sales
 make up-vnext DOMAIN=sales
 
 # 4. View all running services
@@ -333,28 +333,34 @@ The `vnext-init` service automatically runs after the vnext-app service becomes 
    - Default domain is `"core"`, but can be customized via `APP_DOMAIN=mydomain` in `.env` file
 4. Sends merged and domain-updated components as POST requests to the `vnext-app/api/admin` endpoint
 
-## Automatic Database Initialization
+## Database Management (Domain-Specific)
 
-When the Docker Compose starts, PostgreSQL automatically creates the `vNext_WorkflowDb` database using an init script. This ensures:
-
-- Database is ready before any service tries to connect
-- Services depending on postgres wait until the database is healthy
-- No manual database creation needed
+Each domain requires its own database. Database names are automatically generated from the domain name:
+- `core` → `vNext_Core`
+- `sales` → `vNext_Sales`
+- `morph-idm` → `vNext_Morph_idm`
 
 ### Database Commands
 
 ```bash
-# Check database status
+# Check database status (lists all databases)
 make db-status
 
-# Manually create database (if needed)
-make db-create
+# List only vNext databases
+make db-list
 
-# Drop and recreate database
-make db-reset
+# Create database for a domain
+make db-create DOMAIN=core
+make db-create DOMAIN=sales
 
-# Connect to database via psql
-make db-connect
+# Drop database for a domain (WARNING: destructive!)
+make db-drop DOMAIN=core
+
+# Reset database (drop and recreate)
+make db-reset DOMAIN=core
+
+# Connect to domain database via psql
+make db-connect DOMAIN=core
 ```
 
 ## Automatic Component Publishing
@@ -579,7 +585,6 @@ make help
 | `make logs-vnext` | Show logs for a domain | `make logs-vnext DOMAIN=mydom` |
 | `make status-all-domains` | Show all running vnext services | `make status-all-domains` |
 | `make down-all-vnext` | Stop all domain services (keep infra) | `make down-all-vnext` |
-| `make db-create-domain` | Create database for a domain | `make db-create-domain DOMAIN=mydom` |
 | `make health` | Check health (with optional DOMAIN) | `make health DOMAIN=mydom` |
 
 ### Infrastructure Management
@@ -627,15 +632,16 @@ make help
 | `make logs-dapr` | Shows DAPR service logs | `make logs-dapr` |
 | `make logs-db` | Shows database service logs | `make logs-db` |
 
-### Database Operations
+### Database Operations (Domain-Specific)
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `make db-status` | Shows database status and lists databases | `make db-status` |
-| `make db-create` | Creates vNext database | `make db-create` |
-| `make db-drop` | Drops vNext database (destructive!) | `make db-drop` |
-| `make db-reset` | Drops and recreates database | `make db-reset` |
-| `make db-connect` | Connects to database via psql | `make db-connect` |
+| `make db-status` | Shows database status and lists all databases | `make db-status` |
+| `make db-list` | Lists only vNext databases | `make db-list` |
+| `make db-create` | Creates database for domain | `make db-create DOMAIN=core` |
+| `make db-drop` | Drops database for domain (destructive!) | `make db-drop DOMAIN=core` |
+| `make db-reset` | Drops and recreates database for domain | `make db-reset DOMAIN=core` |
+| `make db-connect` | Connects to domain database via psql | `make db-connect DOMAIN=core` |
 
 ### Development Tools
 
@@ -837,8 +843,8 @@ docker-compose ps
    ```bash
    # Check database status
    make db-status
-   # Manually create if needed
-   make db-create
+   # Create database for your domain
+   make db-create DOMAIN=core
    ```
 
 ### Performance Tuning

@@ -93,12 +93,12 @@ make up-infra
 
 # 2. İlk domain'i oluştur ve başlat
 make create-domain DOMAIN=core PORT_OFFSET=0
-make db-create-domain DOMAIN=core
+make db-create DOMAIN=core
 make up-vnext DOMAIN=core
 
 # 3. İkinci domain'i oluştur ve başlat
 make create-domain DOMAIN=sales PORT_OFFSET=10
-make db-create-domain DOMAIN=sales
+make db-create DOMAIN=sales
 make up-vnext DOMAIN=sales
 
 # 4. Tüm çalışan servisleri görüntüle
@@ -332,28 +332,34 @@ Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema r
    - Bu sayede her geliştirici kendi domain'inde lokal ortamda çalışabilir
    - Varsayılan domain `"core"`'dur, ancak `.env` dosyasında `APP_DOMAIN=mydomain` ile özelleştirilebilir
 
-## Otomatik Veritabanı Başlatma
+## Veritabanı Yönetimi (Domain-Spesifik)
 
-Docker Compose başladığında, PostgreSQL init script kullanarak `vNext_WorkflowDb` veritabanını otomatik olarak oluşturur. Bu sayede:
-
-- Herhangi bir servis bağlanmaya çalışmadan önce veritabanı hazır olur
-- Postgres'e bağımlı servisler, veritabanı healthy olana kadar bekler
-- Manuel veritabanı oluşturma gerekmez
+Her domain kendi veritabanını gerektirir. Veritabanı adları domain adından otomatik olarak oluşturulur:
+- `core` → `vNext_Core`
+- `sales` → `vNext_Sales`
+- `morph-idm` → `vNext_Morph_idm`
 
 ### Veritabanı Komutları
 
 ```bash
-# Veritabanı durumunu kontrol et
+# Veritabanı durumunu kontrol et (tüm veritabanlarını listeler)
 make db-status
 
-# Manuel olarak veritabanı oluştur (gerekirse)
-make db-create
+# Sadece vNext veritabanlarını listele
+make db-list
 
-# Veritabanını sil ve yeniden oluştur
-make db-reset
+# Domain için veritabanı oluştur
+make db-create DOMAIN=core
+make db-create DOMAIN=sales
 
-# psql ile veritabanına bağlan
-make db-connect
+# Domain veritabanını sil (DİKKAT: yıkıcı!)
+make db-drop DOMAIN=core
+
+# Veritabanını sıfırla (sil ve yeniden oluştur)
+make db-reset DOMAIN=core
+
+# psql ile domain veritabanına bağlan
+make db-connect DOMAIN=core
 ```
 
 ## Otomatik Component Publishing
@@ -578,7 +584,6 @@ make help
 | `make logs-vnext` | Bir domain'in loglarını göster | `make logs-vnext DOMAIN=sirketim` |
 | `make status-all-domains` | Tüm çalışan vnext servislerini göster | `make status-all-domains` |
 | `make down-all-vnext` | Tüm domain servislerini durdur (altyapıyı tut) | `make down-all-vnext` |
-| `make db-create-domain` | Bir domain için veritabanı oluştur | `make db-create-domain DOMAIN=sirketim` |
 | `make health` | Sağlık kontrolü (opsiyonel DOMAIN ile) | `make health DOMAIN=sirketim` |
 
 ### Altyapı Yönetimi
@@ -626,15 +631,16 @@ make help
 | `make logs-dapr` | DAPR servislerin logları | `make logs-dapr` |
 | `make logs-db` | Database servislerin logları | `make logs-db` |
 
-### Database Operations
+### Veritabanı İşlemleri (Domain-Spesifik)
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
-| `make db-status` | Veritabanı durumunu ve listesini gösterir | `make db-status` |
-| `make db-create` | vNext veritabanını oluşturur | `make db-create` |
-| `make db-drop` | vNext veritabanını siler (yıkıcı!) | `make db-drop` |
-| `make db-reset` | Veritabanını silip yeniden oluşturur | `make db-reset` |
-| `make db-connect` | psql ile veritabanına bağlanır | `make db-connect` |
+| `make db-status` | Veritabanı durumunu ve tüm veritabanlarını listeler | `make db-status` |
+| `make db-list` | Sadece vNext veritabanlarını listeler | `make db-list` |
+| `make db-create` | Domain için veritabanı oluşturur | `make db-create DOMAIN=core` |
+| `make db-drop` | Domain veritabanını siler (yıkıcı!) | `make db-drop DOMAIN=core` |
+| `make db-reset` | Domain veritabanını silip yeniden oluşturur | `make db-reset DOMAIN=core` |
+| `make db-connect` | psql ile domain veritabanına bağlanır | `make db-connect DOMAIN=core` |
 
 ### Development Tools
 
@@ -836,8 +842,8 @@ docker-compose ps
    ```bash
    # Veritabanı durumunu kontrol et
    make db-status
-   # Gerekirse manuel oluştur
-   make db-create
+   # Domain için veritabanı oluştur
+   make db-create DOMAIN=core
    ```
 
 ### Performance Tuning
