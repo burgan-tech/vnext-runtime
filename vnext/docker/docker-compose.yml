@@ -281,7 +281,6 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-      - ./config/postgres/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     ports:
       - "5432:5432"
     healthcheck:

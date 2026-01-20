@@ -392,8 +392,21 @@ clean-all: check-runtime ## Remove all containers, images, and volumes (WARNING:
 	@echo "$(RED)WARNING: This will remove ALL containers, images, and volumes!$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 10 seconds to continue...$(NC)"
 	@sleep 10
-	@$(MAKE) down
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext down -v --rmi all
+	@echo "$(YELLOW)Stopping all domain projects...$(NC)"
+	@for domain_dir in $(DOMAINS_DIR)/*/; do \
+		if [ -d "$$domain_dir" ]; then \
+			domain=$$(basename "$$domain_dir"); \
+			echo "$(YELLOW)Stopping domain: $$domain$(NC)"; \
+			cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$$domain --profile vnext down -v 2>/dev/null || true; \
+		fi; \
+	done
+	@echo "$(YELLOW)Stopping infrastructure...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra down -v 2>/dev/null || true
+	@echo "$(YELLOW)Removing all vnext containers...$(NC)"
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=vnext-" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=dapr-" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=mockoon" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@echo "$(YELLOW)Pruning system...$(NC)"
 	$(CONTAINER_RUNTIME) system prune -a -f
 	@echo "$(GREEN)Complete cleanup finished!$(NC)"
 

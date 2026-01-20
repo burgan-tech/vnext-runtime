@@ -63,6 +63,11 @@ make create-domain DOMAIN=sales PORT_OFFSET=10
 make create-domain DOMAIN=hr PORT_OFFSET=20
 ```
 
+This generates:
+- Environment files with domain-specific DAPR store names, ports, and app IDs
+- Appsettings files with domain-specific database connection strings
+- Proper OTEL service names for observability
+
 The database name is automatically generated from your domain name:
 - `core` → `vNext_Core`
 - `sales` → `vNext_Sales`
@@ -131,9 +136,19 @@ Templates are located in `vnext/docker/templates/`. You can customize them to ch
 |-------------|-------------|
 | `{{DOMAIN_NAME}}` | Domain name (e.g., `core`, `sales`) |
 | `{{PORT_OFFSET}}` | Port offset value |
-| `{{DB_NAME}}` | Database name (e.g., `vNext_Core`) |
+| `{{DB_NAME}}` | Database name (e.g., `vNext_Core`) - used in appsettings connection strings |
 | `{{VNEXT_APP_PORT}}` | Orchestration port |
 | `{{DAPR_*_PORT}}` | Dapr sidecar ports |
+
+**Important Environment Variables (auto-generated):**
+
+| Variable | Description |
+|----------|-------------|
+| `DAPR_STATE_STORE_NAME` | Dapr state store name (required) |
+| `DAPR_SECRET_STORE_NAME` | Dapr secret store name |
+| `DAPR_PUBSUB_STORE_NAME` | Dapr pubsub store name |
+| `DAPR_APP_ID` | Unique Dapr app identifier per service |
+| `OTEL_SERVICE_NAME` | OpenTelemetry service name |
 
 ### Legacy Single Domain Mode
 
@@ -651,7 +666,7 @@ make help
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `make clean` | Removes stopped containers and unused networks | `make clean` |
-| `make clean-all` | ⚠️ Removes ALL containers, images and volumes | `make clean-all` |
+| `make clean-all` | ⚠️ Removes ALL domains, infra, images and volumes | `make clean-all` |
 | `make reset` | Resets environment (stop, clean, setup) | `make reset` |
 | `make update` | Pulls latest images and restarts services | `make update` |
 

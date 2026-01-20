@@ -63,6 +63,11 @@ make create-domain DOMAIN=sales PORT_OFFSET=10
 make create-domain DOMAIN=hr PORT_OFFSET=20
 ```
 
+Bu komut şunları oluşturur:
+- Domain'e özgü DAPR store adları, portlar ve app ID'leri içeren environment dosyaları
+- Domain'e özgü veritabanı connection string'leri içeren appsettings dosyaları
+- Observability için uygun OTEL servis adları
+
 Veritabanı adı, domain adınızdan otomatik olarak oluşturulur:
 - `core` → `vNext_Core`
 - `sales` → `vNext_Sales`
@@ -131,9 +136,19 @@ make logs-vnext DOMAIN=core
 |-------------|----------|
 | `{{DOMAIN_NAME}}` | Domain adı (örn. `core`, `sales`) |
 | `{{PORT_OFFSET}}` | Port offset değeri |
-| `{{DB_NAME}}` | Veritabanı adı (örn. `vNext_Core`) |
+| `{{DB_NAME}}` | Veritabanı adı (örn. `vNext_Core`) - appsettings connection string'lerinde kullanılır |
 | `{{VNEXT_APP_PORT}}` | Orchestration portu |
 | `{{DAPR_*_PORT}}` | Dapr sidecar portları |
+
+**Önemli Environment Değişkenleri (otomatik oluşturulur):**
+
+| Değişken | Açıklama |
+|----------|----------|
+| `DAPR_STATE_STORE_NAME` | Dapr state store adı (zorunlu) |
+| `DAPR_SECRET_STORE_NAME` | Dapr secret store adı |
+| `DAPR_PUBSUB_STORE_NAME` | Dapr pubsub store adı |
+| `DAPR_APP_ID` | Her servis için benzersiz Dapr app tanımlayıcısı |
+| `OTEL_SERVICE_NAME` | OpenTelemetry servis adı |
 
 ### Eski Tekli Domain Modu
 
@@ -650,7 +665,7 @@ make help
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
 | `make clean` | Durdurulmuş container'ları ve kullanılmayan network'leri temizler | `make clean` |
-| `make clean-all` | ⚠️ TÜM container, image ve volume'leri siler | `make clean-all` |
+| `make clean-all` | ⚠️ TÜM domain'leri, altyapıyı, image ve volume'leri siler | `make clean-all` |
 | `make reset` | Environment'ı resetler (stop, clean, setup) | `make reset` |
 | `make update` | Latest image'ları çeker ve servisleri yeniden başlatır | `make update` |
 
