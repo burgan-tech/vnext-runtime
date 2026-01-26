@@ -58,9 +58,11 @@ vnext/docker/
 
 ```bash
 # Port çakışmasını önlemek için port offset ile domain oluştur
-make create-domain DOMAIN=core PORT_OFFSET=0
+# Not: core (offset 0) ve discovery (offset 5) önceden yapılandırılmıştır
+# Özel domain'ler için offset 10 veya üstünü kullanın
 make create-domain DOMAIN=sales PORT_OFFSET=10
 make create-domain DOMAIN=hr PORT_OFFSET=20
+make create-domain DOMAIN=finance PORT_OFFSET=30
 ```
 
 Bu komut şunları oluşturur:
@@ -77,13 +79,17 @@ Veritabanı adı, domain adınızdan otomatik olarak oluşturulur:
 
 Her domain, `PORT_OFFSET` değerine göre benzersiz portlar kullanır:
 
-| Offset | App Port | Execution | Inbox | Outbox | Init |
-|--------|----------|-----------|-------|--------|------|
-| 0      | 4201     | 4202      | 4203  | 4204   | 3005 |
-| 10     | 4211     | 4212      | 4213  | 4214   | 3015 |
-| 20     | 4221     | 4222      | 4223  | 4224   | 3025 |
+| Offset | Domain (Örnek) | App Port | Execution | Inbox | Outbox | Init |
+|--------|----------------|----------|-----------|-------|--------|------|
+| 0      | core (rezerve) | 4201     | 4202      | 4203  | 4204   | 3005 |
+| 5      | discovery (rezerve) | 4206 | 4207      | 4208  | 4209   | 3010 |
+| 10     | sales          | 4211     | 4212      | 4213  | 4214   | 3015 |
+| 20     | hr             | 4221     | 4222      | 4223  | 4224   | 3025 |
+| 30     | finance        | 4231     | 4232      | 4233  | 4234   | 3035 |
 
 Dapr portları çakışmayı önlemek için `offset * 100` kullanır.
+
+> **⚠️ Rezerve Edilmiş Offset'ler:** `core` ve `discovery` domain'leri, sırasıyla **0** ve **5** offset'leri ile önceden yapılandırılmış domain'ler olarak sunulmaktadır. Özel domain'leriniz için **bu offset'leri kullanmayınız**. Yeni domain'ler için 10 veya daha yüksek offset değerleri ile başlayınız.
 
 ### Birden Fazla Domain Çalıştırma
 
@@ -91,12 +97,11 @@ Dapr portları çakışmayı önlemek için `offset * 100` kullanır.
 # 1. Paylaşılan altyapıyı başlat
 make up-infra
 
-# 2. İlk domain'i oluştur ve başlat
-make create-domain DOMAIN=core PORT_OFFSET=0
-make db-create DOMAIN=core
+# 2. Önceden yapılandırılmış domain'ler (core ve discovery) kullanıma hazır
 make up-vnext DOMAIN=core
+make up-vnext DOMAIN=discovery
 
-# 3. İkinci domain'i oluştur ve başlat
+# 3. Kendi domain'inizi oluşturun ve başlatın (offset 10 veya üstü kullanın)
 make create-domain DOMAIN=sales PORT_OFFSET=10
 make db-create DOMAIN=sales
 make up-vnext DOMAIN=sales

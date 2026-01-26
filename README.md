@@ -58,9 +58,11 @@ Use the `create-domain` command to generate domain configuration from templates:
 
 ```bash
 # Create domain with port offset (to avoid port conflicts)
-make create-domain DOMAIN=core PORT_OFFSET=0
+# Note: core (offset 0) and discovery (offset 5) are pre-configured
+# Use offset 10 or higher for custom domains
 make create-domain DOMAIN=sales PORT_OFFSET=10
 make create-domain DOMAIN=hr PORT_OFFSET=20
+make create-domain DOMAIN=finance PORT_OFFSET=30
 ```
 
 This generates:
@@ -77,13 +79,17 @@ The database name is automatically generated from your domain name:
 
 Each domain uses unique ports based on the `PORT_OFFSET`:
 
-| Offset | App Port | Execution | Inbox | Outbox | Init |
-|--------|----------|-----------|-------|--------|------|
-| 0      | 4201     | 4202      | 4203  | 4204   | 3005 |
-| 10     | 4211     | 4212      | 4213  | 4214   | 3015 |
-| 20     | 4221     | 4222      | 4223  | 4224   | 3025 |
+| Offset | Domain (Example) | App Port | Execution | Inbox | Outbox | Init |
+|--------|------------------|----------|-----------|-------|--------|------|
+| 0      | core (reserved)  | 4201     | 4202      | 4203  | 4204   | 3005 |
+| 5      | discovery (reserved) | 4206 | 4207      | 4208  | 4209   | 3010 |
+| 10     | sales            | 4211     | 4212      | 4213  | 4214   | 3015 |
+| 20     | hr               | 4221     | 4222      | 4223  | 4224   | 3025 |
+| 30     | finance          | 4231     | 4232      | 4233  | 4234   | 3035 |
 
 Dapr ports use `offset * 100` to avoid conflicts.
+
+> **⚠️ Reserved Offsets:** The `core` and `discovery` domains are provided as pre-configured domains with offsets **0** and **5** respectively. **Do not use these offsets** for your custom domains. Start with offset 10 or higher for new domains.
 
 ### Running Multiple Domains
 
@@ -91,12 +97,11 @@ Dapr ports use `offset * 100` to avoid conflicts.
 # 1. Start shared infrastructure
 make up-infra
 
-# 2. Create and start first domain
-make create-domain DOMAIN=core PORT_OFFSET=0
-make db-create DOMAIN=core
+# 2. Pre-configured domains (core and discovery) are ready to use
 make up-vnext DOMAIN=core
+make up-vnext DOMAIN=discovery
 
-# 3. Create and start second domain
+# 3. Create and start your custom domain (use offset 10 or higher)
 make create-domain DOMAIN=sales PORT_OFFSET=10
 make db-create DOMAIN=sales
 make up-vnext DOMAIN=sales

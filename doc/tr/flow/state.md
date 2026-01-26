@@ -30,7 +30,7 @@ State nesnesi aşağıdaki türlerde tanımlanabilir:
 
 ## State Alt Türleri (SubTypes)
 
-State SubType'lar, durumlar için ek sınıflandırma sağlar. Özellikle Finish durumlarının sonuç türünü belirtmek için kullanışlıdır.
+State SubType'lar, durumlar için ek sınıflandırma sağlar. Özellikle Finish durumlarının sonuç türünü belirtmek ve işlem durumunu takip etmek için kullanışlıdır.
 
 | Alt Tür | Kod | Açıklama |
 |---------|-----|----------|
@@ -39,6 +39,8 @@ State SubType'lar, durumlar için ek sınıflandırma sağlar. Özellikle Finish
 | **Error** | 2 | Hata durumu |
 | **Terminated** | 3 | Manuel olarak sonlandırıldı |
 | **Suspended** | 4 | Geçici olarak askıya alındı |
+| **Busy** | 5 | İşlem devam ediyor (v0.0.33+) |
+| **Human** | 6 | İnsan etkileşimi gerekli (v0.0.33+) |
 
 ### Kullanım Örneği
 ```json
@@ -61,12 +63,73 @@ State SubType'lar, durumlar için ek sınıflandırma sağlar. Özellikle Finish
 - **Error (2)**: Hata/başarısızlık sonuçlarını temsil eden bitiş durumları için kullanın
 - **Terminated (3)**: Manuel iptal yoluyla ulaşılan bitiş durumları için kullanın
 - **Suspended (4)**: Workflow'un geçici olarak duraklatıldığı durumlar için kullanın
+- **Busy (5)**: Workflow'un aktif olarak işlem yaptığı durumlar için kullanın (v0.0.33+)
+- **Human (6)**: İnsan etkileşimi veya onayı gereken durumlar için kullanın (v0.0.33+)
 
 :::info[SubProcess vs SubFlow]
 **SubProcess**: Ana workflow'u bloklamaz ve paralelde izole şekilde çalışır. Ana workflow'a paralel çalışır ve fan-in gibi akış paternlerini gerçeklemek için kullanılır.
 
 **SubFlow**: Ana workflow'u bloklar ve subflow, ana workflow üzerinden organize edilir. SubFlow tamamlanmadan ana workflow devam edemez.
 :::
+
+---
+
+## EffectiveState Takibi (v0.0.33+)
+
+v0.0.33 sürümünden itibaren platform, gelişmiş sorgulama ve izleme yetenekleri için instance seviyesinde etkin durum bilgisini takip eder.
+
+### Instance Alanları
+
+| Alan | Tür | Açıklama |
+|------|-----|----------|
+| `EffectiveState` | string | Mevcut etkin durum adı |
+| `EffectiveStateType` | int | Mevcut etkin durum tipi kodu |
+| `EffectiveStateSubType` | int | Mevcut etkin durum alt tipi kodu |
+
+### Amaç
+
+Bu alanlar şunları sağlar:
+- Workflow'ları mevcut işlem durumlarına göre sorgulama
+- İnsan etkileşimi bekleyen instance'ları filtreleme
+- Meşgul ve müsait instance'ları tanımlama
+- İş yükü ve kuyruk raporları oluşturma
+- İç içe subflow'lar arasında workflow durumunu takip etme
+
+### Davranış
+
+- Aktif subflow'u olmayan instance'lar için, `EffectiveState*` alanları instance'ın kendi durumunu yansıtır
+- Aktif subflow'u olan instance'lar için, `EffectiveState*` alanları en derin aktif subflow'un durumunu yansıtır
+- Değerler state geçişlerinde otomatik olarak güncellenir
+- Veritabanı migration'ı başlangıçta otomatik olarak uygulanır
+
+### Sorgu Örnekleri
+
+**İnsan etkileşimi gereken tüm instance'ları bul:**
+```http
+GET /core/workflows/approval-flow/instances?filter={"effectiveStateSubType":{"eq":"6"}}
+```
+
+**Tüm meşgul instance'ları bul:**
+```http
+GET /core/workflows/order-processing/instances?filter={"effectiveStateSubType":{"eq":"5"}}
+```
+
+**Durum filtreleme ile birleştir:**
+```http
+GET /core/workflows/payment/instances?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
+```
+
+### Kullanım Alanları
+
+- **İnsan Görev Kuyrukları**: İnsan onayı bekleyen tüm workflow'ları filtrele ve görüntüle
+- **İşlem Takibi**: Şu anda işlem durumunda olan instance'ları takip et
+- **İş Yükü Raporları**: Durum türüne göre instance dağılımı raporları oluştur
+- **SLA Takibi**: Instance'ların insan etkileşimi durumlarında ne kadar kaldığını izle
+- **Kaynak Planlama**: Durum dağılımına göre darboğazları tanımla
+
+> **Not:** Detaylı filtreleme sözdizimi için [Instance Filtreleme Rehberi](instance-filtering.md) bölümüne bakın.
+
+---
 
 ## State Yaşam Döngüsü
 

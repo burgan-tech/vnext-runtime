@@ -20,8 +20,7 @@ services:
   # ============================================================================
   vnext-app:
     container_name: vnext-app-${DOMAIN_NAME:-core}
-    # image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_VERSION:-latest}"
-    image: vnext-orchestration:latest
+    image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_VERSION:-latest}"
     profiles:
       - vnext
     env_file:
@@ -86,8 +85,7 @@ services:
     restart: "no"
   vnext-execution-app:
     container_name: vnext-execution-app-${DOMAIN_NAME:-core}
-    # image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_VERSION:-latest}"
-    image: vnext-execution:latest
+    image: "ghcr.io/burgan-tech/vnext/execution:${VNEXT_VERSION:-latest}"
     profiles:
       - vnext
     env_file:
@@ -147,8 +145,7 @@ services:
       - vnext-execution-app
   vnext-worker-inbox:
     container_name: vnext-worker-inbox-${DOMAIN_NAME:-core}
-    # image: "ghcr.io/burgan-tech/vnext/inbox:${VNEXT_VERSION:-latest}"
-    image: vnext-inbox:latest
+    image: "ghcr.io/burgan-tech/vnext/inbox:${VNEXT_VERSION:-latest}"
     profiles:
       - vnext
     env_file:
@@ -188,8 +185,7 @@ services:
       - vnext-worker-inbox
   vnext-worker-outbox:
     container_name: vnext-worker-outbox-${DOMAIN_NAME:-core}
-    # image: "ghcr.io/burgan-tech/vnext/outbox:${VNEXT_VERSION:-latest}"
-    image: vnext-outbox:latest
+    image: "ghcr.io/burgan-tech/vnext/outbox:${VNEXT_VERSION:-latest}"
     profiles:
       - vnext
     env_file:

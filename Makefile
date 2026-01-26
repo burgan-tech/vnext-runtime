@@ -166,12 +166,25 @@ build: check-env check-runtime ## Build container images
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext build
 	@echo "$(GREEN)Build completed!$(NC)"
 
-up: check-env check-runtime ## Start all services (infra + vnext)
+up: check-env check-runtime ## Start all services (infra + all domains)
 	@echo "$(YELLOW)Starting VNext Runtime services...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext up -d
-	@echo "$(GREEN)Services started!$(NC)"
-	@$(MAKE) status
+	@$(MAKE) up-infra
+	@echo "$(YELLOW)Starting all configured domain services...$(NC)"
+	@if [ -d "$(DOMAINS_DIR)" ] && [ "$$(ls -A $(DOMAINS_DIR) 2>/dev/null)" ]; then \
+		for d in $(DOMAINS_DIR)/*/; do \
+			if [ -d "$$d" ] && [ -f "$$d/.env" ]; then \
+				domain=$$(basename "$$d"); \
+				echo "$(YELLOW)Starting domain: $$domain$(NC)"; \
+				$(MAKE) up-vnext DOMAIN=$$domain || echo "$(RED)Failed to start $$domain$(NC)"; \
+			fi; \
+		done; \
+		echo "$(GREEN)All services started!$(NC)"; \
+	else \
+		echo "$(YELLOW)No domains configured. Only infrastructure started.$(NC)"; \
+		echo "$(YELLOW)Run 'make create-domain DOMAIN=<name>' to create a domain$(NC)"; \
+	fi
+	@$(MAKE) status-all-domains
 
 up-infra: check-env-infra check-runtime ## Start only infrastructure services
 	@echo "$(YELLOW)Starting infrastructure services...$(NC)"
@@ -232,10 +245,11 @@ up-vnext-build: check-env-infra check-runtime ## Start vnext services with build
 	@echo "$(GREEN)VNext services for $(DOMAIN) started!$(NC)"
 	@$(MAKE) status-vnext DOMAIN=$(DOMAIN)
 
-down: check-runtime ## Stop all services
+down: check-runtime ## Stop all services (all domains + infra)
 	@echo "$(YELLOW)Stopping VNext Runtime services...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext down
-	@echo "$(GREEN)Services stopped!$(NC)"
+	@$(MAKE) down-all-vnext
+	@$(MAKE) down-infra
+	@echo "$(GREEN)All services stopped!$(NC)"
 
 down-infra: check-runtime ## Stop only infrastructure services
 	@echo "$(YELLOW)Stopping infrastructure services...$(NC)"
@@ -499,14 +513,25 @@ status-all-domains: check-runtime ## Show status of all running domain services
 
 down-all-vnext: check-runtime ## Stop all vnext domain services (keeps infra running)
 	@echo "$(YELLOW)Stopping all VNext domain services...$(NC)"
-	@if [ -d "$(DOMAINS_DIR)" ]; then \
+	@if [ ! -d "$(DOMAINS_DIR)" ] || [ -z "$$(ls -A $(DOMAINS_DIR) 2>/dev/null)" ]; then \
+		echo "$(YELLOW)No domains found to stop.$(NC)"; \
+	else \
+		domain_count=0; \
 		for d in $(DOMAINS_DIR)/*/; do \
-			if [ -d "$$d" ]; then \
+			if [ -d "$$d" ] && [ -f "$$d/.env" ]; then \
 				domain=$$(basename "$$d"); \
-				echo "$(YELLOW)Stopping domain: $$domain$(NC)"; \
-				cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$$domain --profile vnext down 2>/dev/null || true; \
+				echo "$(YELLOW)  → Stopping domain: $$domain$(NC)"; \
+				cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$$domain --profile vnext down 2>/dev/null && \
+					echo "$(GREEN)    ✓ Domain $$domain stopped$(NC)" || \
+					echo "$(RED)    ✗ Failed to stop $$domain (may not be running)$(NC)"; \
+				domain_count=$$((domain_count + 1)); \
 			fi; \
 		done; \
+		if [ $$domain_count -eq 0 ]; then \
+			echo "$(YELLOW)No valid domain configurations found.$(NC)"; \
+		else \
+			echo "$(GREEN)Processed $$domain_count domain(s)$(NC)"; \
+		fi; \
 	fi
 	@echo "$(GREEN)All VNext domain services stopped!$(NC)"
 

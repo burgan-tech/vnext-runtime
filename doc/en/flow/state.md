@@ -30,7 +30,7 @@ The State object can be defined in the following types:
 
 ## State SubTypes
 
-State SubTypes provide additional classification for states, particularly useful for Finish states to indicate the outcome type.
+State SubTypes provide additional classification for states, particularly useful for Finish states to indicate the outcome type and for tracking processing state.
 
 | SubType | Code | Description |
 |---------|------|-------------|
@@ -39,6 +39,8 @@ State SubTypes provide additional classification for states, particularly useful
 | **Error** | 2 | Error condition |
 | **Terminated** | 3 | Manually terminated |
 | **Suspended** | 4 | Temporarily suspended |
+| **Busy** | 5 | Processing in progress (v0.0.33+) |
+| **Human** | 6 | Human interaction required (v0.0.33+) |
 
 ### Usage Example
 ```json
@@ -61,12 +63,73 @@ State SubTypes provide additional classification for states, particularly useful
 - **Error (2)**: Use for finish states that represent error/failure outcomes
 - **Terminated (3)**: Use for finish states reached through manual cancellation
 - **Suspended (4)**: Use for states where the workflow is temporarily paused
+- **Busy (5)**: Use for states where the workflow is actively processing (v0.0.33+)
+- **Human (6)**: Use for states that require human interaction or approval (v0.0.33+)
 
 :::info[SubProcess vs SubFlow]
 **SubProcess**: Does not block the main workflow and runs in parallel in isolation. It runs parallel to the main workflow and is used to implement flow patterns like fan-in.
 
 **SubFlow**: Blocks the main workflow and the subflow is organized through the main workflow. The main workflow cannot continue until SubFlow is completed.
 :::
+
+---
+
+## EffectiveState Tracking (v0.0.33+)
+
+Starting with v0.0.33, the platform tracks effective state information at the instance level for enhanced querying and monitoring capabilities.
+
+### Instance Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `EffectiveState` | string | Current effective state name |
+| `EffectiveStateType` | int | Current effective state type code |
+| `EffectiveStateSubType` | int | Current effective state subtype code |
+
+### Purpose
+
+These fields enable:
+- Query workflows by their current processing state
+- Filter instances awaiting human interaction
+- Identify busy vs. available instances
+- Generate workload and queue reports
+- Track workflow state across nested subflows
+
+### Behavior
+
+- For instances without active subflows, `EffectiveState*` fields reflect the instance's own state
+- For instances with active subflows, `EffectiveState*` fields reflect the deepest active subflow's state
+- Values are automatically updated on state transitions
+- Database migration is applied automatically on startup
+
+### Query Examples
+
+**Find all instances requiring human interaction:**
+```http
+GET /core/workflows/approval-flow/instances?filter={"effectiveStateSubType":{"eq":"6"}}
+```
+
+**Find all busy instances:**
+```http
+GET /core/workflows/order-processing/instances?filter={"effectiveStateSubType":{"eq":"5"}}
+```
+
+**Combine with status filtering:**
+```http
+GET /core/workflows/payment/instances?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
+```
+
+### Use Cases
+
+- **Human Task Queues**: Filter and display all workflows awaiting human approval
+- **Processing Monitoring**: Track instances currently in processing state
+- **Workload Reports**: Generate reports on instance distribution by state type
+- **SLA Tracking**: Monitor how long instances remain in human interaction states
+- **Resource Planning**: Identify bottlenecks based on state distribution
+
+> **Note:** For detailed filtering syntax, see [Instance Filtering Guide](instance-filtering.md)
+
+---
 
 ## State Lifecycle
 

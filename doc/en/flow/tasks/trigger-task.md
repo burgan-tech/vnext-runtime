@@ -48,11 +48,42 @@ Creates a new workflow instance. Use this to programmatically start new workflow
 
 ### Configuration Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `domain` | string | Yes | Target workflow domain |
-| `flow` | string | Yes | Target workflow flow name |
-| `body` | object | No | Data to send with the request |
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `domain` | string | Yes | - | Target workflow domain |
+| `flow` | string | Yes | - | Target workflow flow name |
+| `body` | object | No | - | Data to send with the request |
+| `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
+
+### SSL Configuration
+
+**SSL Validation Enabled (Default):**
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Validation Disabled:**
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Security Warning
+Disable SSL validation only in development environment or trusted internal services.
+:::
 
 ### Use Cases
 
@@ -171,16 +202,49 @@ Executes a specific transition on an existing workflow instance. Use this to tri
 
 ### Configuration Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `domain` | string | Yes | Target workflow domain |
-| `flow` | string | Yes | Target workflow flow name |
-| `transitionName` | string | Yes | Transition name to execute |
-| `key` | string | Conditional | Target instance key (used if instanceId is not provided) |
-| `instanceId` | string | Conditional | Target instance ID (takes priority) |
-| `body` | object | No | Data to send with the request |
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `domain` | string | Yes | - | Target workflow domain |
+| `flow` | string | Yes | - | Target workflow flow name |
+| `transitionName` | string | Yes | - | Transition name to execute |
+| `key` | string | Conditional | - | Target instance key (used if instanceId is not provided) |
+| `instanceId` | string | Conditional | - | Target instance ID (takes priority) |
+| `body` | object | No | - | Data to send with the request |
+| `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 
 **Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
+
+### SSL Configuration
+
+**SSL Validation Enabled (Default):**
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Validation Disabled:**
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Security Warning
+Disable SSL validation only in development environment or trusted internal services.
+:::
 
 ### Use Cases
 
@@ -293,15 +357,48 @@ Retrieves instance data from another workflow instance. Supports optional extens
 
 ### Configuration Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `domain` | string | Yes | Target workflow domain |
-| `flow` | string | Yes | Target workflow flow name |
-| `key` | string | Conditional | Target instance key (used if instanceId is not provided, used directly as key) |
-| `instanceId` | string | Conditional | Target instance ID (takes priority) |
-| `extensions` | string[] | No | Extensions to fetch |
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `domain` | string | Yes | - | Target workflow domain |
+| `flow` | string | Yes | - | Target workflow flow name |
+| `key` | string | Conditional | - | Target instance key (used if instanceId is not provided, used directly as key) |
+| `instanceId` | string | Conditional | - | Target instance ID (takes priority) |
+| `extensions` | string[] | No | - | Extensions to fetch |
+| `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 
 **Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
+
+### SSL Configuration
+
+**SSL Validation Enabled (Default):**
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Validation Disabled:**
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Security Warning
+Disable SSL validation only in development environment or trusted internal services.
+:::
 
 ### Use Cases
 
@@ -426,12 +523,45 @@ Starts an independent subprocess instance that runs in parallel with the main wo
 
 ### Configuration Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `domain` | string | Yes | Target workflow domain |
-| `key` | string | Yes | Target workflow key |
-| `version` | string | No | SubFlow version |
-| `body` | object | No | Data to send with the request |
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `domain` | string | Yes | - | Target workflow domain |
+| `key` | string | Yes | - | Target workflow key |
+| `version` | string | No | - | SubFlow version |
+| `body` | object | No | - | Data to send with the request |
+| `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
+
+### SSL Configuration
+
+**SSL Validation Enabled (Default):**
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "key": "transaction-audit",
+    "version": "1.0.0",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Validation Disabled:**
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "key": "transaction-audit",
+    "version": "1.0.0",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Security Warning
+Disable SSL validation only in development environment or trusted internal services.
+:::
 
 ### Use Cases
 

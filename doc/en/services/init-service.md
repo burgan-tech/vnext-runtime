@@ -376,6 +376,135 @@ After each component deployment, the platform automatically triggers a re-initia
 
 ---
 
+## Service Discovery Configuration (v0.0.33+)
+
+### Localhost Validation in Production
+
+Starting with v0.0.33, the platform validates Service Discovery configuration on startup to prevent common misconfiguration issues.
+
+**Validation Rules:**
+
+| Environment | Localhost Allowed | Behavior |
+|-------------|-------------------|----------|
+| Development | ✅ Yes | Localhost addresses accepted |
+| Production | ❌ No | Application fails to start |
+
+**Blocked Addresses in Production:**
+- `localhost`
+- `127.0.0.1`
+- `::1`
+
+**Configuration Example:**
+
+```json
+{
+  "vNextApi": {
+    "BaseUrl": "https://api.production.com",
+    "ServiceDiscovery": {
+      "Enabled": true
+    }
+  }
+}
+```
+
+**Error Message:**
+```
+FATAL: Service Discovery configuration error
+vNextApi:BaseUrl cannot point to localhost in production environment.
+Current value: http://localhost:4201
+Environment: Production
+
+Please update the configuration to use a resolvable network address.
+```
+
+**Why This Matters:**
+- Prevents deployment of misconfigured services
+- Ensures service mesh can reach the application
+- Fail-fast behavior catches configuration errors early
+
+> **Reference:** [#313 - Fail fast when vNextApi:BaseUrl points to localhost in production](https://github.com/burgan-tech/vnext/issues/313)
+
+---
+
+### Service Discovery Registration Failure Handling
+
+When Service Discovery is enabled, the application now enforces successful registration before continuing startup.
+
+**Fail-Fast Behavior:**
+
+| Scenario | Behavior |
+|----------|----------|
+| Service Discovery enabled + Registration successful | ✅ Normal operation |
+| Service Discovery enabled + Registration failed | ❌ Application crashes immediately |
+| Service Discovery disabled | No validation performed |
+
+**Error Handling:**
+
+```
+FATAL: Service Discovery registration failed
+Cannot proceed without successful service registration.
+
+Details:
+- Service Discovery Endpoint: https://discovery.prod.com
+- Registration Timeout: 30s
+- Error: Connection timeout
+
+Check:
+1. Network connectivity to Service Discovery endpoint
+2. Service Discovery endpoint configuration
+3. Firewall rules and network policies
+4. DNS resolution for the endpoint
+```
+
+**Configuration Check:**
+
+```json
+{
+  "ServiceDiscovery": {
+    "Enabled": true,
+    "Endpoint": "https://discovery.production.com",
+    "RetryAttempts": 3,
+    "RetryDelay": "PT5S"
+  }
+}
+```
+
+**Why This Matters:**
+- Prevents services from running in partially configured state
+- Ensures microservice deployments are fully integrated with service mesh
+- Detects infrastructure issues immediately during deployment
+- Prevents silent failures in distributed systems
+
+**Troubleshooting:**
+
+1. **Verify Service Discovery Endpoint:**
+   ```bash
+   curl https://discovery.production.com/health
+   ```
+
+2. **Check Network Connectivity:**
+   ```bash
+   ping discovery.production.com
+   ```
+
+3. **Review Application Logs:**
+   ```bash
+   docker logs vnext-app-core | grep "Service Discovery"
+   ```
+
+4. **Temporarily Disable (Development Only):**
+   ```json
+   {
+     "ServiceDiscovery": {
+       "Enabled": false
+     }
+   }
+   ```
+
+> **Reference:** [#325 - Refactor: Move service discovery enable check into RegisterDomainAsync and add failure handling](https://github.com/burgan-tech/vnext/issues/325)
+
+---
+
 ## Related Documentation
 
 - [Version Management](../principles/versioning.md) - Versioning strategy
