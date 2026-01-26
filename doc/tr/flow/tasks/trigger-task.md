@@ -48,11 +48,42 @@ Yeni bir iş akışı instance'ı oluşturur. İş akışı yürütmesi sırası
 
 ### Konfigürasyon Alanları
 
-| Alan | Tür | Gerekli | Açıklama |
-|------|-----|---------|----------|
-| `domain` | string | Evet | Hedef iş akışı domain'i |
-| `flow` | string | Evet | Hedef iş akışı flow adı |
-| `body` | object | Hayır | İstekle gönderilecek veri |
+| Alan | Tür | Gerekli | Varsayılan | Açıklama |
+|------|-----|---------|------------|----------|
+| `domain` | string | Evet | - | Hedef iş akışı domain'i |
+| `flow` | string | Evet | - | Hedef iş akışı flow adı |
+| `body` | object | Hayır | - | İstekle gönderilecek veri |
+| `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
+
+### SSL Yapılandırması
+
+**SSL Doğrulama Etkin (Varsayılan):**
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Doğrulama Devre Dışı:**
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Güvenlik Uyarısı
+SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
+:::
 
 ### Kullanım Alanları
 
@@ -167,16 +198,49 @@ Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Di�
 
 ### Konfigürasyon Alanları
 
-| Alan | Tür | Gerekli | Açıklama |
-|------|-----|---------|----------|
-| `domain` | string | Evet | Hedef iş akışı domain'i |
-| `flow` | string | Evet | Hedef iş akışı flow adı |
-| `transitionName` | string | Evet | Çalıştırılacak transition adı |
-| `key` | string | Koşullu | Hedef instance key'i (instanceId yoksa kullanılır) |
-| `instanceId` | string | Koşullu | Hedef instance ID'si (öncelikli) |
-| `body` | object | Hayır | İstekle gönderilecek veri |
+| Alan | Tür | Gerekli | Varsayılan | Açıklama |
+|------|-----|---------|------------|----------|
+| `domain` | string | Evet | - | Hedef iş akışı domain'i |
+| `flow` | string | Evet | - | Hedef iş akışı flow adı |
+| `transitionName` | string | Evet | - | Çalıştırılacak transition adı |
+| `key` | string | Koşullu | - | Hedef instance key'i (instanceId yoksa kullanılır) |
+| `instanceId` | string | Koşullu | - | Hedef instance ID'si (öncelikli) |
+| `body` | object | Hayır | - | İstekle gönderilecek veri |
+| `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 
 **Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
+
+### SSL Yapılandırması
+
+**SSL Doğrulama Etkin (Varsayılan):**
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Doğrulama Devre Dışı:**
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Güvenlik Uyarısı
+SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
+:::
 
 ### Kullanım Alanları
 
@@ -284,15 +348,48 @@ Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili ver
 
 ### Konfigürasyon Alanları
 
-| Alan | Tür | Gerekli | Açıklama |
-|------|-----|---------|----------|
-| `domain` | string | Evet | Hedef iş akışı domain'i |
-| `flow` | string | Evet | Hedef iş akışı flow adı |
-| `key` | string | Koşullu | Hedef instance key'i (instanceId yoksa kullanılır, doğrudan key olarak kullanılır) |
-| `instanceId` | string | Koşullu | Hedef instance ID'si (öncelikli) |
-| `extensions` | string[] | Hayır | Alınacak extension'lar |
+| Alan | Tür | Gerekli | Varsayılan | Açıklama |
+|------|-----|---------|------------|----------|
+| `domain` | string | Evet | - | Hedef iş akışı domain'i |
+| `flow` | string | Evet | - | Hedef iş akışı flow adı |
+| `key` | string | Koşullu | - | Hedef instance key'i (instanceId yoksa kullanılır, doğrudan key olarak kullanılır) |
+| `instanceId` | string | Koşullu | - | Hedef instance ID'si (öncelikli) |
+| `extensions` | string[] | Hayır | - | Alınacak extension'lar |
+| `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 
 **Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
+
+### SSL Yapılandırması
+
+**SSL Doğrulama Etkin (Varsayılan):**
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Doğrulama Devre Dışı:**
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Güvenlik Uyarısı
+SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
+:::
 
 ### Kullanım Alanları
 
@@ -417,14 +514,47 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
 
 ### Konfigürasyon Alanları
 
-| Alan | Tür | Gerekli | Açıklama |
-|------|-----|---------|----------|
-| `domain` | string | Evet | Hedef iş akışı domain'i |
-| `flow` | string | Evet | Hedef iş akışı key'i |
-| `version` | string | Hayır | SubFlow versiyonu |
-| `key` | string | Hayır | SubFlow key değeri |
-| `tags` | Array<string> | Hayır | Etiket değerleri |
-| `body` | object | Hayır | İstekle gönderilecek veri |
+| Alan | Tür | Gerekli | Varsayılan | Açıklama |
+|------|-----|---------|------------|----------|
+| `domain` | string | Evet | - | Hedef iş akışı domain'i |
+| `flow` | string | Evet | - | Hedef iş akışı key'i |
+| `version` | string | Hayır | - | SubFlow versiyonu |
+| `key` | string | Hayır | - | SubFlow key değeri |
+| `tags` | Array<string> | Hayır | - | Etiket değerleri |
+| `body` | object | Hayır | - | İstekle gönderilecek veri |
+| `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
+
+### SSL Yapılandırması
+
+**SSL Doğrulama Etkin (Varsayılan):**
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "flow": "transaction-audit",
+    "version": "1.0.0",
+    "validateSsl": true
+  }
+}
+```
+
+**SSL Doğrulama Devre Dışı:**
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "flow": "transaction-audit",
+    "version": "1.0.0",
+    "validateSsl": false
+  }
+}
+```
+
+:::warning Güvenlik Uyarısı
+SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
+:::
 
 ### Kullanım Alanları
 

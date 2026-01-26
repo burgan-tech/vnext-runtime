@@ -46,6 +46,9 @@ Doğrudan veritabanı kolonları:
 | `flow` | string | Workflow adı | eq, ne, like, startswith, endswith, in, nin |
 | `status` | string | Instance durumu | eq, ne, in, nin |
 | `currentState` (veya `state`) | string | Mevcut state | eq, ne, like, startswith, endswith, in, nin |
+| `effectiveState` | string | Etkin state adı (v0.0.33+) | eq, ne, like, startswith, endswith, in, nin |
+| `effectiveStateType` | int | Etkin state tipi kodu (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
+| `effectiveStateSubType` | int | Etkin state alt tipi kodu (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
 | `createdAt` | DateTime | Oluşturulma zamanı | eq, ne, gt, ge, lt, le, between |
 | `modifiedAt` | DateTime | Değiştirilme zamanı | eq, ne, gt, ge, lt, le, between |
 | `completedAt` | DateTime | Tamamlanma zamanı | eq, ne, gt, ge, lt, le, between |
@@ -132,6 +135,37 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"createdAt":{"bet
 ```http
 GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"in":["Active","Busy"]}}
 ```
+
+### 7. EffectiveState Filtreleri (v0.0.33+)
+
+**Etkin State Adına Göre Filtreleme:**
+```http
+GET /banking/workflows/payment-workflow/functions/data?filter={"effectiveState":{"eq":"awaiting-approval"}}
+```
+
+**Etkin State Alt Tipine Göre Filtreleme (İnsan Görevleri):**
+```http
+GET /approvals/workflows/approval-flow/functions/data?filter={"effectiveStateSubType":{"eq":"6"}}
+```
+
+**Etkin State Alt Tipine Göre Filtreleme (Meşgul Görevler):**
+```http
+GET /processing/workflows/order-flow/functions/data?filter={"effectiveStateSubType":{"eq":"5"}}
+```
+
+**Birleşik Status ve EffectiveState Filtresi:**
+```http
+GET /core/workflows/payment/functions/data?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
+```
+
+**EffectiveState Alt Tip Değerleri:**
+- `0` - Yok (None)
+- `1` - Başarı (Success)
+- `2` - Hata (Error)
+- `3` - Sonlandırıldı (Terminated)
+- `4` - Askıya Alındı (Suspended)
+- `5` - Meşgul (Busy) - işlem devam ediyor
+- `6` - İnsan (Human) - insan etkileşimi gerekli
 
 ---
 

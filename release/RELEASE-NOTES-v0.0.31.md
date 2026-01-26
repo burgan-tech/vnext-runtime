@@ -452,7 +452,7 @@ Cache is now automatically cleared after each component deployment to ensure con
 Configuration for v0.0.31:
 ```json
 {
-  "runtimeVersion": "31",
+  "runtimeVersion": "0.0.31",
   "schemaVersion": "0.0.30",
   "componentVersion": "0.0.18"
 }
@@ -515,7 +515,7 @@ With this release:
 2. **Update Configuration:**
    ```json
    {
-     "runtimeVersion": "31",
+     "runtimeVersion": "0.0.31",
      "schemaVersion": "0.0.31",
      "componentVersion": "0.0.18"
    }

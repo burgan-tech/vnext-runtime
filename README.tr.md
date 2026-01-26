@@ -10,65 +10,160 @@ Bu proje, geliştiricilerin lokal ortamlarında VNext Runtime sistemini ayağa k
 
 ## Environment Konfigürasyonu
 
-Repo, `vnext/docker/` dizininde hazır environment dosyaları (`.env`, `.env.orchestration`, `.env.execution`) içerir. Bu dosyalar sistem versiyonlarını, veritabanı bağlantılarını, Redis konfigürasyonunu, telemetry ayarlarını ve diğer runtime parametrelerini kontrol eder.
+Repo, domain'e özgü konfigürasyonlar oluşturmak için kullanılan şablon dosyalarını `vnext/docker/templates/` dizininde içerir. `make create-domain` komutu ile bir domain oluşturduğunuzda, bu şablonlar işlenir ve sonuçta oluşan konfigürasyon dosyaları `vnext/docker/domains/<domain_adi>/` dizinine yerleştirilir.
 
-**Amaç:** Bu environment dosyalarını altyapınıza ve geliştirme ihtiyaçlarınıza göre özelleştirebilirsiniz. Tüm kullanılabilir environment variable'ları ve varsayılan değerlerini repository içindeki ilgili dosyalardan inceleyebilirsiniz.
+**Şablon Dosyaları:**
+- `.env` - Versiyonlar ve portları içeren ana environment dosyası
+- `.env.orchestration` - Orchestration servis konfigürasyonu
+- `.env.execution` - Execution servis konfigürasyonu
+- `.env.worker-inbox` - Worker inbox servis konfigürasyonu
+- `.env.worker-outbox` - Worker outbox servis konfigürasyonu
+- `appsettings.*.Development.json` - Uygulama ayarları
 
-## 🎯 Domain Konfigürasyonu (Önemli!)
+**Amaç:** Tüm yeni domain'ler için varsayılan değerleri değiştirmek amacıyla `vnext/docker/templates/` dizinindeki şablon dosyalarını özelleştirebilir, veya bireysel domain özelleştirmesi için `vnext/docker/domains/<domain_adi>/` dizinindeki domain'e özgü dosyaları düzenleyebilirsiniz.
 
-**Domain konfigürasyonu, vNext Runtime'da kritik bir kavramdır.** Her geliştiricinin platform ile çalışabilmesi için kendi domain'ini yapılandırması gerekir. Her domain, kendine ait bir veritabanı ile kendi runtime ortamında çalışır.
+## 🎯 Çoklu Domain Desteği (Yeni!)
 
-### Otomatik Domain Konfigürasyonu (Önerilen)
+**VNext Runtime artık aynı altyapı üzerinde birden fazla domain'i eş zamanlı çalıştırmayı destekliyor.** Bu özellik, takımların aynı PostgreSQL, Redis, Vault ve Dapr servislerini paylaşarak izole domain ortamları (örn. `core`, `sales`, `hr`) çalıştırmasına olanak tanır.
 
-Tüm domain ayarlarını otomatik olarak yapılandırmak için `change-domain` komutunu kullanın:
+### Klasör Yapısı
+
+```
+vnext/docker/
+├── templates/                              # Yeni domain'ler için şablon dosyalar
+│   ├── .env                                # {{PLACEHOLDER}} içeren ana env şablonu
+│   ├── .env.orchestration                  # Orchestration şablonu
+│   ├── .env.execution                      # Execution şablonu
+│   ├── .env.worker-inbox                   # Inbox worker şablonu
+│   ├── .env.worker-outbox                  # Outbox worker şablonu
+│   └── appsettings.*.Development.json      # App settings şablonları
+├── domains/                                # Domain konfigürasyonları (her domain için)
+│   ├── core/                               # Domain: core
+│   ├── sales/                              # Domain: sales
+│   └── <domain_adi>/                       # Sizin domain'iniz
+│       ├── .env
+│       ├── .env.orchestration
+│       ├── .env.execution
+│       ├── .env.worker-inbox
+│       ├── .env.worker-outbox
+│       └── appsettings.*.Development.json
+├── config/                                 # Paylaşılan altyapı konfigürasyonu
+├── docker-compose.yml
+└── create-domain.sh                        # Şablonlardan domain oluşturma scripti
+```
+
+### Yeni Domain Oluşturma
+
+Şablonlardan domain konfigürasyonu oluşturmak için `create-domain` komutunu kullanın:
 
 ```bash
-# Domain'i istediğiniz isimle değiştirin
+# Port çakışmasını önlemek için port offset ile domain oluştur
+# Not: core (offset 0) ve discovery (offset 5) önceden yapılandırılmıştır
+# Özel domain'ler için offset 10 veya üstünü kullanın
+make create-domain DOMAIN=sales PORT_OFFSET=10
+make create-domain DOMAIN=hr PORT_OFFSET=20
+make create-domain DOMAIN=finance PORT_OFFSET=30
+```
+
+Bu komut şunları oluşturur:
+- Domain'e özgü DAPR store adları, portlar ve app ID'leri içeren environment dosyaları
+- Domain'e özgü veritabanı connection string'leri içeren appsettings dosyaları
+- Observability için uygun OTEL servis adları
+
+Veritabanı adı, domain adınızdan otomatik olarak oluşturulur:
+- `core` → `vNext_Core`
+- `sales` → `vNext_Sales`
+- `kullanici-yonetimi` → `vNext_Kullanici_Yonetimi`
+
+### Port Tahsisi
+
+Her domain, `PORT_OFFSET` değerine göre benzersiz portlar kullanır:
+
+| Offset | Domain (Örnek) | App Port | Execution | Inbox | Outbox | Init |
+|--------|----------------|----------|-----------|-------|--------|------|
+| 0      | core (rezerve) | 4201     | 4202      | 4203  | 4204   | 3005 |
+| 5      | discovery (rezerve) | 4206 | 4207      | 4208  | 4209   | 3010 |
+| 10     | sales          | 4211     | 4212      | 4213  | 4214   | 3015 |
+| 20     | hr             | 4221     | 4222      | 4223  | 4224   | 3025 |
+| 30     | finance        | 4231     | 4232      | 4233  | 4234   | 3035 |
+
+Dapr portları çakışmayı önlemek için `offset * 100` kullanır.
+
+> **⚠️ Rezerve Edilmiş Offset'ler:** `core` ve `discovery` domain'leri, sırasıyla **0** ve **5** offset'leri ile önceden yapılandırılmış domain'ler olarak sunulmaktadır. Özel domain'leriniz için **bu offset'leri kullanmayınız**. Yeni domain'ler için 10 veya daha yüksek offset değerleri ile başlayınız.
+
+### Birden Fazla Domain Çalıştırma
+
+```bash
+# 1. Paylaşılan altyapıyı başlat
+make up-infra
+
+# 2. Önceden yapılandırılmış domain'ler (core ve discovery) kullanıma hazır
+make up-vnext DOMAIN=core
+make up-vnext DOMAIN=discovery
+
+# 3. Kendi domain'inizi oluşturun ve başlatın (offset 10 veya üstü kullanın)
+make create-domain DOMAIN=sales PORT_OFFSET=10
+make db-create DOMAIN=sales
+make up-vnext DOMAIN=sales
+
+# 4. Tüm çalışan servisleri görüntüle
+make status-all-domains
+
+# 5. Belirli bir domain'in sağlık durumunu kontrol et
+make health DOMAIN=core
+make health DOMAIN=sales
+```
+
+### Domain Yönetimi
+
+```bash
+# Tüm yapılandırılmış domain'leri listele
+make list-domains
+
+# Belirli bir domain'i durdur
+make down-vnext DOMAIN=sales
+
+# Belirli bir domain'i yeniden başlat
+make restart-vnext DOMAIN=sales
+
+# Tüm domain'leri durdur ama altyapıyı çalışır tut
+make down-all-vnext
+
+# Belirli bir domain'in loglarını görüntüle
+make logs-vnext DOMAIN=core
+```
+
+### Şablonları Özelleştirme
+
+Şablonlar `vnext/docker/templates/` dizininde bulunur. Varsayılan değerleri değiştirmek için bunları özelleştirebilirsiniz. Şablonlar `{{PLACEHOLDER}}` sözdizimini kullanır:
+
+| Placeholder | Açıklama |
+|-------------|----------|
+| `{{DOMAIN_NAME}}` | Domain adı (örn. `core`, `sales`) |
+| `{{PORT_OFFSET}}` | Port offset değeri |
+| `{{DB_NAME}}` | Veritabanı adı (örn. `vNext_Core`) - appsettings connection string'lerinde kullanılır |
+| `{{VNEXT_APP_PORT}}` | Orchestration portu |
+| `{{DAPR_*_PORT}}` | Dapr sidecar portları |
+
+**Önemli Environment Değişkenleri (otomatik oluşturulur):**
+
+| Değişken | Açıklama |
+|----------|----------|
+| `DAPR_STATE_STORE_NAME` | Dapr state store adı (zorunlu) |
+| `DAPR_SECRET_STORE_NAME` | Dapr secret store adı |
+| `DAPR_PUBSUB_STORE_NAME` | Dapr pubsub store adı |
+| `DAPR_APP_ID` | Her servis için benzersiz Dapr app tanımlayıcısı |
+| `OTEL_SERVICE_NAME` | OpenTelemetry servis adı |
+
+### Eski Tekli Domain Modu
+
+Geriye uyumluluk için eski `change-domain` komutu hala kullanılabilir:
+
+```bash
 make change-domain DOMAIN=sirketim
 ```
 
-Bu komut otomatik olarak şunları günceller:
-- **Environment dosyaları**: `.env`, `.env.orchestration`, `.env.execution`, `.env.inbox`, `.env.outbox` dosyalarındaki `APP_DOMAIN`
-- **Veritabanı adı**: Tüm appsettings dosyalarındaki `ConnectionStrings:Default`
-- **PostgreSQL init script**: `init-db.sql` dosyasındaki veritabanı adı
-
-Veritabanı adı, domain adınızdan otomatik olarak oluşturulur:
-- `sirketim` → `vNext_Sirketim`
-- `e-ticaret` → `vNext_E_Ticaret`
-- `kullanici-yonetimi` → `vNext_Kullanici_Yonetimi`
-
-### Domain Değiştirdikten Sonra
-
-`make change-domain` çalıştırdıktan sonra ortamınızı sıfırlamanız gerekir:
-
-```bash
-# Tüm servisleri durdur
-make down
-
-# Veritabanını sıfırla (UYARI: Bu tüm verileri silecek!)
-make db-reset
-
-# Temiz ortamı başlat
-make dev
-```
-
-### Manuel Domain Konfigürasyonu
-
-Manuel yapılandırmayı tercih ediyorsanız, aşağıdaki dosyalardaki `APP_DOMAIN` değerini güncelleyin:
-
-1. **`vnext/docker/.env`** - Runtime domain konfigürasyonu
-2. **`vnext/docker/.env.orchestration`** - Orchestration servis domain'i
-3. **`vnext/docker/.env.execution`** - Execution servis domain'i
-4. **`vnext/docker/.env.inbox`** - Worker inbox servis domain'i
-5. **`vnext/docker/.env.outbox`** - Worker outbox servis domain'i
-6. **`vnext.config.json`** - Proje domain konfigürasyonu (kendi workflow repository'nizde)
-
-```bash
-# Örnek: Varsayılan "core" değerini kendi domain'inize değiştirin
-APP_DOMAIN=sirketim
-```
-
-Bu, tüm workflow bileşenlerinin, görevlerin ve sistem kaynaklarının doğru şekilde kendi domain namespace'inize atanmasını sağlar.
+Bu komut tüm domain ile ilgili ayarları günceller ancak birden fazla domain'i eş zamanlı çalıştırmayı desteklemez.
 
 ## Hızlı Başlangıç
 
@@ -242,28 +337,34 @@ Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema r
    - Bu sayede her geliştirici kendi domain'inde lokal ortamda çalışabilir
    - Varsayılan domain `"core"`'dur, ancak `.env` dosyasında `APP_DOMAIN=mydomain` ile özelleştirilebilir
 
-## Otomatik Veritabanı Başlatma
+## Veritabanı Yönetimi (Domain-Spesifik)
 
-Docker Compose başladığında, PostgreSQL init script kullanarak `vNext_WorkflowDb` veritabanını otomatik olarak oluşturur. Bu sayede:
-
-- Herhangi bir servis bağlanmaya çalışmadan önce veritabanı hazır olur
-- Postgres'e bağımlı servisler, veritabanı healthy olana kadar bekler
-- Manuel veritabanı oluşturma gerekmez
+Her domain kendi veritabanını gerektirir. Veritabanı adları domain adından otomatik olarak oluşturulur:
+- `core` → `vNext_Core`
+- `sales` → `vNext_Sales`
+- `morph-idm` → `vNext_Morph_idm`
 
 ### Veritabanı Komutları
 
 ```bash
-# Veritabanı durumunu kontrol et
+# Veritabanı durumunu kontrol et (tüm veritabanlarını listeler)
 make db-status
 
-# Manuel olarak veritabanı oluştur (gerekirse)
-make db-create
+# Sadece vNext veritabanlarını listele
+make db-list
 
-# Veritabanını sil ve yeniden oluştur
-make db-reset
+# Domain için veritabanı oluştur
+make db-create DOMAIN=core
+make db-create DOMAIN=sales
 
-# psql ile veritabanına bağlan
-make db-connect
+# Domain veritabanını sil (DİKKAT: yıkıcı!)
+make db-drop DOMAIN=core
+
+# Veritabanını sıfırla (sil ve yeniden oluştur)
+make db-reset DOMAIN=core
+
+# psql ile domain veritabanına bağlan
+make db-connect DOMAIN=core
 ```
 
 ## Otomatik Component Publishing
@@ -475,11 +576,35 @@ make help
 | `make setup` | Environment dosyalarını kontrol eder ve network'ü oluşturur | `make setup` |
 | `make info` | Proje bilgilerini ve erişim URL'lerini gösterir | `make info` |
 
-### Domain Konfigürasyonu
+### Çoklu Domain Yönetimi
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
-| `make change-domain` | Tüm servisler için domain'i değiştirir | `make change-domain DOMAIN=sirketim` |
+| `make create-domain` | Şablonlardan domain oluştur | `make create-domain DOMAIN=sirketim PORT_OFFSET=10` |
+| `make list-domains` | Tüm yapılandırılmış domain'leri listele | `make list-domains` |
+| `make up-vnext` | Bir domain için vnext servislerini başlat | `make up-vnext DOMAIN=sirketim` |
+| `make down-vnext` | Bir domain için vnext servislerini durdur | `make down-vnext DOMAIN=sirketim` |
+| `make restart-vnext` | Bir domain için vnext servislerini yeniden başlat | `make restart-vnext DOMAIN=sirketim` |
+| `make status-vnext` | Bir domain'in durumunu göster | `make status-vnext DOMAIN=sirketim` |
+| `make logs-vnext` | Bir domain'in loglarını göster | `make logs-vnext DOMAIN=sirketim` |
+| `make status-all-domains` | Tüm çalışan vnext servislerini göster | `make status-all-domains` |
+| `make down-all-vnext` | Tüm domain servislerini durdur (altyapıyı tut) | `make down-all-vnext` |
+| `make health` | Sağlık kontrolü (opsiyonel DOMAIN ile) | `make health DOMAIN=sirketim` |
+
+### Altyapı Yönetimi
+
+| Komut | Açıklama | Kullanım |
+|-------|----------|----------|
+| `make up-infra` | Sadece altyapı servislerini başlat | `make up-infra` |
+| `make down-infra` | Sadece altyapı servislerini durdur | `make down-infra` |
+| `make status-infra` | Altyapı durumunu göster | `make status-infra` |
+| `make logs-infra` | Altyapı loglarını göster | `make logs-infra` |
+
+### Eski Domain Konfigürasyonu
+
+| Komut | Açıklama | Kullanım |
+|-------|----------|----------|
+| `make change-domain` | Domain değiştir (eski tekli-domain modu) | `make change-domain DOMAIN=sirketim` |
 
 ### Environment Setup
 
@@ -511,15 +636,16 @@ make help
 | `make logs-dapr` | DAPR servislerin logları | `make logs-dapr` |
 | `make logs-db` | Database servislerin logları | `make logs-db` |
 
-### Database Operations
+### Veritabanı İşlemleri (Domain-Spesifik)
 
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
-| `make db-status` | Veritabanı durumunu ve listesini gösterir | `make db-status` |
-| `make db-create` | vNext veritabanını oluşturur | `make db-create` |
-| `make db-drop` | vNext veritabanını siler (yıkıcı!) | `make db-drop` |
-| `make db-reset` | Veritabanını silip yeniden oluşturur | `make db-reset` |
-| `make db-connect` | psql ile veritabanına bağlanır | `make db-connect` |
+| `make db-status` | Veritabanı durumunu ve tüm veritabanlarını listeler | `make db-status` |
+| `make db-list` | Sadece vNext veritabanlarını listeler | `make db-list` |
+| `make db-create` | Domain için veritabanı oluşturur | `make db-create DOMAIN=core` |
+| `make db-drop` | Domain veritabanını siler (yıkıcı!) | `make db-drop DOMAIN=core` |
+| `make db-reset` | Domain veritabanını silip yeniden oluşturur | `make db-reset DOMAIN=core` |
+| `make db-connect` | psql ile domain veritabanına bağlanır | `make db-connect DOMAIN=core` |
 
 ### Development Tools
 
@@ -550,7 +676,7 @@ make help
 | Komut | Açıklama | Kullanım |
 |-------|----------|----------|
 | `make clean` | Durdurulmuş container'ları ve kullanılmayan network'leri temizler | `make clean` |
-| `make clean-all` | ⚠️ TÜM container, image ve volume'leri siler | `make clean-all` |
+| `make clean-all` | ⚠️ TÜM domain'leri, altyapıyı, image ve volume'leri siler | `make clean-all` |
 | `make reset` | Environment'ı resetler (stop, clean, setup) | `make reset` |
 | `make update` | Latest image'ları çeker ve servisleri yeniden başlatır | `make update` |
 
@@ -591,14 +717,10 @@ make shell-postgres
 
 ## Servisler ve Portlar
 
+### Altyapı Servisleri (Paylaşılan)
+
 | Servis | Açıklama | Port | Erişim URL |
 |--------|----------|------|------------|
-| **vnext-app** | Ana orchestration uygulaması | 4201 | http://localhost:4201 |
-| **vnext-execution-app** | Execution servis uygulaması | 4202 | http://localhost:4202 |
-| **vnext-init** | Sistem component'lerini yükleyen init container | - | - |
-| **vnext-component-publisher** | Init sonrası component'leri publish eder | - | - |
-| **vnext-orchestration-dapr** | Orchestration servisi için Dapr sidecar | 42110/42111 | - |
-| **vnext-execution-dapr** | Execution servisi için Dapr sidecar | 43110/43111 | - |
 | **dapr-placement** | Dapr placement servisi | 50005 | - |
 | **dapr-scheduler** | Dapr scheduler servisi | 50007 | - |
 | **vnext-redis** | Redis cache | 6379 | - |
@@ -607,6 +729,22 @@ make shell-postgres
 | **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
 | **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
 | **mockoon** | API Mock Server | 3001 | http://localhost:3001 |
+
+### VNext Domain Servisleri (Her Domain İçin)
+
+Portlar `PORT_OFFSET` değerine göre değişir. Varsayılan (offset 0):
+
+| Servis | Açıklama | Port | Container Adı |
+|--------|----------|------|---------------|
+| **vnext-app** | Orchestration uygulaması | 4201 | vnext-app-{domain} |
+| **vnext-execution-app** | Execution servisi | 4202 | vnext-execution-app-{domain} |
+| **vnext-worker-inbox** | Worker inbox servisi | 4203 | vnext-worker-inbox-{domain} |
+| **vnext-worker-outbox** | Worker outbox servisi | 4204 | vnext-worker-outbox-{domain} |
+| **vnext-init** | Init container | 3005 | vnext-init-{domain} |
+| **vnext-orchestration-dapr** | Orchestration için Dapr sidecar | 42110/42111 | vnext-orchestration-dapr-{domain} |
+| **vnext-execution-dapr** | Execution için Dapr sidecar | 43110/43111 | vnext-execution-dapr-{domain} |
+
+`PORT_OFFSET=10` olan domain'ler için portlar 4211, 4212, 4213, 4214, 3015 vb. olur.
 
 ## Management Tools
 
@@ -709,8 +847,8 @@ docker-compose ps
    ```bash
    # Veritabanı durumunu kontrol et
    make db-status
-   # Gerekirse manuel oluştur
-   make db-create
+   # Domain için veritabanı oluştur
+   make db-create DOMAIN=core
    ```
 
 ### Performance Tuning

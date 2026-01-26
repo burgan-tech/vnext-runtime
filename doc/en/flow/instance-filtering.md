@@ -46,6 +46,9 @@ Direct database columns:
 | `flow` | string | Workflow name | eq, ne, like, startswith, endswith, in, nin |
 | `status` | string | Instance status | eq, ne, in, nin |
 | `currentState` (or `state`) | string | Current state | eq, ne, like, startswith, endswith, in, nin |
+| `effectiveState` | string | Effective state name (v0.0.33+) | eq, ne, like, startswith, endswith, in, nin |
+| `effectiveStateType` | int | Effective state type code (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
+| `effectiveStateSubType` | int | Effective state subtype code (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
 | `createdAt` | DateTime | Creation time | eq, ne, gt, ge, lt, le, between |
 | `modifiedAt` | DateTime | Modification time | eq, ne, gt, ge, lt, le, between |
 | `completedAt` | DateTime | Completion time | eq, ne, gt, ge, lt, le, between |
@@ -132,6 +135,37 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"createdAt":{"bet
 ```http
 GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"in":["Active","Busy"]}}
 ```
+
+### 7. EffectiveState Filters (v0.0.33+)
+
+**Filter by Effective State Name:**
+```http
+GET /banking/workflows/payment-workflow/functions/data?filter={"effectiveState":{"eq":"awaiting-approval"}}
+```
+
+**Filter by Effective State SubType (Human Tasks):**
+```http
+GET /approvals/workflows/approval-flow/functions/data?filter={"effectiveStateSubType":{"eq":"6"}}
+```
+
+**Filter by Effective State SubType (Busy Tasks):**
+```http
+GET /processing/workflows/order-flow/functions/data?filter={"effectiveStateSubType":{"eq":"5"}}
+```
+
+**Combined Status and EffectiveState Filter:**
+```http
+GET /core/workflows/payment/functions/data?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
+```
+
+**EffectiveState SubType Values:**
+- `0` - None
+- `1` - Success
+- `2` - Error
+- `3` - Terminated
+- `4` - Suspended
+- `5` - Busy (processing in progress)
+- `6` - Human (human interaction required)
 
 ---
 

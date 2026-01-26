@@ -40,6 +40,17 @@ ENV_ORCHESTRATION_FILE = $(DOCKER_DIR)/.env.orchestration
 ENV_EXECUTION_FILE = $(DOCKER_DIR)/.env.execution
 NETWORK_NAME = vnext-development
 
+# Multi-domain support
+# DOMAIN: Name of the domain (default: core)
+# PORT_OFFSET: Port offset for domain (auto-calculated if not specified)
+DOMAIN ?= core
+PORT_OFFSET ?= 0
+
+# Domain-specific paths (files stored in domains/<domain_name>/)
+DOMAINS_DIR = $(DOCKER_DIR)/domains
+DOMAIN_DIR = $(DOMAINS_DIR)/$(DOMAIN)
+DOMAIN_ENV_FILE = $(DOMAIN_DIR)/.env
+
 # Default target
 .DEFAULT_GOAL := help
 
@@ -90,15 +101,14 @@ setup: ## Setup environment files and network
 	@$(MAKE) create-network
 	@echo "$(GREEN)Environment setup completed!$(NC)"
 
-create-env-files: ## Create environment files from templates
+create-env-files: ## Create infrastructure environment file and ensure templates/domains directories exist
 	@echo "$(YELLOW)Creating environment files...$(NC)"
+	@mkdir -p $(DOCKER_DIR)/templates
+	@mkdir -p $(DOCKER_DIR)/domains
 	@if [ ! -f $(ENV_FILE) ]; then \
-		echo "# VNext Core Runtime Version" > $(ENV_FILE); \
-		echo "VNEXT_CORE_VERSION=latest" >> $(ENV_FILE); \
-		echo "" >> $(ENV_FILE); \
-		echo "# Component Configuration" >> $(ENV_FILE); \
-		echo "VNEXT_COMPONENT_VERSION=latest" >> $(ENV_FILE); \
-		echo "APP_DOMAIN=core" >> $(ENV_FILE); \
+		echo "# VNext Infrastructure Environment" > $(ENV_FILE); \
+		echo "# This file contains shared infrastructure settings (versions, etc.)" >> $(ENV_FILE); \
+		echo "# Domain-specific settings are in domains/<domain_name>/" >> $(ENV_FILE); \
 		echo "" >> $(ENV_FILE); \
 		echo "# Docker Image Versions" >> $(ENV_FILE); \
 		echo "VNEXT_VERSION=latest" >> $(ENV_FILE); \
@@ -116,80 +126,11 @@ create-env-files: ## Create environment files from templates
 	else \
 		echo "$(YELLOW)$(ENV_FILE) already exists$(NC)"; \
 	fi
-	@if [ ! -f $(ENV_ORCHESTRATION_FILE) ]; then \
-		echo "# VNext Orchestration Environment Variables" > $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Application Settings" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "APP_NAME=vnext-app" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "APP_PORT=5000" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "APP_HOST=0.0.0.0" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Database Configuration" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DATABASE_URL=postgresql://postgres:postgres@vnext-postgres:5432/vnext_orchestration" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DATABASE_HOST=vnext-postgres" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DATABASE_PORT=5432" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DATABASE_USER=postgres" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DATABASE_PASSWORD=postgres" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DATABASE_NAME=vnext_orchestration" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Redis Configuration" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "REDIS_HOST=vnext-redis" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "REDIS_PORT=6379" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Vault Configuration" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "VAULT_URL=http://vnext-vault:8200" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "VAULT_TOKEN=admin" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Dapr Configuration" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DAPR_HTTP_PORT=42110" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "DAPR_GRPC_PORT=42111" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Logging" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "LOG_LEVEL=info" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "# Environment" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "NODE_ENV=development" >> $(ENV_ORCHESTRATION_FILE); \
-		echo "$(GREEN)Created $(ENV_ORCHESTRATION_FILE)$(NC)"; \
-	else \
-		echo "$(YELLOW)$(ENV_ORCHESTRATION_FILE) already exists$(NC)"; \
-	fi
-	@if [ ! -f $(ENV_EXECUTION_FILE) ]; then \
-		echo "# VNext Execution Environment Variables" > $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Application Settings" >> $(ENV_EXECUTION_FILE); \
-		echo "APP_NAME=vnext-execution-app" >> $(ENV_EXECUTION_FILE); \
-		echo "APP_PORT=5000" >> $(ENV_EXECUTION_FILE); \
-		echo "APP_HOST=0.0.0.0" >> $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Database Configuration" >> $(ENV_EXECUTION_FILE); \
-		echo "DATABASE_URL=postgresql://postgres:postgres@vnext-postgres:5432/vnext_execution" >> $(ENV_EXECUTION_FILE); \
-		echo "DATABASE_HOST=vnext-postgres" >> $(ENV_EXECUTION_FILE); \
-		echo "DATABASE_PORT=5432" >> $(ENV_EXECUTION_FILE); \
-		echo "DATABASE_USER=postgres" >> $(ENV_EXECUTION_FILE); \
-		echo "DATABASE_PASSWORD=postgres" >> $(ENV_EXECUTION_FILE); \
-		echo "DATABASE_NAME=vnext_execution" >> $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Redis Configuration" >> $(ENV_EXECUTION_FILE); \
-		echo "REDIS_HOST=vnext-redis" >> $(ENV_EXECUTION_FILE); \
-		echo "REDIS_PORT=6379" >> $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Vault Configuration" >> $(ENV_EXECUTION_FILE); \
-		echo "VAULT_URL=http://vnext-vault:8200" >> $(ENV_EXECUTION_FILE); \
-		echo "VAULT_TOKEN=admin" >> $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Dapr Configuration" >> $(ENV_EXECUTION_FILE); \
-		echo "DAPR_HTTP_PORT=43110" >> $(ENV_EXECUTION_FILE); \
-		echo "DAPR_GRPC_PORT=43111" >> $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Logging" >> $(ENV_EXECUTION_FILE); \
-		echo "LOG_LEVEL=info" >> $(ENV_EXECUTION_FILE); \
-		echo "" >> $(ENV_EXECUTION_FILE); \
-		echo "# Environment" >> $(ENV_EXECUTION_FILE); \
-		echo "NODE_ENV=development" >> $(ENV_EXECUTION_FILE); \
-		echo "$(GREEN)Created $(ENV_EXECUTION_FILE)$(NC)"; \
-	else \
-		echo "$(YELLOW)$(ENV_EXECUTION_FILE) already exists$(NC)"; \
-	fi
+	@echo "$(GREEN)✅ Templates directory: $(DOCKER_DIR)/templates$(NC)"
+	@echo "$(GREEN)✅ Domains directory: $(DOCKER_DIR)/domains$(NC)"
+	@echo ""
+	@echo "$(YELLOW)To create a domain, run:$(NC)"
+	@echo "  make create-domain DOMAIN=<name> PORT_OFFSET=<offset>"
 
 create-network: check-runtime ## Create container network
 	@echo "$(YELLOW)Creating container network: $(NETWORK_NAME)...$(NC)"
@@ -201,52 +142,124 @@ check-env: ## Check if environment files exist
 	@echo "$(YELLOW)Checking environment files...$(NC)"
 	@if [ ! -f $(ENV_FILE) ]; then \
 		echo "$(RED)❌ $(ENV_FILE) not found$(NC)"; \
-		echo "$(YELLOW)Run 'make create-env-files' to create it$(NC)"; \
+		echo "$(YELLOW)Run 'make setup' to create it$(NC)"; \
 		exit 1; \
 	else \
 		echo "$(GREEN)✅ $(ENV_FILE) found$(NC)"; \
 	fi
-	@if [ ! -f $(ENV_ORCHESTRATION_FILE) ]; then \
-		echo "$(RED)❌ $(ENV_ORCHESTRATION_FILE) not found$(NC)"; \
-		echo "$(YELLOW)Run 'make create-env-files' to create it$(NC)"; \
-		exit 1; \
+	@if [ ! -d "$(DOMAINS_DIR)" ]; then \
+		echo "$(YELLOW)⚠️  No domains directory. Run 'make create-domain DOMAIN=<name>' to create a domain$(NC)"; \
 	else \
-		echo "$(GREEN)✅ $(ENV_ORCHESTRATION_FILE) found$(NC)"; \
+		echo "$(GREEN)✅ Domains directory exists$(NC)"; \
 	fi
-	@if [ ! -f $(ENV_EXECUTION_FILE) ]; then \
-		echo "$(RED)❌ $(ENV_EXECUTION_FILE) not found$(NC)"; \
-		echo "$(YELLOW)Run 'make create-env-files' to create it$(NC)"; \
+
+check-env-infra: ## Check if infrastructure environment file exists
+	@if [ ! -f $(ENV_FILE) ]; then \
+		echo "$(RED)❌ $(ENV_FILE) not found$(NC)"; \
+		echo "$(YELLOW)Run 'make setup' to create it$(NC)"; \
 		exit 1; \
-	else \
-		echo "$(GREEN)✅ $(ENV_EXECUTION_FILE) found$(NC)"; \
 	fi
 
 ##@ Container Operations
 build: check-env check-runtime ## Build container images
 	@echo "$(YELLOW)Building container images...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) build
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext build
 	@echo "$(GREEN)Build completed!$(NC)"
 
-up: check-env check-runtime ## Start all services
+up: check-env check-runtime ## Start all services (infra + all domains)
 	@echo "$(YELLOW)Starting VNext Runtime services...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d
-	@echo "$(GREEN)Services started!$(NC)"
-	@$(MAKE) status
+	@$(MAKE) up-infra
+	@echo "$(YELLOW)Starting all configured domain services...$(NC)"
+	@if [ -d "$(DOMAINS_DIR)" ] && [ "$$(ls -A $(DOMAINS_DIR) 2>/dev/null)" ]; then \
+		for d in $(DOMAINS_DIR)/*/; do \
+			if [ -d "$$d" ] && [ -f "$$d/.env" ]; then \
+				domain=$$(basename "$$d"); \
+				echo "$(YELLOW)Starting domain: $$domain$(NC)"; \
+				$(MAKE) up-vnext DOMAIN=$$domain || echo "$(RED)Failed to start $$domain$(NC)"; \
+			fi; \
+		done; \
+		echo "$(GREEN)All services started!$(NC)"; \
+	else \
+		echo "$(YELLOW)No domains configured. Only infrastructure started.$(NC)"; \
+		echo "$(YELLOW)Run 'make create-domain DOMAIN=<name>' to create a domain$(NC)"; \
+	fi
+	@$(MAKE) status-all-domains
+
+up-infra: check-env-infra check-runtime ## Start only infrastructure services
+	@echo "$(YELLOW)Starting infrastructure services...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra up -d
+	@echo "$(GREEN)Infrastructure services started!$(NC)"
+	@$(MAKE) status-infra
+
+up-vnext: check-env-infra check-runtime ## Start vnext services for a domain (usage: make up-vnext DOMAIN=mydom)
+	@if [ ! -d "$(DOMAIN_DIR)" ]; then \
+		echo "$(RED)❌ Domain '$(DOMAIN)' not configured!$(NC)"; \
+		echo "$(YELLOW)Run 'make create-domain DOMAIN=$(DOMAIN) PORT_OFFSET=<offset>' first$(NC)"; \
+		exit 1; \
+	fi
+	@# Check if infrastructure is running
+	@if ! $(CONTAINER_RUNTIME) ps --filter "name=vnext-postgres" --filter "status=running" -q | grep -q .; then \
+		echo "$(YELLOW)Infrastructure not running. Starting infrastructure first...$(NC)"; \
+		$(MAKE) up-infra; \
+	fi
+	@echo "$(YELLOW)Starting VNext services for domain: $(DOMAIN)...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && set -a && . ./domains/$(DOMAIN)/.env && set +a && \
+		$(COMPOSE_CMD) -p vnext-$(DOMAIN) --env-file ./domains/$(DOMAIN)/.env --profile vnext up -d
+	@echo "$(GREEN)VNext services for $(DOMAIN) started!$(NC)"
+	@$(MAKE) status-vnext DOMAIN=$(DOMAIN)
 
 start: up-build ## Start services with build
 
-up-build: check-env check-runtime ## Start services with build
+up-build: check-env check-runtime ## Start all services with build
 	@echo "$(YELLOW)Starting VNext Runtime services with build...$(NC)"
 	@$(MAKE) create-network
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up -d --build
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext up -d --build
 	@echo "$(GREEN)Services started!$(NC)"
 	@$(MAKE) status
 
-down: check-runtime ## Stop all services
+up-infra-build: check-env check-runtime ## Start infrastructure services with build
+	@echo "$(YELLOW)Starting infrastructure services with build...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra up -d --build
+	@echo "$(GREEN)Infrastructure services started!$(NC)"
+	@$(MAKE) status-infra
+
+up-vnext-build: check-env-infra check-runtime ## Start vnext services with build (usage: make up-vnext-build DOMAIN=mydom)
+	@if [ ! -d "$(DOMAIN_DIR)" ]; then \
+		echo "$(RED)❌ Domain '$(DOMAIN)' not configured!$(NC)"; \
+		echo "$(YELLOW)Run 'make create-domain DOMAIN=$(DOMAIN) PORT_OFFSET=<offset>' first$(NC)"; \
+		exit 1; \
+	fi
+	@# Check if infrastructure is running
+	@if ! $(CONTAINER_RUNTIME) ps --filter "name=vnext-postgres" --filter "status=running" -q | grep -q .; then \
+		echo "$(YELLOW)Infrastructure not running. Starting infrastructure first...$(NC)"; \
+		$(MAKE) up-infra; \
+	fi
+	@echo "$(YELLOW)Starting VNext services with build for domain: $(DOMAIN)...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && set -a && . ./domains/$(DOMAIN)/.env && set +a && \
+		$(COMPOSE_CMD) -p vnext-$(DOMAIN) --env-file ./domains/$(DOMAIN)/.env --profile vnext up -d --build
+	@echo "$(GREEN)VNext services for $(DOMAIN) started!$(NC)"
+	@$(MAKE) status-vnext DOMAIN=$(DOMAIN)
+
+down: check-runtime ## Stop all services (all domains + infra)
 	@echo "$(YELLOW)Stopping VNext Runtime services...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down
-	@echo "$(GREEN)Services stopped!$(NC)"
+	@$(MAKE) down-all-vnext
+	@$(MAKE) down-infra
+	@echo "$(GREEN)All services stopped!$(NC)"
+
+down-infra: check-runtime ## Stop only infrastructure services
+	@echo "$(YELLOW)Stopping infrastructure services...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra down
+	@echo "$(GREEN)Infrastructure services stopped!$(NC)"
+
+down-vnext: check-runtime ## Stop vnext services for a domain (usage: make down-vnext DOMAIN=mydom)
+	@echo "$(YELLOW)Stopping VNext services for domain: $(DOMAIN)...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$(DOMAIN) --profile vnext down
+	@echo "$(GREEN)VNext services for $(DOMAIN) stopped!$(NC)"
 
 stop: down ## Alias for 'down'
 
@@ -256,14 +269,42 @@ restart: ## Restart all services
 	@$(MAKE) up
 	@echo "$(GREEN)Services restarted!$(NC)"
 
+restart-infra: ## Restart infrastructure services
+	@echo "$(YELLOW)Restarting infrastructure services...$(NC)"
+	@$(MAKE) down-infra
+	@$(MAKE) up-infra
+	@echo "$(GREEN)Infrastructure services restarted!$(NC)"
+
+restart-vnext: ## Restart vnext services for a domain (usage: make restart-vnext DOMAIN=mydom)
+	@echo "$(YELLOW)Restarting VNext services for domain: $(DOMAIN)...$(NC)"
+	@$(MAKE) down-vnext DOMAIN=$(DOMAIN)
+	@$(MAKE) up-vnext DOMAIN=$(DOMAIN)
+	@echo "$(GREEN)VNext services for $(DOMAIN) restarted!$(NC)"
+
 ##@ Service Management
 status: check-runtime ## Show status of all services
 	@echo "$(BLUE)VNext Runtime Services Status:$(NC)"
 	@echo "================================="
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext ps
+
+status-infra: check-runtime ## Show status of infrastructure services
+	@echo "$(BLUE)Infrastructure Services Status:$(NC)"
+	@echo "================================="
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra ps
+
+status-vnext: check-runtime ## Show status of vnext services for a domain (usage: make status-vnext DOMAIN=mydom)
+	@echo "$(BLUE)VNext Services Status for Domain: $(DOMAIN)$(NC)"
+	@echo "============================================="
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$(DOMAIN) --profile vnext ps
 
 logs: check-runtime ## Show logs for all services
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext logs -f
+
+logs-infra: check-runtime ## Show logs for infrastructure services
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra logs -f
+
+logs-vnext: check-runtime ## Show logs for vnext services (usage: make logs-vnext DOMAIN=mydom)
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$(DOMAIN) --profile vnext logs -f
 
 logs-orchestration: check-runtime ## Show logs for orchestration service
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f vnext-app
@@ -280,43 +321,73 @@ logs-dapr: check-runtime ## Show logs for DAPR services
 logs-db: check-runtime ## Show logs for database services
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) logs -f postgres redis
 
-health: ## Check health of services
+health: ## Check health of services (usage: make health or make health DOMAIN=mydom)
 	@echo "$(BLUE)Service Health Check:$(NC)"
 	@echo "===================="
-	@echo "$(YELLOW)VNext Orchestration:$(NC)"
-	@curl -s http://localhost:4201/health || echo "$(RED)❌ Orchestration service not healthy$(NC)"
+	@if [ -d "$(DOMAIN_DIR)" ] && [ -f "$(DOMAIN_DIR)/.env" ]; then \
+		. $(DOMAIN_DIR)/.env; \
+		echo "$(YELLOW)Domain: $(DOMAIN)$(NC)"; \
+		echo ""; \
+		echo "$(YELLOW)VNext Orchestration (port $$VNEXT_APP_PORT):$(NC)"; \
+		curl -s http://localhost:$$VNEXT_APP_PORT/health || echo "$(RED)❌ Orchestration service not healthy$(NC)"; \
+		echo ""; \
+		echo "$(YELLOW)VNext Execution (port $$VNEXT_EXECUTION_PORT):$(NC)"; \
+		curl -s http://localhost:$$VNEXT_EXECUTION_PORT/health || echo "$(RED)❌ Execution service not healthy$(NC)"; \
+		echo ""; \
+		echo "$(YELLOW)VNext Inbox (port $$VNEXT_INBOX_PORT):$(NC)"; \
+		curl -s http://localhost:$$VNEXT_INBOX_PORT/health || echo "$(RED)❌ Inbox service not healthy$(NC)"; \
+		echo ""; \
+		echo "$(YELLOW)VNext Outbox (port $$VNEXT_OUTBOX_PORT):$(NC)"; \
+		curl -s http://localhost:$$VNEXT_OUTBOX_PORT/health || echo "$(RED)❌ Outbox service not healthy$(NC)"; \
+	else \
+		echo "$(YELLOW)VNext Orchestration (default port 4201):$(NC)"; \
+		curl -s http://localhost:4201/health || echo "$(RED)❌ Orchestration service not healthy$(NC)"; \
+		echo ""; \
+		echo "$(YELLOW)VNext Execution (default port 4202):$(NC)"; \
+		curl -s http://localhost:4202/health || echo "$(RED)❌ Execution service not healthy$(NC)"; \
+	fi
 	@echo ""
-	@echo "$(YELLOW)VNext Execution:$(NC)"
-	@curl -s http://localhost:4202/health || echo "$(RED)❌ Execution service not healthy$(NC)"
-	@echo ""
-	@echo "$(YELLOW)Management Interfaces:$(NC)"
+	@echo "$(YELLOW)Infrastructure Services:$(NC)"
 	@echo "• Vault: http://localhost:8200"
 	@echo "• OpenObserve: http://localhost:5080"
 
-##@ Database Operations
-db-create: check-runtime ## Create vNext database in running postgres container
-	@echo "$(YELLOW)Creating vNext database...$(NC)"
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'vNext_WorkflowDb'" | grep -q 1 && \
-		echo "$(YELLOW)Database vNext_WorkflowDb already exists$(NC)" || \
-		($(COMPOSE_CMD) exec -T postgres psql -U postgres -f /docker-entrypoint-initdb.d/init-db.sql && \
-		echo "$(GREEN)Database vNext_WorkflowDb created successfully!$(NC)")
+##@ Database Operations (Domain-Specific)
+db-create: check-runtime ## Create database for domain (usage: make db-create DOMAIN=core)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(YELLOW)Creating database $$DB_NAME for domain: $(DOMAIN)...$(NC)"; \
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = '$$DB_NAME'" | grep -q 1 && \
+		echo "$(YELLOW)Database $$DB_NAME already exists$(NC)" || \
+		($(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "CREATE DATABASE \"$$DB_NAME\";" && \
+		echo "$(GREEN)Database $$DB_NAME created successfully!$(NC)")
 
-db-drop: check-runtime ## Drop vNext database (WARNING: Destructive)
-	@echo "$(RED)WARNING: This will drop the vNext_WorkflowDb database!$(NC)"
-	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 5 seconds to continue...$(NC)"
-	@sleep 5
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS \"vNext_WorkflowDb\";"
-	@echo "$(GREEN)Database dropped!$(NC)"
+db-drop: check-runtime ## Drop database for domain (WARNING: Destructive) (usage: make db-drop DOMAIN=core)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(RED)WARNING: This will drop the $$DB_NAME database!$(NC)"; \
+	echo "$(YELLOW)Press Ctrl+C to cancel, or wait 5 seconds to continue...$(NC)"; \
+	sleep 5; \
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "DROP DATABASE IF EXISTS \"$$DB_NAME\";"; \
+	echo "$(GREEN)Database $$DB_NAME dropped!$(NC)"
 
-db-reset: db-drop db-create ## Reset vNext database (drop and recreate)
+db-reset: ## Reset database for domain (drop and recreate) (usage: make db-reset DOMAIN=core)
+	@$(MAKE) db-drop DOMAIN=$(DOMAIN)
+	@$(MAKE) db-create DOMAIN=$(DOMAIN)
 
-db-status: check-runtime ## Check database status and list databases
+db-status: check-runtime ## Check database status and list all databases
 	@echo "$(BLUE)PostgreSQL Database Status:$(NC)"
 	@echo "=========================="
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec -T postgres psql -U postgres -c "\l" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "\l" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
 
-db-connect: check-runtime ## Connect to vNext database via psql
-	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) exec postgres psql -U postgres -d "vNext_WorkflowDb"
+db-connect: check-runtime ## Connect to domain database via psql (usage: make db-connect DOMAIN=core)
+	@NORMALIZED=$$(echo "$(DOMAIN)" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{print toupper(substr($$0,1,1)) tolower(substr($$0,2))}'); \
+	DB_NAME="vNext_$${NORMALIZED}"; \
+	echo "$(YELLOW)Connecting to database $$DB_NAME...$(NC)"; \
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec postgres psql -U postgres -d "$$DB_NAME"
+
+db-list: check-runtime ## List all vNext databases
+	@echo "$(BLUE)VNext Databases:$(NC)"
+	@cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra exec -T postgres psql -U postgres -c "SELECT datname FROM pg_database WHERE datname LIKE 'vNext_%';" 2>/dev/null || echo "$(RED)❌ PostgreSQL is not running$(NC)"
 
 ##@ Development
 dev: ## Start development environment
@@ -348,8 +419,21 @@ clean-all: check-runtime ## Remove all containers, images, and volumes (WARNING:
 	@echo "$(RED)WARNING: This will remove ALL containers, images, and volumes!$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to cancel, or wait 10 seconds to continue...$(NC)"
 	@sleep 10
-	@$(MAKE) down
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) down -v --rmi all
+	@echo "$(YELLOW)Stopping all domain projects...$(NC)"
+	@for domain_dir in $(DOMAINS_DIR)/*/; do \
+		if [ -d "$$domain_dir" ]; then \
+			domain=$$(basename "$$domain_dir"); \
+			echo "$(YELLOW)Stopping domain: $$domain$(NC)"; \
+			cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$$domain --profile vnext down -v 2>/dev/null || true; \
+		fi; \
+	done
+	@echo "$(YELLOW)Stopping infrastructure...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra down -v 2>/dev/null || true
+	@echo "$(YELLOW)Removing all vnext containers...$(NC)"
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=vnext-" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=dapr-" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=mockoon" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@echo "$(YELLOW)Pruning system...$(NC)"
 	$(CONTAINER_RUNTIME) system prune -a -f
 	@echo "$(GREEN)Complete cleanup finished!$(NC)"
 
@@ -362,19 +446,19 @@ reset: ## Reset environment (stop, clean, and setup)
 
 update: check-runtime ## Pull latest images and restart
 	@echo "$(YELLOW)Updating VNext Runtime images...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) pull
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext pull
 	@$(MAKE) restart
 	@echo "$(GREEN)Update completed!$(NC)"
 
 ##@ Monitoring
 ps: check-runtime ## Show running containers
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext ps
 
 top: check-runtime ## Show container resource usage
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) top
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext top
 
 stats: check-runtime ## Show container statistics
-	$(CONTAINER_RUNTIME) stats $(shell cd $(DOCKER_DIR) && $(COMPOSE_CMD) ps -q)
+	$(CONTAINER_RUNTIME) stats $(shell cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra --profile vnext ps -q)
 
 ##@ Custom Components
 publish-component: check-env ## Publish component package (waits for vnext-init to be healthy)
@@ -387,13 +471,71 @@ publish-component-skip-health: check-env ## Publish component package (skip heal
 	@cd $(DOCKER_DIR) && ./publish-component.sh --skip-health
 	@echo "$(GREEN)Component published!$(NC)"
 
-republish-component: check-runtime ## Re-run component publisher container
-	@echo "$(YELLOW)Re-publishing component via container...$(NC)"
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) rm -f vnext-component-publisher
-	cd $(DOCKER_DIR) && $(COMPOSE_CMD) up vnext-component-publisher
-	@echo "$(GREEN)Component re-published!$(NC)"
+republish-component: check-runtime ## Re-run component publisher (usage: make republish-component DOMAIN=mydom)
+	@if [ ! -d "$(DOMAIN_DIR)" ]; then \
+		echo "$(RED)❌ Domain '$(DOMAIN)' not configured!$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)Re-publishing component for domain: $(DOMAIN)...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$(DOMAIN) --profile vnext rm -f vnext-component-publisher
+	cd $(DOCKER_DIR) && set -a && . ./domains/$(DOMAIN)/.env && set +a && \
+		$(COMPOSE_CMD) -p vnext-$(DOMAIN) --env-file ./domains/$(DOMAIN)/.env --profile vnext up vnext-component-publisher
+	@echo "$(GREEN)Component re-published for $(DOMAIN)!$(NC)"
 
-##@ Domain Configuration
+##@ Multi-Domain Management
+create-domain: ## Create domain configuration (usage: make create-domain DOMAIN=mydom PORT_OFFSET=10)
+	@echo "$(BLUE)Creating domain configuration...$(NC)"
+	@cd $(DOCKER_DIR) && ./create-domain.sh $(DOMAIN) $(PORT_OFFSET)
+
+list-domains: ## List all configured domains
+	@echo "$(BLUE)Configured Domains:$(NC)"
+	@echo "==================="
+	@if [ -d "$(DOMAINS_DIR)" ] && [ "$$(ls -A $(DOMAINS_DIR) 2>/dev/null)" ]; then \
+		for d in $(DOMAINS_DIR)/*/; do \
+			if [ -d "$$d" ]; then \
+				domain=$$(basename "$$d"); \
+				if [ -f "$$d/.env" ]; then \
+					port=$$(grep "^VNEXT_APP_PORT=" "$$d/.env" 2>/dev/null | cut -d= -f2); \
+					offset=$$(grep "^PORT_OFFSET=" "$$d/.env" 2>/dev/null | cut -d= -f2); \
+					echo "  • $$domain (port: $${port:-N/A}, offset: $${offset:-0})"; \
+				fi; \
+			fi; \
+		done; \
+	else \
+		echo "  No domains configured."; \
+		echo "  Run 'make create-domain DOMAIN=<name> PORT_OFFSET=<offset>'"; \
+	fi
+
+status-all-domains: check-runtime ## Show status of all running domain services
+	@echo "$(BLUE)All Running VNext Services:$(NC)"
+	@echo "==========================="
+	@$(CONTAINER_RUNTIME) ps --filter "name=vnext-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "No vnext services running"
+
+down-all-vnext: check-runtime ## Stop all vnext domain services (keeps infra running)
+	@echo "$(YELLOW)Stopping all VNext domain services...$(NC)"
+	@if [ ! -d "$(DOMAINS_DIR)" ] || [ -z "$$(ls -A $(DOMAINS_DIR) 2>/dev/null)" ]; then \
+		echo "$(YELLOW)No domains found to stop.$(NC)"; \
+	else \
+		domain_count=0; \
+		for d in $(DOMAINS_DIR)/*/; do \
+			if [ -d "$$d" ] && [ -f "$$d/.env" ]; then \
+				domain=$$(basename "$$d"); \
+				echo "$(YELLOW)  → Stopping domain: $$domain$(NC)"; \
+				cd $(DOCKER_DIR) && $(COMPOSE_CMD) -p vnext-$$domain --profile vnext down 2>/dev/null && \
+					echo "$(GREEN)    ✓ Domain $$domain stopped$(NC)" || \
+					echo "$(RED)    ✗ Failed to stop $$domain (may not be running)$(NC)"; \
+				domain_count=$$((domain_count + 1)); \
+			fi; \
+		done; \
+		if [ $$domain_count -eq 0 ]; then \
+			echo "$(YELLOW)No valid domain configurations found.$(NC)"; \
+		else \
+			echo "$(GREEN)Processed $$domain_count domain(s)$(NC)"; \
+		fi; \
+	fi
+	@echo "$(GREEN)All VNext domain services stopped!$(NC)"
+
+##@ Legacy Domain Configuration (single domain)
 change-domain: ## Change domain for all services (usage: make change-domain DOMAIN=mydomain)
 	@if [ -z "$(DOMAIN)" ]; then \
 		echo "$(RED)❌ DOMAIN parameter is required!$(NC)"; \
@@ -484,25 +626,38 @@ git-init: ## Initialize git repository
 info: ## Show project information
 	@echo "$(BLUE)VNext Runtime Project Information$(NC)"
 	@echo "=================================="
-	@echo "$(YELLOW)Project:$(NC) VNext Runtime"
+	@echo "$(YELLOW)Project:$(NC) VNext Runtime (Multi-Domain Support)"
 	@echo "$(YELLOW)Container Runtime:$(NC) $(CONTAINER_RUNTIME)$(if $(filter yes,$(IS_ORBSTACK)), (OrbStack),)"
 	@echo "$(YELLOW)Compose Command:$(NC) $(COMPOSE_CMD)"
 	@echo "$(YELLOW)Docker Compose:$(NC) $(DOCKER_COMPOSE_FILE)"
 	@echo "$(YELLOW)Network:$(NC) $(NETWORK_NAME)"
 	@echo ""
-	@echo "$(BLUE)Services:$(NC)"
-	@echo "• VNext Orchestration: http://localhost:4201"
-	@echo "• VNext Execution: http://localhost:4202"
-	@echo ""
-	@echo "$(BLUE)Management Interfaces:$(NC)"
-	@echo "• Vault: http://localhost:8200 (admin)"
+	@echo "$(BLUE)Infrastructure Services (shared):$(NC)"
+	@echo "• PostgreSQL: localhost:5432"
+	@echo "• Redis: localhost:6379"
+	@echo "• Vault: http://localhost:8200 (token: admin)"
 	@echo "• OpenObserve: http://localhost:5080 (root@example.com / Complexpass#@123)"
+	@echo "• Dapr Placement: localhost:50005"
+	@echo "• Dapr Scheduler: localhost:50007"
 	@echo ""
-	@echo "$(BLUE)Quick Commands:$(NC)"
-	@echo "• make dev      - Start development environment"
-	@echo "• make logs     - View all service logs"
-	@echo "• make health   - Check service health"
-	@echo "• make status   - Show service status"
+	@echo "$(BLUE)Multi-Domain Commands:$(NC)"
+	@echo "• make create-domain DOMAIN=mydom PORT_OFFSET=10  - Create new domain"
+	@echo "• make up-vnext DOMAIN=mydom                      - Start domain services"
+	@echo "• make down-vnext DOMAIN=mydom                    - Stop domain services"
+	@echo "• make list-domains                               - List configured domains"
+	@echo "• make status-all-domains                         - Show all running services"
+	@echo ""
+	@echo "$(BLUE)Port Allocation (by offset):$(NC)"
+	@echo "• Offset 0:  Ports 4201-4204, 3005"
+	@echo "• Offset 10: Ports 4211-4214, 3015"
+	@echo "• Offset 20: Ports 4221-4224, 3025"
+	@echo ""
+	@echo "$(BLUE)Quick Start:$(NC)"
+	@echo "1. make up-infra                           - Start infrastructure"
+	@echo "2. make create-domain DOMAIN=core          - Create 'core' domain (offset 0)"
+	@echo "3. make create-domain DOMAIN=sales PORT_OFFSET=10  - Create 'sales' domain"
+	@echo "4. make up-vnext DOMAIN=core               - Start 'core' domain"
+	@echo "5. make up-vnext DOMAIN=sales              - Start 'sales' domain"
 
 version: ## Show version information
 	@echo "$(BLUE)Version Information:$(NC)"
@@ -526,4 +681,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env build up start up-build down stop restart status logs logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect change-domain
+.PHONY: help check-runtime setup create-env-files create-network check-env check-env-infra build up up-infra up-vnext start up-build up-infra-build up-vnext-build down down-infra down-vnext stop restart restart-infra restart-vnext status status-infra status-vnext logs logs-infra logs-vnext logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect db-list change-domain create-domain list-domains status-all-domains down-all-vnext

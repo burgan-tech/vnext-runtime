@@ -1,7 +1,7 @@
 # vNext Runtime - Cursor Ignore Rules
 
 # Docker and deployment files - we are focusing on development so ignore these
-vnext/
+#vnext/
 
 # Build and deployment files
 #Makefile
