@@ -512,6 +512,7 @@ Starts an independent subprocess instance that runs in parallel with the main wo
       "domain": "audit",
       "key": "transaction-audit",
       "version": "1.0.0",
+      "sync": false,
       "body": {
         "transactionId": "txn-12345",
         "userId": "user-123"
@@ -528,6 +529,7 @@ Starts an independent subprocess instance that runs in parallel with the main wo
 | `domain` | string | Yes | - | Target workflow domain |
 | `key` | string | Yes | - | Target workflow key |
 | `version` | string | No | - | SubFlow version |
+| `sync` | boolean | No | false | Pass-through to the subprocess start request `sync` query parameter (v0.0.35+) |
 | `body` | object | No | - | Data to send with the request |
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 
@@ -593,6 +595,7 @@ public class StartAuditSubProcessMapping : IMapping
         subProcessTask.SetDomain("audit");
         subProcessTask.SetKey("transaction-audit");
         subProcessTask.SetVersion("1.0.0");
+        subProcessTask.SetSync(false);
         
         // Prepare subprocess initialization data
         subProcessTask.SetBody(new {
@@ -681,6 +684,7 @@ Each task type has its own setter methods:
 - **SetDomain(string domain)**: Sets the target workflow domain
 - **SetKey(string key)**: Sets the target workflow key
 - **SetVersion(string version)**: Sets the SubFlow version
+- **SetSync(bool sync)**: Sets the `sync` flag (v0.0.35+)
 - **SetBody(dynamic body)**: Sets the request body
 
 ### Configuration vs Dynamic Setting

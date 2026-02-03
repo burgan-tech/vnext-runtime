@@ -501,8 +501,9 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
     "type": "14",
     "config": {
       "domain": "audit",
-      "flow": "transaction-audit",
+      "key": "transaction-audit",
       "version": "1.0.0",
+      "sync": false,
       "body": {
         "transactionId": "txn-12345",
         "userId": "user-123"
@@ -517,10 +518,9 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
 | Alan | Tür | Gerekli | Varsayılan | Açıklama |
 |------|-----|---------|------------|----------|
 | `domain` | string | Evet | - | Hedef iş akışı domain'i |
-| `flow` | string | Evet | - | Hedef iş akışı key'i |
+| `key` | string | Evet | - | Hedef iş akışı key'i |
 | `version` | string | Hayır | - | SubFlow versiyonu |
-| `key` | string | Hayır | - | SubFlow key değeri |
-| `tags` | Array<string> | Hayır | - | Etiket değerleri |
+| `sync` | boolean | Hayır | false | Subprocess başlatma isteğinde `sync` query parametresine pass-through (v0.0.35+) |
 | `body` | object | Hayır | - | İstekle gönderilecek veri |
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 
@@ -584,8 +584,9 @@ public class StartAuditSubProcessMapping : IMapping
         
         // Subprocess'i yapılandır
         subProcessTask.SetDomain("audit");
-        subProcessTask.SetFlow("transaction-audit");
+        subProcessTask.SetKey("transaction-audit");
         subProcessTask.SetVersion("1.0.0");
+        subProcessTask.SetSync(false);
         
         // Subprocess başlangıç verilerini hazırla
         subProcessTask.SetBody(new {
@@ -639,10 +640,6 @@ Her task türü kendi setter metodlarına sahiptir:
 
 - **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
 - **SetFlow(string flow)**: Hedef iş akışı flow adını ayarlar
-- **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır)
-- **SetSync(string key)**: Hedef instance nasıl başlatılacağını ayarlar
-- **SetTags(string[] tags)**: Hedef instance tags'ini ayarlar
-- **SetVersion(string version)**: SubFlow versiyonunu ayarlar
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
 
 ### DirectTriggerTask Setter Metodları
@@ -652,9 +649,6 @@ Her task türü kendi setter metodlarına sahiptir:
 - **SetTransitionName(string transitionName)**: Çalıştırılacak transition adını ayarlar
 - **SetInstance(string instanceId)**: Hedef instance ID'sini ayarlar
 - **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır)
-- **SetSync(string key)**: Hedef instance nasıl başlatılacağını ayarlar
-- **SetTags(string[] tags)**: Hedef instance tags'ini ayarlar
-- **SetVersion(string version)**: SubFlow versiyonunu ayarlar
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
 
 ### GetInstanceDataTask Setter Metodları
@@ -668,10 +662,9 @@ Her task türü kendi setter metodlarına sahiptir:
 ### SubProcessTask Setter Metodları
 
 - **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
-- **SetFlow(string key)**: Hedef iş akışı key'ini ayarlar
 - **SetKey(string key)**: Hedef instance key'ini ayarlar
-- **SetTags(string[] tags)**: Hedef instance tags'ini ayarlar
 - **SetVersion(string version)**: SubFlow versiyonunu ayarlar
+- **SetSync(bool sync)**: `sync` flag'ini ayarlar (v0.0.35+)
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
 
 ### Konfigürasyon vs Dinamik Ayarlama
