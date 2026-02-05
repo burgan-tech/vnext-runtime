@@ -54,6 +54,8 @@ Yeni bir iş akışı instance'ı oluşturur. İş akışı yürütmesi sırası
 | `flow` | string | Evet | - | Hedef iş akışı flow adı |
 | `body` | object | Hayır | - | İstekle gönderilecek veri |
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
+| `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
+| `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
 
 ### SSL Yapılandırması
 
@@ -84,6 +86,72 @@ Yeni bir iş akışı instance'ı oluşturur. İş akışı yürütmesi sırası
 :::warning Güvenlik Uyarısı
 SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
 :::
+
+### Header ve Timeout Yapılandırması (v0.0.36+)
+
+**Özel Header'lar:**
+
+İsteğinizle birlikte özel HTTP header'ları gönderin:
+
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "headers": {
+      "X-Request-ID": "req-12345",
+      "X-Correlation-ID": "corr-67890",
+      "X-API-Version": "v2"
+    }
+  }
+}
+```
+
+**Timeout Yapılandırması:**
+
+İstek timeout süresini saniye cinsinden yapılandırın (varsayılan: 30):
+
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "timeoutSeconds": 60
+  }
+}
+```
+
+**Kombine Yapılandırma:**
+
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "validateSsl": true,
+    "timeoutSeconds": 45,
+    "headers": {
+      "X-Request-ID": "req-12345",
+      "X-Client-Name": "payment-service",
+      "Authorization": "Bearer token-here"
+    },
+    "body": {
+      "documentId": "doc-12345"
+    }
+  }
+}
+```
+
+**Kullanım Alanları:**
+
+- **İzleme & Korelasyon**: Dağıtık izleme için korelasyon ID'leri gönderme
+- **Kimlik Doğrulama**: Özel kimlik doğrulama header'ları gönderme
+- **API Versiyonlama**: Header'lar ile API versiyonu belirtme
+- **Uzun Süren İşlemler**: Başlatması uzun sürebilecek iş akışları için timeout'u artırma
+- **İstemci Tanımlama**: Denetim için çağrıyı yapan servisi tanımlama
 
 ### Kullanım Alanları
 
@@ -207,6 +275,8 @@ Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Di�
 | `instanceId` | string | Koşullu | - | Hedef instance ID'si (öncelikli) |
 | `body` | object | Hayır | - | İstekle gönderilecek veri |
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
+| `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
+| `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
 
 **Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
 
@@ -241,6 +311,39 @@ Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Di�
 :::warning Güvenlik Uyarısı
 SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
 :::
+
+### Header ve Timeout Yapılandırması (v0.0.36+)
+
+**Özel Header'lar:**
+
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "headers": {
+      "X-Triggered-By": "automated-process",
+      "X-Priority": "high"
+    }
+  }
+}
+```
+
+**Timeout Yapılandırması:**
+
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "timeoutSeconds": 120
+  }
+}
+```
 
 ### Kullanım Alanları
 
@@ -356,6 +459,8 @@ Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili ver
 | `instanceId` | string | Koşullu | - | Hedef instance ID'si (öncelikli) |
 | `extensions` | string[] | Hayır | - | Alınacak extension'lar |
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
+| `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
+| `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
 
 **Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
 
@@ -390,6 +495,39 @@ Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili ver
 :::warning Güvenlik Uyarısı
 SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
 :::
+
+### Header ve Timeout Yapılandırması (v0.0.36+)
+
+**Özel Header'lar:**
+
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "headers": {
+      "X-Data-Scope": "full",
+      "X-Cache-Control": "no-cache"
+    }
+  }
+}
+```
+
+**Timeout Yapılandırması:**
+
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "timeoutSeconds": 15
+  }
+}
+```
 
 ### Kullanım Alanları
 
@@ -523,6 +661,8 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
 | `sync` | boolean | Hayır | false | Subprocess başlatma isteğinde `sync` query parametresine pass-through (v0.0.35+) |
 | `body` | object | Hayır | - | İstekle gönderilecek veri |
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
+| `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
+| `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
 
 ### SSL Yapılandırması
 
@@ -555,6 +695,40 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
 :::warning Güvenlik Uyarısı
 SSL doğrulamasını yalnızca geliştirme ortamında veya güvenilir dahili servislerde devre dışı bırakın.
 :::
+
+### Header ve Timeout Yapılandırması (v0.0.36+)
+
+**Özel Header'lar:**
+
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "key": "transaction-audit",
+    "version": "1.0.0",
+    "headers": {
+      "X-Audit-Source": "payment-service",
+      "X-Audit-Level": "detailed"
+    }
+  }
+}
+```
+
+**Timeout Yapılandırması:**
+
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "key": "transaction-audit",
+    "version": "1.0.0",
+    "sync": false,
+    "timeoutSeconds": 10
+  }
+}
+```
 
 ### Kullanım Alanları
 
