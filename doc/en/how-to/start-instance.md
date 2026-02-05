@@ -188,7 +188,165 @@ Content-Type: application/json
 > - Easier integration with external systems that use business keys
 > - No need to store and manage UUIDs separately
 
-### 3. Querying Instance Status
+### 3. Retrying Faulted Instances (v0.0.36+)
+
+The retry endpoint allows you to resume workflow instances that have entered a "Faulted" state. This endpoint enables recovery from failed tasks by retrying from the point of failure.
+
+> **Important:** This endpoint can **only** be used on instances in "Faulted" state.
+
+**Endpoint:**
+```
+POST /:domain/workflows/:flow/instances/:instanceIdOrKey/retry?version={version}&sync={sync}
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `version` | string | No | Latest | Workflow version (e.g., "1.0.0") |
+| `sync` | boolean | No | false | Synchronous execution |
+
+**Payload Schema:**
+```json
+{
+    "key": "",
+    "tags": [],
+    "attributes": {}
+}
+```
+
+> **Note**: All fields are optional. The `attributes` field can be used to provide additional data or corrections for the retry attempt.
+
+**Example Request (using Instance ID):**
+```http
+POST /ecommerce/workflows/payment-processing/instances/18075ad5-e5b2-4437-b884-21d733339113/retry?version=1.0.0&sync=true
+Content-Type: application/json
+
+{
+    "tags": ["retry-attempt-1"],
+    "attributes": {
+        "retryReason": "Network timeout recovered",
+        "retriedBy": "system-admin",
+        "retryTimestamp": "2026-02-06T10:30:00Z"
+    }
+}
+```
+
+**Example Request (using Instance Key):**
+```http
+POST /ecommerce/workflows/payment-processing/instances/ORDER-2024-001/retry?sync=true
+Content-Type: application/json
+
+{
+    "tags": ["auto-retry"],
+    "attributes": {
+        "retryCount": 1,
+        "previousError": "External service unavailable"
+    }
+}
+```
+
+**Example Response (Success):**
+```json
+{
+  "id": "18075ad5-e5b2-4437-b884-21d733339113",
+  "status": "A"
+}
+```
+
+**Error Response (Not Faulted):**
+
+When attempting to retry an instance that is not in "Faulted" state:
+
+```json
+{
+  "type": "https://httpstatuses.com/400",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Instance is not in Faulted state. Current state: Active",
+  "instance": "/api/v1/ecommerce/workflows/payment-processing/instances/18075ad5-e5b2-4437-b884-21d733339113/retry"
+}
+```
+
+**Error Response (Instance Not Found):**
+```json
+{
+  "type": "https://httpstatuses.com/404",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Instance not found",
+  "instance": "/api/v1/ecommerce/workflows/payment-processing/instances/18075ad5-e5b2-4437-b884-21d733339113/retry"
+}
+```
+
+**Use Cases:**
+
+1. **Transient Failure Recovery**  
+   Retry after temporary infrastructure issues like network timeouts or service unavailability.
+
+   ```http
+   POST /payments/workflows/checkout/instances/order-123/retry?sync=true
+   {
+     "attributes": {
+       "retryReason": "Payment gateway timeout resolved"
+     }
+   }
+   ```
+
+2. **Data Correction and Retry**  
+   Fix data issues that caused the failure and retry.
+
+   ```http
+   POST /orders/workflows/fulfillment/instances/ord-456/retry?sync=true
+   {
+     "attributes": {
+       "correctedAddress": "123 Main St",
+       "validationOverride": true
+     }
+   }
+   ```
+
+3. **Manual Intervention**  
+   Allow operators to manually resume workflows after investigating and resolving failures.
+
+   ```http
+   POST /approvals/workflows/document-approval/instances/doc-789/retry?sync=true
+   {
+     "tags": ["manual-retry", "ops-team"],
+     "attributes": {
+       "investigatedBy": "ops-admin",
+       "resolution": "External system issue resolved"
+     }
+   }
+   ```
+
+4. **Automated Retry Strategies**  
+   Implement retry logic in external monitoring systems with exponential backoff.
+
+   ```http
+   POST /integrations/workflows/data-sync/instances/sync-999/retry?sync=false
+   {
+     "tags": ["automated-retry"],
+     "attributes": {
+       "retryAttempt": 2,
+       "backoffSeconds": 30,
+       "automationSource": "monitoring-service"
+     }
+   }
+   ```
+
+**Best Practices:**
+
+1. **Track Retry Attempts**: Use tags or attributes to log retry count and reasons
+2. **Investigate Before Retry**: Understand why the instance faulted before retrying
+3. **Fix Root Cause**: Correct data or resolve external dependencies when possible
+4. **Monitor Retry Success**: Track whether retries succeed to identify systemic issues
+5. **Implement Backoff**: For automated retries, use exponential backoff to avoid overwhelming systems
+6. **Set Retry Limits**: Don't retry indefinitely; set a maximum retry count
+
+> **Reference:** [#290 - Incident Retry Endpoint (Resume from Failed Task)](https://github.com/burgan-tech/vnext/issues/290)
+
+### 4. Querying Instance Status
 
 The GET endpoint is used to query the current status and data of the instance. This endpoint works with the ETag pattern. You can use either the instance ID or instance Key.
 
@@ -225,7 +383,7 @@ If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 }
 ```
 
-### 4. Filtering Instances
+### 5. Filtering Instances
 
 Use the filtering capability to query instances based on various criteria.
 

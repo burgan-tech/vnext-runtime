@@ -54,6 +54,8 @@ Creates a new workflow instance. Use this to programmatically start new workflow
 | `flow` | string | Yes | - | Target workflow flow name |
 | `body` | object | No | - | Data to send with the request |
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
+| `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
+| `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
 
 ### SSL Configuration
 
@@ -84,6 +86,72 @@ Creates a new workflow instance. Use this to programmatically start new workflow
 :::warning Security Warning
 Disable SSL validation only in development environment or trusted internal services.
 :::
+
+### Headers and Timeout Configuration (v0.0.36+)
+
+**Custom Headers:**
+
+Send custom HTTP headers with your request:
+
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "headers": {
+      "X-Request-ID": "req-12345",
+      "X-Correlation-ID": "corr-67890",
+      "X-API-Version": "v2"
+    }
+  }
+}
+```
+
+**Timeout Configuration:**
+
+Configure request timeout in seconds (default: 30):
+
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "timeoutSeconds": 60
+  }
+}
+```
+
+**Combined Configuration:**
+
+```json
+{
+  "type": "11",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "validateSsl": true,
+    "timeoutSeconds": 45,
+    "headers": {
+      "X-Request-ID": "req-12345",
+      "X-Client-Name": "payment-service",
+      "Authorization": "Bearer token-here"
+    },
+    "body": {
+      "documentId": "doc-12345"
+    }
+  }
+}
+```
+
+**Use Cases:**
+
+- **Tracing & Correlation**: Pass correlation IDs for distributed tracing
+- **Authentication**: Send custom authentication headers
+- **API Versioning**: Specify API version via headers
+- **Long-Running Operations**: Increase timeout for workflows that may take longer to start
+- **Client Identification**: Identify the calling service for auditing
 
 ### Use Cases
 
@@ -211,6 +279,8 @@ Executes a specific transition on an existing workflow instance. Use this to tri
 | `instanceId` | string | Conditional | - | Target instance ID (takes priority) |
 | `body` | object | No | - | Data to send with the request |
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
+| `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
+| `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
 
 **Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
 
@@ -245,6 +315,39 @@ Executes a specific transition on an existing workflow instance. Use this to tri
 :::warning Security Warning
 Disable SSL validation only in development environment or trusted internal services.
 :::
+
+### Headers and Timeout Configuration (v0.0.36+)
+
+**Custom Headers:**
+
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "headers": {
+      "X-Triggered-By": "automated-process",
+      "X-Priority": "high"
+    }
+  }
+}
+```
+
+**Timeout Configuration:**
+
+```json
+{
+  "type": "12",
+  "config": {
+    "domain": "approvals",
+    "flow": "approval-flow",
+    "transitionName": "approve",
+    "timeoutSeconds": 120
+  }
+}
+```
 
 ### Use Cases
 
@@ -365,6 +468,8 @@ Retrieves instance data from another workflow instance. Supports optional extens
 | `instanceId` | string | Conditional | - | Target instance ID (takes priority) |
 | `extensions` | string[] | No | - | Extensions to fetch |
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
+| `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
+| `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
 
 **Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
 
@@ -399,6 +504,39 @@ Retrieves instance data from another workflow instance. Supports optional extens
 :::warning Security Warning
 Disable SSL validation only in development environment or trusted internal services.
 :::
+
+### Headers and Timeout Configuration (v0.0.36+)
+
+**Custom Headers:**
+
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "headers": {
+      "X-Data-Scope": "full",
+      "X-Cache-Control": "no-cache"
+    }
+  }
+}
+```
+
+**Timeout Configuration:**
+
+```json
+{
+  "type": "13",
+  "config": {
+    "domain": "users",
+    "flow": "user-profile",
+    "instanceId": "660e8400-e29b-41d4-a716-446655440001",
+    "timeoutSeconds": 15
+  }
+}
+```
 
 ### Use Cases
 
@@ -532,6 +670,8 @@ Starts an independent subprocess instance that runs in parallel with the main wo
 | `sync` | boolean | No | false | Pass-through to the subprocess start request `sync` query parameter (v0.0.35+) |
 | `body` | object | No | - | Data to send with the request |
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
+| `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
+| `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
 
 ### SSL Configuration
 
@@ -564,6 +704,40 @@ Starts an independent subprocess instance that runs in parallel with the main wo
 :::warning Security Warning
 Disable SSL validation only in development environment or trusted internal services.
 :::
+
+### Headers and Timeout Configuration (v0.0.36+)
+
+**Custom Headers:**
+
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "key": "transaction-audit",
+    "version": "1.0.0",
+    "headers": {
+      "X-Audit-Source": "payment-service",
+      "X-Audit-Level": "detailed"
+    }
+  }
+}
+```
+
+**Timeout Configuration:**
+
+```json
+{
+  "type": "14",
+  "config": {
+    "domain": "audit",
+    "key": "transaction-audit",
+    "version": "1.0.0",
+    "sync": false,
+    "timeoutSeconds": 10
+  }
+}
+```
 
 ### Use Cases
 

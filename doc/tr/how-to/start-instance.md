@@ -225,7 +225,7 @@ If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 }
 ```
 
-### 4. Instance'ları Filtreleme
+### 5. Instance'ları Filtreleme
 
 Çeşitli kriterlere göre instance'ları sorgulamak için filtreleme özelliğini kullanın.
 

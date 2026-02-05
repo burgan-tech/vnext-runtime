@@ -376,6 +376,117 @@ After each component deployment, the platform automatically triggers a re-initia
 
 ---
 
+## Gateway Base URL Support - UrlTemplates Configuration (v0.0.36+)
+
+When deploying vNext platform behind an API gateway, you can configure custom URL templates for Hateoas-style response links. This ensures that instance URLs returned in API responses match your gateway's routing configuration.
+
+### Configuration
+
+Add the `UrlTemplates` section to your `appsettings.json`:
+
+```json
+{
+  "UrlTemplates": {
+    "Start": "/api/{0}/workflows/{1}/instances/start",
+    "Transition": "/api/{0}/workflows/{1}/instances/{2}/transitions/{3}",
+    "FunctionList": "/api/{0}/workflows/{1}/functions/{2}",
+    "InstanceList": "/api/{0}/workflows/{1}/instances",
+    "Instance": "/api/{0}/workflows/{1}/instances/{2}",
+    "InstanceHistory": "/api/{0}/workflows/{1}/instances/{2}/transitions",
+    "Data": "/api/{0}/workflows/{1}/instances/{2}/functions/data",
+    "View": "/api/{0}/workflows/{1}/instances/{2}/functions/view",
+    "Schema": "/api/{0}/workflows/{1}/instances/{2}/functions/schema?transitionKey={3}"
+  }
+}
+```
+
+### Template Parameters
+
+Each template uses positional parameters that are replaced at runtime:
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `{0}` | Domain | `ecommerce` |
+| `{1}` | Workflow/Flow name | `payment-processing` |
+| `{2}` | Instance ID | `18075ad5-e5b2-4437-b884-21d733339113` |
+| `{3}` | Transition key or context-specific parameter | `approve`, `reject` |
+
+### Template Descriptions
+
+| Template | Purpose | Generated URL Example |
+|----------|---------|----------------------|
+| **Start** | Start new instance endpoint | `/api/ecommerce/workflows/payment-processing/instances/start` |
+| **Transition** | Trigger transition on instance | `/api/ecommerce/workflows/payment-processing/instances/abc-123/transitions/approve` |
+| **FunctionList** | List available functions | `/api/ecommerce/workflows/payment-processing/functions/view` |
+| **InstanceList** | List workflow instances | `/api/ecommerce/workflows/payment-processing/instances` |
+| **Instance** | Get specific instance | `/api/ecommerce/workflows/payment-processing/instances/abc-123` |
+| **InstanceHistory** | Get instance transition history | `/api/ecommerce/workflows/payment-processing/instances/abc-123/transitions` |
+| **Data** | Get instance data | `/api/ecommerce/workflows/payment-processing/instances/abc-123/functions/data` |
+| **View** | Get instance view | `/api/ecommerce/workflows/payment-processing/instances/abc-123/functions/view` |
+| **Schema** | Get transition schema | `/api/ecommerce/workflows/payment-processing/instances/abc-123/functions/schema?transitionKey=approve` |
+
+### Use Cases
+
+**Scenario 1: Gateway with Path Prefix**
+
+If your gateway routes vNext API through a specific path:
+
+```json
+{
+  "UrlTemplates": {
+    "Start": "/vnext-api/v1/{0}/workflows/{1}/instances/start",
+    "Instance": "/vnext-api/v1/{0}/workflows/{1}/instances/{2}"
+  }
+}
+```
+
+**Scenario 2: Different Domain Structure**
+
+If your gateway organizes routes differently:
+
+```json
+{
+  "UrlTemplates": {
+    "Start": "/domains/{0}/flows/{1}/start",
+    "Transition": "/domains/{0}/flows/{1}/instances/{2}/execute/{3}"
+  }
+}
+```
+
+**Scenario 3: Subdomain-based Routing**
+
+If domains are mapped to subdomains at the gateway level:
+
+```json
+{
+  "UrlTemplates": {
+    "Start": "/api/workflows/{1}/instances/start",
+    "Instance": "/api/workflows/{1}/instances/{2}"
+  }
+}
+```
+
+> **Note:** The domain parameter (`{0}`) can be omitted from templates if your gateway handles domain routing via subdomains.
+
+### Benefits
+
+- ✅ **Cross-Domain Routing**: Support multiple domains behind a single gateway
+- ✅ **Client Simplicity**: Clients can follow Hateoas links without URL manipulation
+- ✅ **Gateway Flexibility**: Adapt to any gateway routing configuration
+- ✅ **API Versioning**: Easy URL structure changes without breaking clients using Hateoas
+
+### Default Behavior
+
+If `UrlTemplates` is not configured, the platform uses default templates that match the standard vNext API structure:
+
+```
+/api/{domain}/workflows/{workflow}/instances/...
+```
+
+> **Reference:** [#327 - Support gateway base URL in InstanceUrlTemplates for cross-domain routing](https://github.com/burgan-tech/vnext/issues/327)
+
+---
+
 ## Service Discovery Configuration (v0.0.33+)
 
 ### Localhost Validation in Production
