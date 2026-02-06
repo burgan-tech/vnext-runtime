@@ -54,7 +54,7 @@ A new `cancel` transition definition has been introduced for workflows. When a c
 - Provides comprehensive audit trail for cancellation events
 - Simplifies cleanup of complex workflow hierarchies
 
-> **Documentation:** See [Cascade Cancel for Subflows](../doc/en/flow/flow.md#cancel) for detailed implementation guide.
+> **Documentation:** See [Cascade Cancel for Subflows](../docs/technical/flow/flow.md#cancel) for detailed implementation guide.
 
 > **Reference:** [#62 - Feature: Cascade Cancel for Subflows on Main Instance Cancellation](https://github.com/burgan-tech/vnext/issues/62)
 
@@ -218,7 +218,7 @@ The `subType` property has been added to the state schema. This change may affec
 }
 ```
 
-> **Documentation:** [State subType Usage Guide](../doc/en/flow/state.md#subtype) - Please update your workflows according to this documentation.
+> **Documentation:** [State subType Usage Guide](../docs/technical/flow/state.md#subtype) - Please update your workflows according to this documentation.
 
 ---
 

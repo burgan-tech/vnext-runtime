@@ -73,7 +73,7 @@ var startTask = task as StartTask;
 // No need to set type - it's implicit
 ```
 
-> **Documentation:** See [Trigger Task Types](../doc/en/flow/tasks/trigger-task.md) for complete usage examples and best practices.
+> **Documentation:** See [Trigger Task Types](../docs/technical/flow/tasks/trigger-task.md) for complete usage examples and best practices.
 
 ---
 
@@ -124,7 +124,7 @@ GET /core/workflows/transaction/instances/789/functions/data?filter=attributes=a
 
 > **Note:** Filtering is only available on the Data Function endpoint and works on instance attributes.
 
-> **Documentation:** See [Function APIs](../doc/en/flow/function.md#filtering-instance-data) for complete filtering documentation.
+> **Documentation:** See [Function APIs](../docs/technical/flow/function.md#filtering-instance-data) for complete filtering documentation.
 
 ---
 
@@ -174,7 +174,7 @@ public class FunctionTaskMapping : IMapping
 - Indexer-based access for flexible parameter retrieval
 - Available in InputHandler for Function tasks
 
-> **Documentation:** See [Mapping Guide](../doc/en/flow/mapping.md#queryparameters) for complete usage examples.
+> **Documentation:** See [Mapping Guide](../docs/technical/flow/mapping.md#queryparameters) for complete usage examples.
 
 ---
 
@@ -227,7 +227,7 @@ Content-Type: application/json
 - GET instance status endpoints
 - Function API endpoints (state, data, view)
 
-> **Documentation:** See [Instance Startup Guide](../doc/en/how-to/start-instance.md#instance-transition) for complete examples.
+> **Documentation:** See [Instance Startup Guide](../docs/technical/how-to/start-instance.md#instance-transition) for complete examples.
 
 ---
 
@@ -367,16 +367,16 @@ Configuration for v0.0.21:
 
 ## 📚 Documentation Updates
 
-- [Trigger Task Types](../doc/en/flow/tasks/trigger-task.md) - Complete guide for all four task types
-- [Function APIs - Filtering](../doc/en/flow/function.md#filtering-instance-data) - Data function filtering documentation
-- [Mapping Guide - QueryParameters](../doc/en/flow/mapping.md#queryparameters) - QueryParameters usage in ScriptContext
-- [Instance Startup Guide](../doc/en/how-to/start-instance.md#instance-transition) - Instance Key support in transitions
+- [Trigger Task Types](../docs/technical/flow/tasks/trigger-task.md) - Complete guide for all four task types
+- [Function APIs - Filtering](../docs/technical/flow/function.md#filtering-instance-data) - Data function filtering documentation
+- [Mapping Guide - QueryParameters](../docs/technical/flow/mapping.md#queryparameters) - QueryParameters usage in ScriptContext
+- [Instance Startup Guide](../docs/technical/how-to/start-instance.md#instance-transition) - Instance Key support in transitions
 
 Turkish documentation:
-- [Trigger Task Türleri](../doc/tr/flow/tasks/trigger-task.md)
-- [Function API'leri - Filtreleme](../doc/tr/flow/function.md#instance-verilerini-filtreleme)
-- [Mapping Rehberi - QueryParameters](../doc/tr/flow/mapping.md#queryparameters)
-- [Instance Başlatma Rehberi](../doc/tr/how-to/start-instance.md#instance-transition)
+- [Trigger Task Types](../docs/technical/flow/tasks/trigger-task.md)
+- [Function APIs - Filtering](../docs/technical/flow/function.md#filtering-instance-data)
+- [Mapping Guide - QueryParameters](../docs/technical/flow/mapping.md#queryparameters)
+- [Instance Startup Guide](../docs/technical/how-to/start-instance.md#instance-transition)
 
 ---
 

@@ -163,7 +163,7 @@ GET /banking/workflows/payment/functions/data?filter={"status":{"eq":"Active"},"
 GET /banking/workflows/payment/functions/data?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
 ```
 
-> **Documentation:** [Instance Filtering Guide](doc/en/flow/instance-filtering.md)  
+> **Documentation:** [Instance Filtering Guide](../docs/technical/flow/instance-filtering.md)  
 > **Reference:** [#202 - Implement GraphQL-Style Filtering for Instance Data](https://github.com/burgan-tech/vnext/issues/202)
 
 ---
@@ -190,7 +190,7 @@ Version references now support multiple resolution strategies for component vers
 }
 ```
 
-> **Documentation:** [Reference Schema - Version Strategies](doc/en/principles/reference.md#version-strategies)  
+> **Documentation:** [Reference Schema - Version Strategies](../docs/technical/principles/reference.md#version-strategies)  
 > **Reference:** [#209 - Support "latest" String Value in References](https://github.com/burgan-tech/vnext/issues/209)
 
 ---
@@ -238,7 +238,7 @@ Task-level → State-level → Global-level → System Default
 
 > **Note:** `onTimeout` property exists in schema but is not yet implemented.
 
-> **Documentation:** [Error Boundary Guide](doc/en/flow/error-boundary.md)  
+> **Documentation:** [Error Boundary Guide](../docs/technical/flow/error-boundary.md)  
 > **Reference:** [#88 - Enhanced Error Handling System](https://github.com/burgan-tech/vnext/issues/88)
 
 ---

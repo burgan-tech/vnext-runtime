@@ -878,15 +878,15 @@ make reset           # Derin reset (gerekirse)
 
 VNext Runtime platformu, iş akışları ve geliştirme rehberleri hakkında kapsamlı dokümantasyon için lütfen şu kaynaklara başvurun:
 
-- **📖 [Kapsamlı Dokümantasyon (Türkçe)](doc/tr/README.md)** - Platform mimarisi, iş akışı bileşenleri ve detaylı API referansları içeren kapsamlı geliştirici rehberi
-- **🇺🇸 [English Documentation](doc/en/README.md)** - Comprehensive developer guide covering platform architecture, workflow components, and detailed API references
+- **🏢 [Business Documentation (English)](docs/business/README.md)** - Platform yetenekleri, özellikler, entegrasyonlar ve kullanım senaryolarına yönelik iş odaklı dokümantasyon
+- **🛠️ [Technical Documentation (English)](docs/technical/README.md)** - Platform mimarisi, iş akışı bileşenleri ve teknik referanslar (İngilizce)
 
 ### Hızlı Dokümantasyon Linkleri
 
-| Konu | Türkçe | İngilizce |
-|------|--------|-----------|
-| **Platform Temelleri** | [fundamentals/readme.md](doc/tr/fundamentals/readme.md) | [fundamentals/readme.md](doc/en/fundamentals/readme.md) |
-| **İş Akışı Durumları** | [flow/state.md](doc/tr/flow/state.md) | [flow/state.md](doc/en/flow/state.md) |
-| **Görev Türleri** | [flow/task.md](doc/tr/flow/task.md) | [flow/task.md](doc/en/flow/task.md) |
-| **Haritalama Rehberi** | [flow/mapping.md](doc/tr/flow/mapping.md) | [flow/mapping.md](doc/en/flow/mapping.md) |
-| **Instance Nasıl Başlatılır** | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) | [how-to/start-instance.md](doc/en/how-to/start-instance.md) |
+| Konu | İngilizce |
+|------|-----------|
+| **Platform Temelleri** | [fundamentals/readme.md](docs/technical/fundamentals/readme.md) |
+| **İş Akışı Durumları** | [flow/state.md](docs/technical/flow/state.md) |
+| **Görev Türleri** | [flow/task.md](docs/technical/flow/task.md) |
+| **Haritalama Rehberi** | [flow/mapping.md](docs/technical/flow/mapping.md) |
+| **Instance Nasıl Başlatılır** | [how-to/start-instance.md](docs/technical/how-to/start-instance.md) |

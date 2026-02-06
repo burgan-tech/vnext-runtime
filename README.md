@@ -879,15 +879,15 @@ make reset           # Deep reset (if needed)
 
 For comprehensive documentation about the VNext Runtime platform, workflows, and development guides, please refer to:
 
-- **📖 [Complete Documentation (English)](doc/en/README.md)** - Comprehensive developer guide covering platform architecture, workflow components, and detailed API references
-- **🇹🇷 [Türkçe Dokümantasyon](doc/tr/README.md)** - Platform mimarisi, iş akışı bileşenleri ve detaylı API referansları içeren kapsamlı geliştirici rehberi
+- **🏢 [Business Documentation (English)](docs/business/README.md)** - Business-focused overview of platform capabilities, features, integrations, and use cases
+- **🛠️ [Technical Documentation (English)](docs/technical/README.md)** - Developer guide covering platform architecture, workflow components, and detailed API references
 
 ### Quick Documentation Links
 
-| Topic | English | Turkish |
-|-------|---------|---------|
-| **Platform Fundamentals** | [fundamentals/readme.md](doc/en/fundamentals/readme.md) | [fundamentals/readme.md](doc/tr/fundamentals/readme.md) |
-| **Workflow States** | [flow/state.md](doc/en/flow/state.md) | [flow/state.md](doc/tr/flow/state.md) |
-| **Task Types** | [flow/task.md](doc/en/flow/task.md) | [flow/task.md](doc/tr/flow/task.md) |
-| **Mapping Guide** | [flow/mapping.md](doc/en/flow/mapping.md) | [flow/mapping.md](doc/tr/flow/mapping.md) |
-| **How to Start Instance** | [how-to/start-instance.md](doc/en/how-to/start-instance.md) | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) |
+| Topic | English |
+|-------|---------|
+| **Platform Fundamentals** | [fundamentals/readme.md](docs/technical/fundamentals/readme.md) |
+| **Workflow States** | [flow/state.md](docs/technical/flow/state.md) |
+| **Task Types** | [flow/task.md](docs/technical/flow/task.md) |
+| **Mapping Guide** | [flow/mapping.md](docs/technical/flow/mapping.md) |
+| **How to Start Instance** | [how-to/start-instance.md](docs/technical/how-to/start-instance.md) |
