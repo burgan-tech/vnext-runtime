@@ -163,6 +163,29 @@ Task'lara gönderilen ve dönen verilerin doğrulanması:
 
 Kullanıcı arayüzünden gelen form verilerinin doğrulanması.
 
+### 5. Master Schema (Flow Seviyesi) (v0.0.37+)
+
+Bir flow, instance'ın tüm yaşam döngüsü boyunca tüm instance verisini doğrulayan bir **master şema** referansı tanımlayabilir. Flow seviyesinde master şema tanımlandığında, instance verisine yapılan her yazma bu şemaya göre doğrulanır; doğrulama başarısız olursa instance durdurulur.
+
+**Flow seviyesi tanım:**
+
+```json
+{
+  "schema": {
+    "key": "token-master",
+    "domain": "morph-idm",
+    "version": "1.0.0",
+    "flow": "sys-schemas"
+  }
+}
+```
+
+**Davranış:**
+
+- Bir flow'da `schema` referansı varsa, instance verisine eklenen tüm veri (transition'lar, task'lar, mapping'ler vb.) referans verilen şemaya göre doğrulanır.
+- Geçersiz veri instance'ın sonlandırılmasına (örn. faulted veya durdurulma) neden olur.
+- Instance verisinin tek ve tutarlı bir yapıda kalması gereken flow'larda (örn. token veya kimlik verisi) kullanılır.
+
 ## Type Değerleri
 
 `attributes.type` özelliği, schema'nın hangi bileşen türü için tasarlandığını belirtir:

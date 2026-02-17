@@ -268,6 +268,18 @@ var httpTaskResult = context.TaskResponse["httpTask"];
 var scriptTaskResult = context.TaskResponse["scriptTask"];
 ```
 
+#### CurrentTransition (v0.0.37+)
+Provides access to the **original transition request** (body and headers) in input and transition mappings. Use this when you need transition data in scripts without writing it to instance data (e.g. you process it in transition mapping and still need it later in the same pipeline).
+
+- **Data**: Original transition request body (dynamic).
+- **Header**: Original transition request headers (keys are lowercase).
+
+```csharp
+// Reading original transition request in mapping
+var transitionBody = context.CurrentTransition.Data;
+var authHeader = context.CurrentTransition.Header?.authorization;
+```
+
 ## ScriptResponse Class
 
 `ScriptResponse` is the standard response model returned from mapping interfaces. It carries task audit data, instance merge data, and metadata information.

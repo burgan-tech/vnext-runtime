@@ -12,6 +12,7 @@ View'lar, workflow state'leri ve transition'ları için görsel arayüzü temsil
 6. [Platform Override'ları](#platform-overrideları)
 7. [Kullanım Örnekleri](#kullanım-örnekleri)
 8. [En İyi Uygulamalar](#en-iyi-uygulamalar)
+9. [İlgili Dokümantasyon](#ilgili-dokümantasyon)
 
 ## View Tanımı
 
@@ -57,6 +58,63 @@ public sealed class View : IDomainEntity, IViewReference, IReferenceSetter
 - HTML şablonları
 - Bileşen referansları
 - Özel UI tanımları
+
+### View Tipleri (ViewType)
+
+Desteklenen view içerik tipleri:
+
+| Değer | Açıklama |
+|-------|----------|
+| `Json` (1) | JSON içerik (örn. form tanımları) |
+| `Html` (2) | HTML içerik |
+| `Markdown` (3) | Markdown içerik |
+| `DeepLink` (4) | Navigasyon için deep link URL (örn. uygulama şeması) |
+| `Http` (5) | HTTP URL (örn. harici veya uygulama içi web) |
+| `URN` (6) | Platform flow/transition/continue komutları için URN |
+
+**Http**, **DeepLink** ve **URN** tipleri için içerik, ileride genişletilebilmesi amacıyla aşağıdaki yapıda bir JSON nesnesi olmalıdır:
+
+**Http** – isteğe bağlı binding ile harici veya web URL:
+
+```json
+{
+  "href": "https://example.com/sayfa?s=${param}"
+}
+```
+
+**DeepLink** – isteğe bağlı binding ile uygulama deep link’i (örn. özel şema):
+
+```json
+{
+  "href": "on-burgan://onboarding/${param}"
+}
+```
+
+**URN** – isteğe bağlı binding ile platform komut URN’i:
+
+```json
+{
+  "urn": "urn:vnext:flow:continue:credit:overdraft-utilization-subprocess:${utilizationId}"
+}
+```
+
+#### URN Yapısı
+
+Format: `URN:NAMESPACE:TYPE:COMMAND:DOMAIN:FLOW:INSTANCE:TRANSITION`
+
+| Komut | Örnek | Açıklama |
+|-------|-------|----------|
+| **start** | `urn:vnext:flow:start:credit:utilization-flow` | Bir flow başlatılır ve o flow’a yönlendirilir. |
+| **transition** | `urn:vnext:flow:transition:credit:utilization-flow:39484-38484-3938d:submit` | Bir instance üzerinde transition çağrılır (kullanıcı yönlendirmesi yok). |
+| **continue** | `urn:vnext:flow:continue:credit:utilization-flow:39484-38484-3938d` | Bir instance’ta ilerleme; state alınır ve ilerlemek için view gerekir. |
+
+- **Start**: Bir flow başlatılır ve kullanıcı o flow’a yönlendirilir.
+- **Transition**: Verilen bir instance üzerinde kullanıcı arayüzü olmadan transition çalıştırılır.
+- **Continue**: Instance’ta ilerlemek için kullanılır; client state alıp view’ı yükleyerek devam eder (view zorunludur).
+
+#### Veri Bağlama (Data Binding)
+
+`href` veya `urn` içeriğinde `${param}` ifadesi kullanın. Değişken, client’ta instance verisi ve extension verisinin tek bir root’ta birleştiği yapıdan çözülür; bağlama için yalnızca root seviye özellikler desteklenir.
 
 ### Display Özelliği
 
@@ -595,5 +653,6 @@ Bu, hızlı erişim sağlar ve veritabanı yükünü azaltır.
 - [State Yönetimi](./state.md) - Workflow state'lerini anlama
 - [Transition Yönetimi](./transition.md) - Transition'larla çalışma
 - [Function API'leri](./function.md) - View function endpoint detayları
+- [Kural Tabanlı View Seçimi](./rule-based-view-selection.md) - Kurallara göre dinamik view seçimi (platform, rol, veri)
 - [Interface Dokümantasyonu](./interface.md) - Mapping interface'leri
 

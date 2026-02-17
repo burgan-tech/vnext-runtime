@@ -8,8 +8,9 @@ Function APIs provide system-level operations for workflow instances. These buil
 2. [State Function](#state-function)
 3. [Data Function](#data-function)
 4. [View Function](#view-function)
-5. [Best Practices](#best-practices)
-6. [Related Documentation](#related-documentation)
+5. [Authorization](#authorization)
+6. [Best Practices](#best-practices)
+7. [Related Documentation](#related-documentation)
 
 ## Overview
 
@@ -430,20 +431,31 @@ The system automatically determines whether to return iOS-specific content or th
 
 The function follows this logic to determine which view to return:
 
+1. **Rule-based views**: If the state or transition defines a `views` array (rule-based view selection), the first matching rule determines the view. See [Rule-Based View Selection](./rule-based-view-selection.md) for details.
+2. **Single view / legacy**:
+   - If `transitionKey` is provided: use the transition’s view if defined, otherwise the state view.
+   - If not: use the state view.
+3. **Platform**: If `platform` is provided and the view has a platform override, use that content and display; otherwise use the default.
+4. **Language**: Apply Accept-Language and return the matching label from the view’s labels array.
+
 ```
-1. Is transitionKey provided?
+1. Does state/transition have "views" array (rule-based)?
+   ├─ Yes: Evaluate rules in order; return first matching view (or default entry without rule)
+   └─ No: Continue with single view logic below
+
+2. Is transitionKey provided?
    ├─ Yes: Check if transition has a view defined
    │   ├─ Yes: Use transition view
    │   └─ No: Use state view (or return empty if no state view)
    └─ No: Use state view
 
-2. Is platform provided?
+3. Is platform provided?
    ├─ Yes: Check if view has platform override for this platform
    │   ├─ Yes: Use override content and display settings
    │   └─ No: Use original content and display settings
    └─ No: Use original content and display settings
 
-3. Apply language selection based on Accept-Language header
+4. Apply language selection based on Accept-Language header
    └─ Return appropriate label from view's labels array
 ```
 
@@ -491,6 +503,86 @@ GET /core/workflows/account-opening/instances/123/functions/view?transitionKey=s
 Host: api.example.com
 Accept: application/json
 ```
+
+## Authorization
+
+Workflows can define **roles** and **queryRoles** on functions, flows, states, and transitions. The following system function endpoints expose permissions and authorization checks (v0.0.37+).
+
+### Get Flow Permissions
+
+Returns the roles and queryRoles defined for the flow.
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/functions/permissions
+```
+
+**Example response:**
+
+```json
+{
+  "workflow": "account-opening",
+  "queryRoles": [{ "role": "morph-idm.viewer", "grant": "allow" }],
+  "states": [
+    { "key": "account-type-selection", "queryRoles": [] },
+    {
+      "key": "account-details-input",
+      "queryRoles": [
+        { "role": "morph-idm.maker", "grant": "allow" },
+        { "role": "morph-idm.viewer", "grant": "deny" }
+      ]
+    }
+  ],
+  "transitions": [
+    { "key": "initiate-account-opening", "target": "account-type-selection", "roles": [] },
+    {
+      "key": "select-demand-deposit",
+      "target": "account-details-input",
+      "roles": [
+        { "role": "morph-idm.maker", "grant": "allow" },
+        { "role": "morph-idm.initiator", "grant": "allow" }
+      ]
+    }
+  ],
+  "functions": []
+}
+```
+
+### Get Instance Permissions
+
+Same response shape as Get Flow Permissions. When the instance is in a subflow, returns the **subflow’s** permissions (subflows are managed from the parent flow).
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/instances/{instanceId}/functions/permissions
+```
+
+### Flow Authorize
+
+Checks whether the given role is allowed for the given transition (or function) on the flow. Optional `version`; if omitted, latest is used.
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/functions/authorize?transitionKey=submit-account-details&role=morph-idm.maker&version=1.0.0
+```
+
+**Response 200:** `{ "allowed": true }`  
+**Response 403:** `{ "allowed": false }`
+
+### Instance Authorize
+
+Same response as Flow Authorize. With `queryRoles=true`, permission is evaluated against the instance’s current state (flow and state queryRoles). For instances in a subflow, the active subflow instance is used.
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/instances/{instanceId}/functions/authorize?queryRoles=true&role=morph-idm.viewer
+```
+
+### Authorize Query Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `role` | The role to check. |
+| `version` | Optional. Flow version; default is latest. |
+| `transitionKey` | Transition to check (transition-level roles). |
+| `functionKey` | Function to check (function-level roles). |
+| `queryRoles` | When true, check flow and state queryRoles for the instance’s current state (and subflow context if applicable). |
 
 ## Best Practices
 

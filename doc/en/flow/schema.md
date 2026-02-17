@@ -163,6 +163,29 @@ Validation of data sent to and returned from tasks:
 
 Validation of form data coming from user interfaces.
 
+### 5. Master Schema (Flow-Level) (v0.0.37+)
+
+A flow can reference a **master schema** that validates all instance data for the entire lifetime of the instance. When a master schema is defined at the flow level, every write to instance data is validated against that schema; if validation fails, the instance is stopped.
+
+**Flow-level definition:**
+
+```json
+{
+  "schema": {
+    "key": "token-master",
+    "domain": "morph-idm",
+    "version": "1.0.0",
+    "flow": "sys-schemas"
+  }
+}
+```
+
+**Behavior:**
+
+- If a flow has a `schema` reference, all data added to instance data (from transitions, tasks, mappings, etc.) is validated against the referenced schema.
+- Invalid data causes the instance to be terminated (e.g. faulted or stopped).
+- Use this for flows that must keep instance data within a single, consistent structure (e.g. token or identity data).
+
 ## Type Values
 
 The `attributes.type` property specifies which component type the schema is designed for:
