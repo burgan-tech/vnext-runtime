@@ -32,6 +32,8 @@ Basit anahtar-değer formatı: `field=operator:value`
 
 Mantıksal operatör desteği olan JSON tabanlı format: `{"field":{"operator":"value"}}`
 
+> **v0.0.37 breaking change:** Filter parametresi **tek bir ifade** (tek JSON nesnesi veya string) olmalıdır. Önceki dizi formatı `"filter": ["expr1", "expr2"]` artık desteklenmemektedir. Tek ifade kullanın; koşulları bu ifade içinde `and`/`or` ile birleştirin (örn. `{"and":[{"status":{"eq":"Active"}},{"attributes.amount":{"gt":"500"}}]}`).
+
 ---
 
 ## Filtrelenebilir Alanlar
@@ -91,6 +93,43 @@ Instance'ın JSON verisinde saklanan herhangi bir alan `attributes` prefix'i kul
 | `Completed` | `C` | Instance başarıyla tamamlandı |
 | `Faulted` | `F` | Instance hata aldı |
 | `Passive` | `P` | Instance pasif |
+
+> **v0.0.37:** `status` ve `state` (currentState) üzerinde filtreleme artık instance sorgularında doğru çalışmaktadır.
+
+---
+
+## OrderBy / Sort (v0.0.37+)
+
+Instance listesi ve data endpoint'leri `sort` veya `orderBy` query parametresi ile sıralama destekler.
+
+### Tek alan
+
+```
+?sort={"field":"createdAt","direction":"desc"}
+?orderBy={"field":"status","direction":"asc"}
+```
+
+### Çoklu alan
+
+```
+?sort={"fields":[{"field":"status","direction":"asc"},{"field":"createdAt","direction":"desc"}]}
+```
+
+- **direction**: `"asc"` veya `"desc"` (büyük/küçük harf duyarsız). Verilmezse varsayılan `"asc"`.
+
+### Sıralanabilir alanlar
+
+| Alan | Notlar |
+|------|--------|
+| `createdAt` | Oluşturulma zamanı |
+| `modifiedAt` | Değiştirilme zamanı |
+| `completedAt` | Tamamlanma zamanı |
+| `status` | Instance durumu |
+| `key` | Instance anahtarı |
+| `currentState` / `state` | Mevcut state (`state` alias) |
+| `attributes.fieldName` | Instance verisine JSON yolu; iç içe yollar desteklenir (örn. `attributes.nested.path`) |
+
+Instance kolonları veritabanında uygulanır; `attributes.*` sıralaması en güncel instance verisi JSON'u kullanır ve filtreleme ile aynı şema/güvenlik kurallarına tabidir.
 
 ---
 

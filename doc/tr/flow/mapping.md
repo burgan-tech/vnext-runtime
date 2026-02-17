@@ -268,6 +268,18 @@ var httpTaskResult = context.TaskResponse["httpTask"];
 var scriptTaskResult = context.TaskResponse["scriptTask"];
 ```
 
+#### CurrentTransition (v0.0.37+)
+Input ve transition mapping'lerde **orijinal transition isteğinin** (body ve headers) erişimini sağlar. Transition verisini instance data'ya yazmadan script'lerde kullanmanız gerektiğinde (örn. transition mapping'de işleyip aynı pipeline'da sonra da kullanacaksanız) kullanın.
+
+- **Data**: Orijinal transition istek gövdesi (dynamic).
+- **Header**: Orijinal transition istek başlıkları (anahtarlar küçük harf).
+
+```csharp
+// Mapping'de orijinal transition isteğini okuma
+var transitionBody = context.CurrentTransition.Data;
+var authHeader = context.CurrentTransition.Header?.authorization;
+```
+
 ## ScriptResponse Sınıfı
 
 `ScriptResponse`, mapping interface'lerinden dönen standart response modelidir. Task audit data'sı, instance merge data'sı ve metadata bilgilerini taşır.

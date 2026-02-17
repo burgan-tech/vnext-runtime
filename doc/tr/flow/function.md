@@ -8,8 +8,9 @@ Function API'leri, workflow instance'ları için sistem seviyesi operasyonlar sa
 2. [State Fonksiyonu](#state-fonksiyonu)
 3. [Data Fonksiyonu](#data-fonksiyonu)
 4. [View Fonksiyonu](#view-fonksiyonu)
-5. [En İyi Uygulamalar](#en-iyi-uygulamalar)
-6. [İlgili Dökümanlar](#ilgili-dökümanlar)
+5. [Yetkilendirme (Authorization)](#yetkilendirme-authorization)
+6. [En İyi Uygulamalar](#en-iyi-uygulamalar)
+7. [İlgili Dökümanlar](#ilgili-dökümanlar)
 
 ## Genel Bakış
 
@@ -430,20 +431,29 @@ Sistem, view tanımına göre iOS'a özel içerik mi yoksa varsayılan içerik m
 
 Fonksiyon, hangi view'ın döndürüleceğini belirlemek için bu mantığı izler:
 
+1. **Kural tabanlı view'lar**: State veya transition bir `views` dizisi (kural tabanlı view seçimi) tanımlıyorsa, ilk eşleşen kural view'ı belirler. Detay için [Kural Tabanlı View Seçimi](./rule-based-view-selection.md) dokümanına bakın.
+2. **Tek view / eski kullanım**: `transitionKey` sağlandıysa transition view'ı (tanımlıysa), değilse state view kullanılır; sağlanmadıysa state view kullanılır.
+3. **Platform**: `platform` sağlandıysa ve view'da platform override varsa o içerik ve display kullanılır; yoksa varsayılan.
+4. **Dil**: Accept-Language uygulanır ve view'ın labels dizisinden uygun etiket döndürülür.
+
 ```
-1. transitionKey sağlandı mı?
+1. State/transition'da "views" dizisi (kural tabanlı) var mı?
+   ├─ Evet: Kuralları sırayla değerlendir; ilk eşleşen view'ı döndür (veya kuralı olmayan varsayılan giriş)
+   └─ Hayır: Aşağıdaki tek view mantığına geç
+
+2. transitionKey sağlandı mı?
    ├─ Evet: Transition'ın tanımlı bir view'ı var mı kontrol et
    │   ├─ Evet: Transition view'ını kullan
    │   └─ Hayır: State view'ını kullan (veya state view yoksa boş döndür)
    └─ Hayır: State view'ını kullan
 
-2. platform sağlandı mı?
+3. platform sağlandı mı?
    ├─ Evet: View'ın bu platform için platform override'ı var mı kontrol et
    │   ├─ Evet: Override içeriğini ve display ayarlarını kullan
    │   └─ Hayır: Orijinal içeriği ve display ayarlarını kullan
    └─ Hayır: Orijinal içeriği ve display ayarlarını kullan
 
-3. Accept-Language header'ına göre dil seçimi uygula
+4. Accept-Language header'ına göre dil seçimi uygula
    └─ View'ın labels dizisinden uygun etiketi döndür
 ```
 
@@ -491,6 +501,86 @@ GET /core/workflows/account-opening/instances/123/functions/view?transitionKey=s
 Host: api.example.com
 Accept: application/json
 ```
+
+## Yetkilendirme (Authorization)
+
+Workflow'larda fonksiyon, flow, state ve transition seviyesinde **roles** ve **queryRoles** tanımlanabilir. Aşağıdaki sistem fonksiyon endpoint'leri yetki bilgilerini ve yetkilendirme kontrolünü sunar (v0.0.37+).
+
+### Get Flow Permissions
+
+Flow için tanımlı roles ve queryRoles bilgisini döner.
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/functions/permissions
+```
+
+**Örnek yanıt:**
+
+```json
+{
+  "workflow": "account-opening",
+  "queryRoles": [{ "role": "morph-idm.viewer", "grant": "allow" }],
+  "states": [
+    { "key": "account-type-selection", "queryRoles": [] },
+    {
+      "key": "account-details-input",
+      "queryRoles": [
+        { "role": "morph-idm.maker", "grant": "allow" },
+        { "role": "morph-idm.viewer", "grant": "deny" }
+      ]
+    }
+  ],
+  "transitions": [
+    { "key": "initiate-account-opening", "target": "account-type-selection", "roles": [] },
+    {
+      "key": "select-demand-deposit",
+      "target": "account-details-input",
+      "roles": [
+        { "role": "morph-idm.maker", "grant": "allow" },
+        { "role": "morph-idm.initiator", "grant": "allow" }
+      ]
+    }
+  ],
+  "functions": []
+}
+```
+
+### Get Instance Permissions
+
+Get Flow Permissions ile aynı yanıt yapısı. Instance bir subflow içindeyse **subflow**'un yetkileri döner (subflow'lar ana flow üzerinden yönetilir).
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/instances/{instanceId}/functions/permissions
+```
+
+### Flow Authorize
+
+Verilen rolün, flow üzerinde verilen transition (veya function) için izinli olup olmadığını kontrol eder. İsteğe bağlı `version`; verilmezse latest kullanılır.
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/functions/authorize?transitionKey=submit-account-details&role=morph-idm.maker&version=1.0.0
+```
+
+**Yanıt 200:** `{ "allowed": true }`  
+**Yanıt 403:** `{ "allowed": false }`
+
+### Instance Authorize
+
+Flow Authorize ile aynı yanıt. `queryRoles=true` ile yetki, instance'ın mevcut state'ine (flow ve state queryRoles) göre değerlendirilir. Subflow içindeki instance'larda aktif subflow instance kullanılır.
+
+```http
+GET /api/v1/{domain}/workflows/{workflow}/instances/{instanceId}/functions/authorize?queryRoles=true&role=morph-idm.viewer
+```
+
+### Authorize Query Parametreleri
+
+| Parametre | Açıklama |
+|-----------|----------|
+| `role` | Kontrol edilecek rol. |
+| `version` | İsteğe bağlı. Flow versiyonu; varsayılan latest. |
+| `transitionKey` | Kontrol edilecek transition (transition seviye roles). |
+| `functionKey` | Kontrol edilecek fonksiyon (function seviye roles). |
+| `queryRoles` | true ise instance'ın mevcut state'i için flow ve state queryRoles kontrol edilir (subflow bağlamı varsa ona göre). |
 
 ## En İyi Uygulamalar
 
@@ -543,6 +633,7 @@ Accept: application/json
 - [Custom Functions](./custom-function.md) - Kullanıcı tanımlı fonksiyonlar ve Schema Fonksiyonu
 - [Instance Filtreleme](./instance-filtering.md) - GraphQL-stil filtreleme kılavuzu
 - [View Yönetimi](./view.md) - View tanımları ve gösterim stratejileri
+- [Kural Tabanlı View Seçimi](./rule-based-view-selection.md) - Kurallara göre dinamik view seçimi
 - [State Yönetimi](./state.md) - Workflow state'lerini anlama
 - [Transition Yönetimi](./transition.md) - Transition'ları yürütme
 - [Versiyonlama ve ETag](../principles/versioning.md) - ETag pattern detayları

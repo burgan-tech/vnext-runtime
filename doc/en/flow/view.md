@@ -12,6 +12,7 @@ Views are UI component definitions that represent the visual interface for workf
 6. [Platform Overrides](#platform-overrides)
 7. [Usage Examples](#usage-examples)
 8. [Best Practices](#best-practices)
+9. [Related Documentation](#related-documentation)
 
 ## View Definition
 
@@ -57,6 +58,63 @@ The `Content` property contains the actual UI definition. This can be:
 - HTML templates
 - Component references
 - Custom UI definitions
+
+### View Types (ViewType)
+
+Supported view content types:
+
+| Value | Description |
+|-------|-------------|
+| `Json` (1) | JSON content (e.g. form definitions) |
+| `Html` (2) | HTML content |
+| `Markdown` (3) | Markdown content |
+| `DeepLink` (4) | Deep link URL for navigation (e.g. app scheme) |
+| `Http` (5) | HTTP URL (e.g. external or in-app web) |
+| `URN` (6) | URN for platform flow/transition/continue commands |
+
+For **Http**, **DeepLink**, and **URN** types, the content must be a JSON object with the following shape so it can be extended later:
+
+**Http** – external or web URL with optional binding:
+
+```json
+{
+  "href": "https://example.com/page?s=${param}"
+}
+```
+
+**DeepLink** – app deep link (e.g. custom scheme) with optional binding:
+
+```json
+{
+  "href": "on-burgan://onboarding/${param}"
+}
+```
+
+**URN** – platform command URN with optional binding:
+
+```json
+{
+  "urn": "urn:vnext:flow:continue:credit:overdraft-utilization-subprocess:${utilizationId}"
+}
+```
+
+#### URN Structure
+
+Format: `URN:NAMESPACE:TYPE:COMMAND:DOMAIN:FLOW:INSTANCE:TRANSITION`
+
+| Command | Example | Description |
+|---------|---------|-------------|
+| **start** | `urn:vnext:flow:start:credit:utilization-flow` | Start a flow and navigate to it. |
+| **transition** | `urn:vnext:flow:transition:credit:utilization-flow:39484-38484-3938d:submit` | Call a transition on an instance (no user navigation). |
+| **continue** | `urn:vnext:flow:continue:credit:utilization-flow:39484-38484-3938d` | Continue an instance; state is fetched and a view is required to proceed. |
+
+- **Start**: Starts a flow and navigates the user to it.
+- **Transition**: Executes a transition on a given instance without user-facing navigation.
+- **Continue**: Used to advance an instance; the client must get state and then load the view to continue (view is required).
+
+#### Data Binding
+
+Use the expression `${param}` in `href` or `urn` content. The variable is resolved from a single root that combines instance data and extension data on the client; only root-level properties are supported for binding.
 
 ### Display Property
 
@@ -595,5 +653,6 @@ This enables fast retrieval and reduces database load.
 - [State Management](./state.md) - Understanding workflow states
 - [Transition Management](./transition.md) - Working with transitions
 - [Function APIs](./function.md) - View function endpoint details
+- [Rule-Based View Selection](./rule-based-view-selection.md) - Dynamic view selection by rules (platform, role, data)
 - [Interface Documentation](./interface.md) - Mapping interfaces
 

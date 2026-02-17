@@ -32,6 +32,8 @@ Simple key-value format: `field=operator:value`
 
 JSON-based format with logical operator support: `{"field":{"operator":"value"}}`
 
+> **v0.0.37 breaking change:** The filter parameter must be a **single expression** (one JSON object or string). The previous array format `"filter": ["expr1", "expr2"]` is no longer supported. Use a single expression; combine conditions with `and`/`or` inside that expression (e.g. `{"and":[{"status":{"eq":"Active"}},{"attributes.amount":{"gt":"500"}}]}`).
+
 ---
 
 ## Filterable Fields
@@ -91,6 +93,43 @@ The `status` field accepts both code and name:
 | `Completed` | `C` | Instance completed successfully |
 | `Faulted` | `F` | Instance encountered an error |
 | `Passive` | `P` | Instance is passive |
+
+> **v0.0.37:** Filtering on `status` and `state` (currentState) now works correctly in instance queries.
+
+---
+
+## OrderBy / Sort (v0.0.37+)
+
+Instance list and data endpoints support sorting via the `sort` or `orderBy` query parameter.
+
+### Single field
+
+```
+?sort={"field":"createdAt","direction":"desc"}
+?orderBy={"field":"status","direction":"asc"}
+```
+
+### Multiple fields
+
+```
+?sort={"fields":[{"field":"status","direction":"asc"},{"field":"createdAt","direction":"desc"}]}
+```
+
+- **direction**: `"asc"` or `"desc"` (case-insensitive). Defaults to `"asc"` if omitted.
+
+### Sortable fields
+
+| Field | Notes |
+|-------|-------|
+| `createdAt` | Creation timestamp |
+| `modifiedAt` | Modification timestamp |
+| `completedAt` | Completion timestamp |
+| `status` | Instance status |
+| `key` | Instance key |
+| `currentState` / `state` | Current state (`state` is alias) |
+| `attributes.fieldName` | JSON path into instance data; nested paths supported (e.g. `attributes.nested.path`) |
+
+Instance columns are applied in the database; ordering by `attributes.*` uses the latest instance data JSON and is subject to the same schema/security as filtering.
 
 ---
 
