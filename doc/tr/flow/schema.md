@@ -106,6 +106,39 @@ Etiketler, schema'ların kategorilendirmesi ve aranması için kullanılır:
 | `type` | `string` | Schema'nın hangi bileşen türü için kullanıldığı |
 | `schema` | `object` | Gerçek JSON Schema tanımı |
 
+### Flow Master şema alan bazlı görünürlük (v0.0.39+)
+
+**Flow Master şeması** (instance veri yapısını tanımlayan şema), şema property'lerinde **roleGrant** (`roles`) özelliği ile **alan bazlı görünürlük** destekler. Data fonksiyonu ve veri dönen endpoint'ler (Get Instance, GetInstances vb.) authorize katmanını çalıştırır ve yalnızca çağıranın görmesine izinli olduğu alanları döndürür. `roles` tanımı olmayan property'ler tüm yetkili çağıranlara görünür.
+
+**Örnek:** `amount` ve `internalNotes` role göre kısıtlı; `publicStatus`'ta `roles` yok, herkese görünür.
+
+```json
+{
+  "properties": {
+    "amount": {
+      "type": "number",
+      "roles": [
+        { "role": "morph-idm.maker", "grant": "allow" },
+        { "role": "morph-idm.approver", "grant": "allow" },
+        { "role": "morph-idm.viewer", "grant": "allow" }
+      ]
+    },
+    "internalNotes": {
+      "type": "string",
+      "roles": [
+        { "role": "morph-idm.approver", "grant": "allow" },
+        { "role": "morph-idm.manager", "grant": "allow" }
+      ]
+    },
+    "publicStatus": {
+      "type": "string"
+    }
+  }
+}
+```
+
+Üçüncü parti ve araç uyumluluğu için roles vocabulary şu adreste yayımlanır: [roles-vocab.json](https://unpkg.com/@burgan-tech/vnext-schema@0.0.37/vocabularies/roles-vocab.json).
+
 ## Kullanım Alanları
 
 Schema'lar aşağıdaki senaryolarda veri doğrulama için kullanılır:

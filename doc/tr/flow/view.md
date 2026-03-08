@@ -46,7 +46,7 @@ public sealed class View : IDomainEntity, IViewReference, IReferenceSetter
 | `Domain` | `string` | View'ın ait olduğu domain |
 | `Version` | `string` | Versiyon bilgisi (semantic versioning) |
 | `Type` | `ViewType` | View içerik tipi (örn: JSON, HTML, vb.) |
-| `Content` | `string` | Gerçek view içeriği/tanımı |
+| `Content` | `string` veya `object`/`array` | Gerçek view içeriği/tanımı; (v0.0.39+) [Tipe bağlı içerik](#tipe-bağlı-içerik-v039) bölümüne bakın |
 | `Display` | `string` | View'ı render etmek için gösterim modu |
 | `Labels` | `LanguageLabel[]` | View için çoklu dil etiketleri |
 | `PlatformOverrides` | `PlatformOverrides` | Platforma özel view override'ları |
@@ -58,6 +58,10 @@ public sealed class View : IDomainEntity, IViewReference, IReferenceSetter
 - HTML şablonları
 - Bileşen referansları
 - Özel UI tanımları
+
+#### Tipe bağlı içerik (v0.0.39+)
+
+View tanım şemasında **content** alanı view tipine göre **string veya JSON** kabul eder: **Json** tipi için content bir object veya array; **Html**, **Markdown** ve benzeri tipler için content bir string'dir. Bu sayede versiyon kontrolü ve tasarım araçlarında conflict yönetimi iyileşir; geriye dönük uyumluluk korunur. Ayrıca bkz. [vnext-schema #85](https://github.com/burgan-tech/vnext-schema/issues/85).
 
 ### View Tipleri (ViewType)
 

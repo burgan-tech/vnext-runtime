@@ -815,6 +815,7 @@ Her task türü kendi setter metodlarına sahiptir:
 - **SetDomain(string domain)**: Hedef iş akışı domain'ini ayarlar
 - **SetFlow(string flow)**: Hedef iş akışı flow adını ayarlar
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Tekil header ekler veya kaldırır (v0.0.38+)
 
 ### DirectTriggerTask Setter Metodları
 
@@ -824,6 +825,7 @@ Her task türü kendi setter metodlarına sahiptir:
 - **SetInstance(string instanceId)**: Hedef instance ID'sini ayarlar
 - **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır)
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Tekil header ekler veya kaldırır (v0.0.38+)
 
 ### GetInstanceDataTask Setter Metodları
 
@@ -832,6 +834,7 @@ Her task türü kendi setter metodlarına sahiptir:
 - **SetInstance(string instanceId)**: Hedef instance ID'sini ayarlar
 - **SetKey(string key)**: Hedef instance key'ini ayarlar (instanceId yoksa kullanılır, doğrudan key olarak kullanılır)
 - **SetExtensions(string[] extensions)**: Alınacak extension'ları ayarlar
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Tekil header ekler veya kaldırır (v0.0.38+)
 
 ### SubProcessTask Setter Metodları
 
@@ -840,6 +843,7 @@ Her task türü kendi setter metodlarına sahiptir:
 - **SetVersion(string version)**: SubFlow versiyonunu ayarlar
 - **SetSync(bool sync)**: `sync` flag'ini ayarlar (v0.0.35+)
 - **SetBody(dynamic body)**: İstek body'sini ayarlar
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Tekil header ekler veya kaldırır (v0.0.38+)
 
 ### Konfigürasyon vs Dinamik Ayarlama
 

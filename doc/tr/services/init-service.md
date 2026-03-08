@@ -87,9 +87,15 @@ npm publish --registry https://your-registry.com
 
 Init service paketi indirir ve `/api/v1/definitions/publish` endpointini kullanarak platforma deploy eder.
 
+### Instance üzerinde flow versiyonu (v0.0.39+)
+
+v0.0.39 itibarıyla bir instance'ın **başlatıldığı flow versiyonu** **instance üzerinde saklanır** ve transition'lar için kullanılır. Böylece instance, başlatıldığı flow versiyonu ile devam eder.
+
 ---
 
 ## API Endpointleri
+
+Tüm API yanıtlarında uygulama sürümü **X-App-Version** response header'ında döner (v0.0.38+).
 
 ### Health Check
 
@@ -99,6 +105,8 @@ Servis ve platform sağlık durumunu kontrol eder.
 GET /health
 Accept: application/json
 ```
+
+**Response headers (v0.0.38+):** Tüm yanıtlarda uygulama sürümü `X-App-Version` header'ında döner (örn. `X-App-Version: 0.0.38`). Health endpoint'i de bu header'ı içerir.
 
 **Response:**
 ```json

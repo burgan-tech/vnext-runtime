@@ -46,7 +46,7 @@ public sealed class View : IDomainEntity, IViewReference, IReferenceSetter
 | `Domain` | `string` | Domain to which the view belongs |
 | `Version` | `string` | Version information (semantic versioning) |
 | `Type` | `ViewType` | Type of view content (e.g., JSON, HTML, etc.) |
-| `Content` | `string` | The actual view content/definition |
+| `Content` | `string` or `object`/`array` | The actual view content/definition; see [Type-dependent content](#type-dependent-content-v039) (v0.0.39+) |
 | `Display` | `string` | Display mode for rendering the view |
 | `Labels` | `LanguageLabel[]` | Multi-language labels for the view |
 | `PlatformOverrides` | `PlatformOverrides` | Platform-specific view overrides |
@@ -58,6 +58,10 @@ The `Content` property contains the actual UI definition. This can be:
 - HTML templates
 - Component references
 - Custom UI definitions
+
+#### Type-dependent content (v0.0.39+)
+
+The view definition schema allows **content** to be **string or JSON** depending on view type: for **Json** type, content is an object or array; for **Html**, **Markdown**, and similar types, content is a string. This improves conflict handling in version control and design tools while remaining backward compatible. See also [vnext-schema #85](https://github.com/burgan-tech/vnext-schema/issues/85).
 
 ### View Types (ViewType)
 

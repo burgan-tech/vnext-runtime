@@ -55,8 +55,9 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
     "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/data"
   },
   "view": {
-    "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view",
-    "loadData": true
+    "hasView": true,
+    "loadData": true,
+    "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view"
   },
   "state": "active",
   "status": "A",
@@ -79,14 +80,26 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/approve",
       "name": "approve",
+      "view": {
+        "hasView": false,
+        "loadData": true,
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view?transitionKey=approve"
+      },
       "schema": {
+        "hasSchema": true,
         "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=approve"
       }
     },
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/reject",
       "name": "reject",
+      "view": {
+        "hasView": false,
+        "loadData": true,
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view?transitionKey=reject"
+      },
       "schema": {
+        "hasSchema": true,
         "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=reject"
       }
     }
@@ -102,15 +115,23 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
 | `data` | `object` | Link to retrieve instance data |
 | `data.href` | `string` | Data function endpoint URL |
 | `view` | `object` | View information for current state |
+| `view.hasView` | `boolean` | Whether a view exists for the current state (v0.0.39+) |
 | `view.href` | `string` | View function endpoint URL |
 | `view.loadData` | `boolean` | Whether view requires instance data |
 | `state` | `string` | Current state of the instance |
 | `status` | `string` | Instance status code (A=Active, C=Completed, etc.) |
 | `activeCorrelations` | `array` | Active sub-flows and correlations |
-| `transitions` | `array` | Available transitions from current state |
+| `transitions` | `array` | Available transitions from current state (filtered by role grants in v0.0.39+) |
+| `transitions[].view` | `object` | View info for the transition (v0.0.39+) |
+| `transitions[].view.hasView` | `boolean` | Whether a view exists for this transition (v0.0.39+) |
 | `transitions[].schema` | `object` | Schema link for the transition (if defined) |
+| `transitions[].schema.hasSchema` | `boolean` | Whether a schema exists for this transition (v0.0.39+) |
 | `transitions[].schema.href` | `string` | Schema function endpoint URL with transitionKey |
 | `eTag` | `string` | ETag for cache validation |
+
+### Transition filtering by role grants (v0.0.39+)
+
+The `transitions` array returned by the State function is filtered by **transition role grants**. Only transitions for which the caller has an allowed role are included. Roles can be static (e.g. from your identity provider) or the predefined system roles **$InstanceStarter** (the actor who started the instance) and **$PreviousUser** (the actor who triggered the previous transition). Use `view.hasView` and `schema.hasSchema` to avoid unnecessary view or schema requests and 404s.
 
 ### Active Correlations
 
@@ -135,6 +156,10 @@ When a workflow has active sub-flows or correlations, they are included in the r
 2. **State Monitoring**: Dashboard applications monitoring workflow progress
 3. **Transition Discovery**: Dynamically discovering available user actions
 4. **Sub-Flow Tracking**: Monitoring progress of parallel sub-workflows
+
+### ParentInstanceId in trace and logs (v0.0.38+)
+
+Trace and logging include **ParentInstanceId** when applicable (e.g. subflow, cross-domain trigger). You can correlate logs and traces for child instances with their parent instance id.
 
 ### Example Request
 
@@ -217,9 +242,13 @@ No body is returned, saving bandwidth and processing time.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `data` | `object` | Current instance data (camelCase properties) |
+| `data` | `object` | Current instance data (camelCase properties); see [Field-level visibility](#master-schema-field-level-visibility-v039) when Master schema uses roleGrant |
 | `eTag` | `string` | ETag for cache validation |
 | `extensions` | `object` | Additional data from registered extensions |
+
+### Instance envelope with metadata (v0.0.39+)
+
+GetInstance and GetInstances responses can include a full **instance envelope**: `id`, `key`, `flow`, `domain`, `flowVersion`, `etag`, `tags`, **metadata** (e.g. `currentState`, `effectiveState`, `status`, `createdAt`, `modifiedAt`, `createdBy`, `modifiedBy`, `createdByBehalfOf`, `modifiedByBehalfOf`), `attributes`, and `extensions`. This provides instance identity and audit information alongside the data payload.
 
 ### ETag Support
 
@@ -355,7 +384,7 @@ If-None-Match: "W/\"previous-etag\""
 
 ## View Function
 
-The View function retrieves the appropriate view definition for the current workflow state. It supports platform-specific content and transition-specific views.
+The View function retrieves the appropriate view definition for the current workflow state. It supports platform-specific content, transition-specific views, and **remote (cross-domain) views** (v0.0.39+): views hosted in another domain can be referenced and used, enabling shared view reuse, versioning, and distribution.
 
 ### Endpoint
 
@@ -375,23 +404,32 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/view
 
 ### Response
 
+**Content type (v0.0.39+):** `content` is typed by view `type`: when `type` is `Json`, `content` is an object or array; when `type` is `Html` (or similar), `content` is a string.
+
+**Json view example:**
 ```json
 {
   "key": "account-type-selection-view",
-  "content": "{\"type\":\"form\",\"fields\":[...]}",
-  "type": "json",
+  "content": {
+    "type": "form",
+    "title": { "en-US": "Choose Your Account Type" },
+    "fields": [...]
+  },
+  "type": "Json",
   "display": "full-page",
   "label": "Select Account Type"
 }
 ```
+
+**Html view example:** `content` is a string (e.g. `"<div>...</div>"`).
 
 ### Response Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `key` | `string` | View key identifier |
-| `content` | `string` | View content (format depends on type) |
-| `type` | `string` | Content type (json, html, etc.) |
+| `content` | `string` or `object`/`array` | View content: **Json** type → object/array (v0.0.39+); **Html** and similar → string |
+| `type` | `string` | Content type (Json, Html, etc.) |
 | `display` | `string` | Display mode (full-page, popup, etc.) |
 | `label` | `string` | Localized label for the view |
 
@@ -507,6 +545,30 @@ Accept: application/json
 ## Authorization
 
 Workflows can define **roles** and **queryRoles** on functions, flows, states, and transitions. The following system function endpoints expose permissions and authorization checks (v0.0.37+).
+
+### Predefined system roles (v0.0.39+)
+
+Two static system roles are available for instance authorization (e.g. in transition roles, state/flow queryRoles, or Master schema field visibility):
+
+| Role | Description |
+|------|-------------|
+| **$InstanceStarter** | The actor who started the instance |
+| **$PreviousUser** | The actor who triggered the previous transition |
+
+Example in a transition or roleGrant:
+
+```json
+{
+  "roles": [
+    { "role": "$InstanceStarter", "grant": "allow" },
+    { "role": "$PreviousUser", "grant": "allow" }
+  ]
+}
+```
+
+### Master schema field-level visibility (v0.0.39+)
+
+The Flow **Master schema** can define **field-level visibility** using a **roleGrant** (`roles`) property on schema properties. Data function and data-returning endpoints (Get Instance, GetInstances, etc.) run the authorize layer and return only fields the caller is allowed to see. Properties without `roles` are visible to all authorized callers. For vocabulary and tooling, see [roles-vocab.json](https://unpkg.com/@burgan-tech/vnext-schema@0.0.37/vocabularies/roles-vocab.json).
 
 ### Get Flow Permissions
 

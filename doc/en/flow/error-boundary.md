@@ -91,6 +91,8 @@ Each rule in the `onError` array defines how to handle specific errors.
 - **errorCodes**: Error codes in format `Category:Code` or just `Code` (e.g., `Task:400007`, `500`)
 - Empty array or `["*"]` matches all errors
 
+**Retry and rule matching (v0.0.39+):** Retry is now resolved by **rule-based matching** (error-aware retry). The error is matched to the appropriate rule before applying retry; infrastructure-level errors are no longer incorrectly included in the boundary, and retry behavior is consistent with the matched rule.
+
 ### Priority System
 
 - Lower values are evaluated first

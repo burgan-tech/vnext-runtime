@@ -106,6 +106,39 @@ The `attributes` object contains the schema content and metadata information:
 | `type` | `string` | Which component type the schema is used for |
 | `schema` | `object` | Actual JSON Schema definition |
 
+### Flow Master schema field-level visibility (v0.0.39+)
+
+The **Flow Master schema** (the schema that describes instance data shape) supports **field-level visibility** via a **roleGrant** (`roles`) property on schema properties. Data function and data-returning endpoints (Get Instance, GetInstances, etc.) run the authorize layer and return only fields the caller is allowed to see. Properties without `roles` are visible to all authorized callers.
+
+**Example:** Properties `amount` and `internalNotes` are restricted by role; `publicStatus` has no `roles` and is visible to all.
+
+```json
+{
+  "properties": {
+    "amount": {
+      "type": "number",
+      "roles": [
+        { "role": "morph-idm.maker", "grant": "allow" },
+        { "role": "morph-idm.approver", "grant": "allow" },
+        { "role": "morph-idm.viewer", "grant": "allow" }
+      ]
+    },
+    "internalNotes": {
+      "type": "string",
+      "roles": [
+        { "role": "morph-idm.approver", "grant": "allow" },
+        { "role": "morph-idm.manager", "grant": "allow" }
+      ]
+    },
+    "publicStatus": {
+      "type": "string"
+    }
+  }
+}
+```
+
+For third-party and tooling compatibility, the roles vocabulary is published at: [roles-vocab.json](https://unpkg.com/@burgan-tech/vnext-schema@0.0.37/vocabularies/roles-vocab.json).
+
 ## Use Cases
 
 Schemas are used for data validation in the following scenarios:

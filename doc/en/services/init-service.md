@@ -87,9 +87,15 @@ npm publish --registry https://your-registry.com
 
 Init service downloads the package and deploys it to the platform using the `/api/v1/definitions/publish` endpoint.
 
+### Flow version on instance (v0.0.39+)
+
+As of v0.0.39, the **flow version** with which an instance was started is **stored on the instance** and used for transitions. This ensures the instance continues on the same flow version it was started with. 
+
 ---
 
 ## API Endpoints
+
+All API responses include the application version in the **X-App-Version** response header (v0.0.38+).
 
 ### Health Check
 
@@ -99,6 +105,8 @@ Checks the health status of the service and platform.
 GET /health
 Accept: application/json
 ```
+
+**Response headers (v0.0.38+):** All API responses include the application version in the `X-App-Version` response header (e.g. `X-App-Version: 0.0.38`). The Health endpoint also returns this header.
 
 **Response:**
 ```json

@@ -66,6 +66,7 @@ Properties in the DaprServiceTask class are defined as read-only. Special method
 - **AppId**: Changed with `SetAppId(string appId)` method
 - **MethodName**: Changed with `SetMethodName(string methodName)` method
 - **QueryString**: Changed with `SetQueryString(string? queryString)` method
+- **Headers**: Changed with `SetHeaders(Dictionary<string, string?> headers)` method; use **AddHeader(string name, string value)** and **RemoveHeader(string name)** to add or remove individual headers (v0.0.38+)
 - **Data**: Changed with `SetData(dynamic data)` method
 - **HttpVerb**: Read-only (set in definition file)
 - **TimeoutSeconds**: Read-only (set in definition file)

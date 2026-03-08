@@ -93,7 +93,7 @@ Disable SSL validation only in development environment or trusted internal servi
 Some properties in the HttpTask class are defined as read-only. Special methods must be used to change these properties:
 
 - **Url**: Changed with `SetUrl(string url)` method
-- **Headers**: Changed with `SetHeaders(Dictionary<string, string?> headers)` method  
+- **Headers**: Changed with `SetHeaders(Dictionary<string, string?> headers)` method; use **AddHeader(string name, string value)** and **RemoveHeader(string name)** to add or remove individual headers (v0.0.38+)
 - **Body**: Changed with `SetBody(dynamic body)` method
 - **Method**: Direct assignment can be made
 - **TimeoutSeconds**: Read-only (also set in definition file)

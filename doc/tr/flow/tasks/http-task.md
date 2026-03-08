@@ -93,7 +93,7 @@ SSL doğrulamasını sadece development ortamında veya güvenilir internal serv
 HttpTask sınıfında bazı property'ler read-only olarak tanımlanmıştır. Bu property'leri değiştirmek için özel metodlar kullanılmalıdır:
 
 - **Url**: `SetUrl(string url)` metoduyla değiştirilir
-- **Headers**: `SetHeaders(Dictionary<string, string?> headers)` metoduyla değiştirilir  
+- **Headers**: `SetHeaders(Dictionary<string, string?> headers)` metoduyla değiştirilir; tekil header ekleme/çıkarma için **AddHeader(string name, string value)** ve **RemoveHeader(string name)** kullanılır (v0.0.38+)
 - **Body**: `SetBody(dynamic body)` metoduyla değiştirilir
 - **Method**: Doğrudan atama yapılabilir
 - **TimeoutSeconds**: Read-only (Tanım dosyasında'da ayarlanır)
