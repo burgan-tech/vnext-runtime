@@ -91,6 +91,8 @@ Her seviyede, kurallar **priority** değerine göre değerlendirilir (düşük s
 - **errorCodes**: `Kategori:Kod` veya sadece `Kod` formatında hata kodları (örn. `Task:400007`, `500`)
 - Boş dizi veya `["*"]` tüm hataları eşleştirir
 
+**Retry ve kural eşlemesi (v0.0.39+):** Retry artık **kural tabanlı eşleme** (error-aware retry) ile çözülür. Hata, retry uygulanmadan önce uygun kurala eşlenir; altyapı kaynaklı hatalar boundary'e yanlış dahil edilmez ve retry davranışı eşleşen kurala göre tutarlıdır.
+
 ### Öncelik Sistemi
 
 - Düşük değerler önce değerlendirilir

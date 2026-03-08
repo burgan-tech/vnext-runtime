@@ -185,6 +185,8 @@ Workflow tanımında `updateData` konfigürasyonu olarak tanımlanır:
 ## Shared Transitions
 `AvailableIn` özelliği sayesinde, bir transition birden fazla state'de kullanılabilir hale getirilebilir. Bu durumda transition hangi state'lerde çalıştırılabileceği bu liste ile belirlenir.
 
+**Subflow iken ana flow (v0.0.39+):** Instance **subflow içindeyken** artık **ana flow**'un shared transition'ı da çalıştırılabilir (önceden yalnızca subflow'un shared transition'ı kullanılabiliyordu). Shared transition, instance subflow'dayken kullanıma açıksa **target** tanımı **$self** olmak zorundadır; böylece subflow'dan tetiklendiğinde geçiş doğru (parent) bağlama uygulanır.
+
 ## Versiyon Yönetimi
 `VersionStrategy` özelliği ile transition'ların data versiyonu Major ve Minor olarak değiştirilebilir. Bu, geriye uyumluluk ve veri migrasyonu açısından önemlidir.
 

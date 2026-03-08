@@ -115,6 +115,8 @@ Ortak geçişler (örnek: Cancel, Approve):
 ]
 ```
 
+Instance **subflow içindeyken** kullanıma açık bir shared transition’da **target** değeri **$self** olmalıdır (v0.0.39+); böylece ana flow’un transition’ı doğru uygulanır. Ayrıntı için transition dokümanında [Shared Transitions](../transition.md#shared-transitions) bölümüne bakın.
+
 #### Cancel (İptal)
 İş akışının iptal davranışını tanımlar:
 ```json

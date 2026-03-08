@@ -55,8 +55,9 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
     "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/data"
   },
   "view": {
-    "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view",
-    "loadData": true
+    "hasView": true,
+    "loadData": true,
+    "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view"
   },
   "state": "active",
   "status": "A",
@@ -79,14 +80,26 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/approve",
       "name": "approve",
+      "view": {
+        "hasView": false,
+        "loadData": true,
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view?transitionKey=approve"
+      },
       "schema": {
+        "hasSchema": true,
         "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=approve"
       }
     },
     {
       "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/transitions/reject",
       "name": "reject",
+      "view": {
+        "hasView": false,
+        "loadData": true,
+        "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/view?transitionKey=reject"
+      },
       "schema": {
+        "hasSchema": true,
         "href": "/core/workflows/oauth-flow/instances/f410f37d-dc4b-4442-af84-e3a4707bd949/functions/schema?transitionKey=reject"
       }
     }
@@ -102,15 +115,23 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/state
 | `data` | `object` | Instance verisini almak için link |
 | `data.href` | `string` | Data fonksiyon endpoint URL'i |
 | `view` | `object` | Mevcut state için view bilgisi |
+| `view.hasView` | `boolean` | Mevcut state için view olup olmadığı (v0.0.39+) |
 | `view.href` | `string` | View fonksiyon endpoint URL'i |
 | `view.loadData` | `boolean` | View'ın instance data'ya ihtiyaç duyup duymadığı |
 | `state` | `string` | Instance'ın mevcut durumu |
 | `status` | `string` | Instance durum kodu (A=Active, C=Completed, vb.) |
 | `activeCorrelations` | `array` | Aktif sub-flow'lar ve correlation'lar |
-| `transitions` | `array` | Mevcut durumdan kullanılabilir transition'lar |
+| `transitions` | `array` | Mevcut durumdan kullanılabilir transition'lar (v0.0.39+ role grant'a göre filtrelenir) |
+| `transitions[].view` | `object` | Transition için view bilgisi (v0.0.39+) |
+| `transitions[].view.hasView` | `boolean` | Bu transition için view olup olmadığı (v0.0.39+) |
 | `transitions[].schema` | `object` | Transition için şema linki (tanımlıysa) |
+| `transitions[].schema.hasSchema` | `boolean` | Bu transition için şema olup olmadığı (v0.0.39+) |
 | `transitions[].schema.href` | `string` | transitionKey ile Schema fonksiyon endpoint URL'i |
 | `eTag` | `string` | Cache doğrulama için ETag |
+
+### Transition'ların role grant'a göre filtrelenmesi (v0.0.39+)
+
+State fonksiyonunun döndürdüğü `transitions` dizisi **transition role grant**'larına göre filtrelenir. Yalnızca çağıranın izinli rolü olduğu transition'lar dahil edilir. Roller statik (örn. kimlik sağlayıcınızdan) veya ön tanımlı sistem rolleri **$InstanceStarter** (instance'ı başlatan actor) ve **$PreviousUser** (bir önceki transition'ı tetikleyen actor) olabilir. Gereksiz view veya schema istekleri ve 404'leri önlemek için `view.hasView` ve `schema.hasSchema` kullanın.
 
 ### Aktif Correlation'lar
 
@@ -135,6 +156,10 @@ Bir workflow aktif sub-flow'lara veya correlation'lara sahip olduğunda, bunlar 
 2. **Durum İzleme**: Workflow ilerlemesini izleyen dashboard uygulamaları
 3. **Transition Keşfi**: Kullanılabilir kullanıcı eylemlerini dinamik olarak keşfetme
 4. **Sub-Flow Takibi**: Paralel sub-workflow'ların ilerlemesini izleme
+
+### Trace ve logda ParentInstanceId (v0.0.38+)
+
+Trace ve loglarda **ParentInstanceId** alanı kullanılır; böylece parent instance ile başlatılan veya tetiklenen (subflow, cross-domain) child instance'ların log ve trace'leri parent instance id ile ilişkilendirilerek takip edilebilir.
 
 ### Örnek İstek
 
@@ -217,9 +242,13 @@ Body döndürülmez, bu da bant genişliği ve işlem süresinden tasarruf sağl
 
 | Alan | Tip | Açıklama |
 |------|-----|----------|
-| `data` | `object` | Mevcut instance verisi (camelCase özellikler) |
+| `data` | `object` | Mevcut instance verisi (camelCase özellikler); Master şemada roleGrant kullanıldığında [Alan bazlı görünürlük](#master-şema-alan-bazlı-görünürlük-v039) bölümüne bakın |
 | `eTag` | `string` | Cache doğrulama için ETag |
 | `extensions` | `object` | Kayıtlı extension'lardan ek veriler |
+
+### Instance zarfı ve metadata (v0.0.39+)
+
+GetInstance ve GetInstances yanıtları, **instance zarfı** bilgisini içerebilir: `id`, `key`, `flow`, `domain`, `flowVersion`, `etag`, `tags`, **metadata** (örn. `currentState`, `effectiveState`, `status`, `createdAt`, `modifiedAt`, `createdBy`, `modifiedBy`, `createdByBehalfOf`, `modifiedByBehalfOf`), `attributes` ve `extensions`. Böylece veri yüküyle birlikte instance kimliği ve audit bilgisi sunulur.
 
 ### ETag Desteği
 
@@ -355,7 +384,7 @@ If-None-Match: "W/\"previous-etag\""
 
 ## View Fonksiyonu
 
-View fonksiyonu, mevcut workflow durumu için uygun view tanımını alır. Platforma özel içerik ve transition'a özel view'ları destekler.
+View fonksiyonu, mevcut workflow durumu için uygun view tanımını alır. Platforma özel içerik, transition'a özel view'lar ve **uzak (cross-domain) view'lar** (v0.0.39+) desteklenir: başka bir domain'de host edilen view'lar referans verilerek kullanılabilir; böylece ortak view'ların yeniden kullanımı, versiyonlama ve dağıtımı tek merkezden yönetilebilir.
 
 ### Endpoint
 
@@ -375,23 +404,32 @@ GET /{domain}/workflows/{workflow}/instances/{instance}/functions/view
 
 ### Response
 
+**İçerik tipi (v0.0.39+):** `content`, view `type`'ına göre tiplenir: `type` **Json** ise `content` bir object veya array; `type` **Html** (ve benzeri) ise `content` bir string'dir.
+
+**Json view örneği:**
 ```json
 {
   "key": "account-type-selection-view",
-  "content": "{\"type\":\"form\",\"fields\":[...]}",
-  "type": "json",
+  "content": {
+    "type": "form",
+    "title": { "en-US": "Choose Your Account Type", "tr-TR": "Hesap Türünüzü Seçin" },
+    "fields": [...]
+  },
+  "type": "Json",
   "display": "full-page",
   "label": "Hesap Tipi Seç"
 }
 ```
+
+**Html view örneği:** `content` bir string'dir (örn. `"<div>...</div>"`).
 
 ### Response Alanları
 
 | Alan | Tip | Açıklama |
 |------|-----|----------|
 | `key` | `string` | View key tanımlayıcısı |
-| `content` | `string` | View içeriği (format tipe bağlı) |
-| `type` | `string` | İçerik tipi (json, html, vb.) |
+| `content` | `string` veya `object`/`array` | View içeriği: **Json** tipi → object/array (v0.0.39+); **Html** ve benzeri → string |
+| `type` | `string` | İçerik tipi (Json, Html, vb.) |
 | `display` | `string` | Gösterim modu (full-page, popup, vb.) |
 | `label` | `string` | View için lokalize edilmiş etiket |
 
@@ -505,6 +543,30 @@ Accept: application/json
 ## Yetkilendirme (Authorization)
 
 Workflow'larda fonksiyon, flow, state ve transition seviyesinde **roles** ve **queryRoles** tanımlanabilir. Aşağıdaki sistem fonksiyon endpoint'leri yetki bilgilerini ve yetkilendirme kontrolünü sunar (v0.0.37+).
+
+### Ön tanımlı sistem rolleri (v0.0.39+)
+
+Instance yetkilendirmesi için (örn. transition roles, state/flow queryRoles veya Master şema alan görünürlüğünde) iki statik sistem rolü kullanılabilir:
+
+| Rol | Açıklama |
+|-----|----------|
+| **$InstanceStarter** | Instance'ı başlatan actor |
+| **$PreviousUser** | Bir önceki transition'ı tetikleyen actor |
+
+Transition veya roleGrant örneği:
+
+```json
+{
+  "roles": [
+    { "role": "$InstanceStarter", "grant": "allow" },
+    { "role": "$PreviousUser", "grant": "allow" }
+  ]
+}
+```
+
+### Master şema alan bazlı görünürlük (v0.0.39+)
+
+Flow **Master şeması**, şema property'lerinde **roleGrant** (`roles`) özelliği ile **alan bazlı görünürlük** tanımlayabilir. Data fonksiyonu ve veri dönen endpoint'ler (Get Instance, GetInstances vb.) authorize katmanını çalıştırır ve yalnızca çağıranın görmesine izinli olduğu alanları döndürür. `roles` tanımı olmayan property'ler tüm yetkili çağıranlara görünür. Vocabulary ve araç uyumluluğu için [roles-vocab.json](https://unpkg.com/@burgan-tech/vnext-schema@0.0.37/vocabularies/roles-vocab.json) kullanılabilir.
 
 ### Get Flow Permissions
 

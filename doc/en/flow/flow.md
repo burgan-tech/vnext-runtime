@@ -115,6 +115,8 @@ Common transitions (example: Cancel, Approve):
 ]
 ```
 
+When a shared transition is available while the instance is **in a subflow**, its **target** must be **$self** (v0.0.39+) so that the parent flow’s transition is applied correctly. See [Shared Transitions](../transition.md#shared-transitions) in the transition doc.
+
 #### Cancel
 Defines the cancel behavior for the workflow:
 ```json

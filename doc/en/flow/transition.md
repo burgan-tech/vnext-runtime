@@ -184,6 +184,8 @@ The transition is defined as `updateData` configuration in the workflow definiti
 ## Shared Transitions
 Thanks to the `AvailableIn` property, a transition can be made available in multiple states. In this case, this list determines in which states the transition can be executed.
 
+**Parent flow from subflow (v0.0.39+):** When an instance is **in a subflow**, the **parent flow’s** shared transition can now be executed (previously only the subflow’s shared transition was available). If a shared transition is available while the instance is in a subflow, its **target** must be **$self** so that the transition applies to the correct (parent) context when invoked from the subflow.
+
 ## Version Management
 With the `VersionStrategy` property, the data version of transitions can be changed as Major and Minor. This is important in terms of backward compatibility and data migration.
 

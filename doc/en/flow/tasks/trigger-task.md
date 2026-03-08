@@ -835,6 +835,7 @@ Each task type has its own setter methods:
 - **SetDomain(string domain)**: Sets the target workflow domain
 - **SetFlow(string flow)**: Sets the target workflow flow name
 - **SetBody(dynamic body)**: Sets the request body
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Add or remove a single header (v0.0.38+)
 
 ### DirectTriggerTask Setter Methods
 
@@ -844,6 +845,7 @@ Each task type has its own setter methods:
 - **SetInstance(string instanceId)**: Sets the target instance ID
 - **SetKey(string key)**: Sets the target instance key (used if instanceId is not provided)
 - **SetBody(dynamic body)**: Sets the request body
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Add or remove a single header (v0.0.38+)
 
 ### GetInstanceDataTask Setter Methods
 
@@ -852,6 +854,7 @@ Each task type has its own setter methods:
 - **SetInstance(string instanceId)**: Sets the target instance ID
 - **SetKey(string key)**: Sets the target instance key (used if instanceId is not provided, used directly as key)
 - **SetExtensions(string[] extensions)**: Sets the extensions to fetch
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Add or remove a single header (v0.0.38+)
 
 ### SubProcessTask Setter Methods
 
@@ -860,6 +863,7 @@ Each task type has its own setter methods:
 - **SetVersion(string version)**: Sets the SubFlow version
 - **SetSync(bool sync)**: Sets the `sync` flag (v0.0.35+)
 - **SetBody(dynamic body)**: Sets the request body
+- **AddHeader(string name, string value)** / **RemoveHeader(string name)**: Add or remove a single header (v0.0.38+)
 
 ### Configuration vs Dynamic Setting
 

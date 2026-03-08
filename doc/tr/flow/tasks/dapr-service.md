@@ -70,7 +70,7 @@ DaprServiceTask sınıfında property'ler read-only olarak tanımlanmıştır. B
 - **AppId**: `SetAppId(string appId)` metoduyla değiştirilir
 - **MethodName**: `SetMethodName(string methodName)` metoduyla değiştirilir
 - **QueryString**: `SetQueryString(string? queryString)` metoduyla değiştirilir
-- **Headers**: `SetHeaders(Dictionary<string, string?> headers)` metoduyla değiştirilir  
+- **Headers**: `SetHeaders(Dictionary<string, string?> headers)` metoduyla değiştirilir; tekil header ekleme/çıkarma için **AddHeader(string name, string value)** ve **RemoveHeader(string name)** kullanılır (v0.0.38+)
 - **Body**: `SetBody(dynamic body)` metoduyla değiştirilir
 - **HttpVerb**: Read-only (tanım dosyasında ayarlanır)
 - **TimeoutSeconds**: Read-only (tanım dosyasında ayarlanır)
