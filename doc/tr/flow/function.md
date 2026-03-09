@@ -295,6 +295,34 @@ Content-Type: application/json
 }
 ```
 
+#### Authorization-aware ETag (v0.0.40+)
+
+Data endpoint'leri yetkilendirme kullandığında yanıt çağırana göre değişebilir. v0.0.40 itibarıyla ETag stratejisi şöyle ayrılır:
+
+- **etag** — **Yanıt** (veya istek bağlamı, örn. yetkilendirme) değiştiğinde değişir. Genel yanıt önbelleği ve `If-None-Match` koşullu istekler için kullanın.
+- **entityETag** — **Entity verisi** değiştiğinde değişir. Gerçek veri değişimini (örn. senkronizasyon veya invalidation) tespit etmek için kullanın.
+
+Her iki değer hem response body'de hem header'larda yer alır:
+
+| Body alanı     | Response header   | Anlamı                    |
+|----------------|-------------------|---------------------------|
+| `etag`         | `ETag`            | Yanıt/istek değişimi      |
+| `entityEtag`   | `X-Entity-ETag`   | Entity veri değişimi      |
+
+**Örnek response body:**
+```json
+{
+  "etag": "\"Hko5JI4fDcAOOnf-KGFNA7Xo_MpuxcLl1_hg5j2Sua8\"",
+  "entityEtag": "\"01KK8Q8N5T6H49T8AENYT6Z6ZQ\""
+}
+```
+
+**Örnek response header'ları:**
+```http
+ETag: "Hko5JI4fDcAOOnf-KGFNA7Xo_MpuxcLl1_hg5j2Sua8"
+X-Entity-ETag: "01KK8Q8N5T6H49T8AENYT6Z6ZQ"
+```
+
 ### Extension'lar
 
 Extension'lar, instance verisini zenginleştiren ek bağlam verisi sağlar:

@@ -72,7 +72,7 @@ Schema, workflow bileşenleri için giriş ve çıkış verilerinin yapısını 
 | `version` | `string` | Versiyon bilgisi (semantic versioning) |
 | `domain` | `string` | Schema'nın ait olduğu domain |
 | `flow` | `string` | Flow stream bilgisi (varsayılan: `sys-schemas`) |
-| `flowVersion` | `string` | Flow versiyon bilgisi |
+| `flowVersion` | `string` | Flow versiyon bilgisi (tanım şemalarında zorunlu, v0.0.40+) |
 | `tags` | `string[]` | Kategorilendirme ve arama için etiketler |
 | `attributes` | `object` | Schema içeriği ve metadata |
 

@@ -47,7 +47,7 @@ HTTP Task is a task type used to send HTTP requests to external web services. Wi
 
 ### Fields
 
-The following fields are defined in the config section of HTTP Task:
+The following fields are defined in the config section of HTTP Task. The task definition requires a `config` section (v0.0.40+).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|

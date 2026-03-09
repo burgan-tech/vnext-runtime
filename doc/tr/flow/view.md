@@ -61,7 +61,7 @@ public sealed class View : IDomainEntity, IViewReference, IReferenceSetter
 
 #### Tipe bağlı içerik (v0.0.39+)
 
-View tanım şemasında **content** alanı view tipine göre **string veya JSON** kabul eder: **Json** tipi için content bir object veya array; **Html**, **Markdown** ve benzeri tipler için content bir string'dir. Bu sayede versiyon kontrolü ve tasarım araçlarında conflict yönetimi iyileşir; geriye dönük uyumluluk korunur. Ayrıca bkz. [vnext-schema #85](https://github.com/burgan-tech/vnext-schema/issues/85).
+View tanım şemasında **content** alanı view tipine göre **string veya JSON** kabul eder: **Json** tipi için content bir object veya array; **Html**, **Markdown** ve benzeri tipler için content bir string'dir. Bu sayede versiyon kontrolü ve tasarım araçlarında conflict yönetimi iyileşir; geriye dönük uyumluluk korunur. Ayrıca bkz. [vnext-schema #85](https://github.com/burgan-tech/vnext-schema/issues/85). View function'da JSON **content** için maksimum derinlik 256'dır (v0.0.40+).
 
 ### View Tipleri (ViewType)
 

@@ -48,7 +48,7 @@ Dapr Service Task is a task type used to make calls to microservices using the D
 
 ### Fields
 
-The following fields are defined in the config section of DAPR Service Task:
+The following fields are defined in the config section of DAPR Service Task. The task definition requires a `config` section (v0.0.40+).
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|

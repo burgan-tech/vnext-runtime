@@ -51,7 +51,7 @@ Dapr Service Task, Dapr service invocation özelliği kullanarak mikroservislere
 
 ### Alanlar
 
-DAPR Service Task'ın config bölümünde aşağıdaki alanlar tanımlanır:
+DAPR Service Task'ın config bölümünde aşağıdaki alanlar tanımlanır. Task tanımında `config` zorunludur (v0.0.40+).
 
 | Alan | Tip | Varsayılan | Açıklama |
 |------|-----|------------|----------|

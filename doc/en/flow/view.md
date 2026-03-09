@@ -61,7 +61,7 @@ The `Content` property contains the actual UI definition. This can be:
 
 #### Type-dependent content (v0.0.39+)
 
-The view definition schema allows **content** to be **string or JSON** depending on view type: for **Json** type, content is an object or array; for **Html**, **Markdown**, and similar types, content is a string. This improves conflict handling in version control and design tools while remaining backward compatible. See also [vnext-schema #85](https://github.com/burgan-tech/vnext-schema/issues/85).
+The view definition schema allows **content** to be **string or JSON** depending on view type: for **Json** type, content is an object or array; for **Html**, **Markdown**, and similar types, content is a string. This improves conflict handling in version control and design tools while remaining backward compatible. See also [vnext-schema #85](https://github.com/burgan-tech/vnext-schema/issues/85). The View function supports JSON **content** up to a maximum depth of 256 (v0.0.40+).
 
 ### View Types (ViewType)
 
