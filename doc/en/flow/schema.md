@@ -72,7 +72,7 @@ A Schema is a domain entity that defines the structure of input and output data 
 | `version` | `string` | Version information (semantic versioning) |
 | `domain` | `string` | Domain the schema belongs to |
 | `flow` | `string` | Flow stream information (default: `sys-schemas`) |
-| `flowVersion` | `string` | Flow version information |
+| `flowVersion` | `string` | Flow version information (required in definition schemas since v0.0.40) |
 | `tags` | `string[]` | Tags for categorization and searching |
 | `attributes` | `object` | Schema content and metadata |
 

@@ -852,6 +852,8 @@ Task'lar için gerekli alanlar **iki şekilde** sağlanabilir:
 1. **Statik Konfigürasyon**: Task JSON tanımında config bölümünde belirtilir
 2. **Dinamik Ayarlama**: InputHandler içinde setter metodları ile runtime'da ayarlanır
 
+Task tanımlarında `config` alanı zorunludur (v0.0.40+).
+
 **Öncelik Kuralı:** Hem JSON config'te hem de InputHandler mapping'inde aynı alan tanımlanmışsa, **InputHandler'da set edilen değer önceliğe sahiptir**. Bu sayede runtime'da dinamik değerlerle statik konfigürasyon override edilebilir.
 
 **Kullanım Stratejileri:**

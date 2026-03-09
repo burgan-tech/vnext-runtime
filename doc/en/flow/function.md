@@ -295,6 +295,34 @@ Content-Type: application/json
 }
 ```
 
+#### Authorization-aware ETag (v0.0.40+)
+
+When the data endpoints use authorization, the response can vary per caller. From v0.0.40 the ETag strategy distinguishes:
+
+- **etag** — Changes when the **response** (or request context, e.g. authorization) changes. Use for general response caching and `If-None-Match` conditional requests.
+- **entityETag** — Changes when the **entity data** changes. Use to detect actual data changes (e.g. for sync or invalidation).
+
+Both values appear in the response body and in headers:
+
+| Body field     | Response header   | Meaning                |
+|----------------|-------------------|------------------------|
+| `etag`         | `ETag`            | Response/request change |
+| `entityEtag`   | `X-Entity-ETag`   | Entity data change      |
+
+**Example response body:**
+```json
+{
+  "etag": "\"Hko5JI4fDcAOOnf-KGFNA7Xo_MpuxcLl1_hg5j2Sua8\"",
+  "entityEtag": "\"01KK8Q8N5T6H49T8AENYT6Z6ZQ\""
+}
+```
+
+**Example response headers:**
+```http
+ETag: "Hko5JI4fDcAOOnf-KGFNA7Xo_MpuxcLl1_hg5j2Sua8"
+X-Entity-ETag: "01KK8Q8N5T6H49T8AENYT6Z6ZQ"
+```
+
 ### Extensions
 
 Extensions provide additional context data that enriches the instance data:

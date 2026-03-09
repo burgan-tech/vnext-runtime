@@ -47,7 +47,7 @@ HTTP Task, harici web servislerine HTTP istekleri göndermek için kullanılan g
 
 ### Alanlar
 
-HTTP Task'ın config bölümünde aşağıdaki alanlar tanımlanır:
+HTTP Task'ın config bölümünde aşağıdaki alanlar tanımlanır. Task tanımında `config` zorunludur (v0.0.40+).
 
 | Alan | Tip | Varsayılan | Açıklama |
 |------|-----|------------|----------|

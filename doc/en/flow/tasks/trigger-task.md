@@ -872,6 +872,8 @@ Required fields for tasks can be provided in **two ways**:
 1. **Static Configuration**: Specified in the config section of the task JSON definition
 2. **Dynamic Setting**: Set at runtime using setter methods in the InputHandler
 
+The `config` section is required in task definitions (v0.0.40+).
+
 **Priority Rule:** If the same field is defined in both JSON config and InputHandler mapping, **the value set in InputHandler takes precedence**. This allows dynamic runtime values to override static configuration.
 
 **Usage Strategies:**
