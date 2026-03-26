@@ -201,7 +201,17 @@ The state machine follows the following lifecycle:
 
 ### SubFlow
 - Sub workflow reference for SubFlow type states
-- Contains type, reference, and mapping information
+- Contains type, process (or reference), mapping, and optional **overrides** (v0.0.42+)
+
+### SubFlow overrides (v0.0.42+)
+
+Legacy **view**-level overrides remain supported for backward compatibility. The **`subFlow.overrides`** object applies **replace-mode** adjustments used when building **authorize** and **transition list** responses for the parent instance:
+
+- **`transitions`**: per transition key, override **roles** (grant list) for who may execute the transition
+- **`states`**: per state key, override **queryRoles** for data/query authorization
+- **`timeout`**: override or replace timeout/timer configuration for the subflow segment
+
+Child workflow definitions are unchanged; overrides are evaluated in the parent context.
 
 ## State Schema
 
@@ -224,8 +234,17 @@ The state machine follows the following lifecycle:
   "onExits": [...],
   "subFlow": {
     "type": "string",
-    "reference": {...},
-    "mapping": {...}
+    "process": { "key": "string", "domain": "string", "flow": "string", "version": "string" },
+    "mapping": { "location": "string", "code": "string" },
+    "overrides": {
+      "timeout": {},
+      "transitions": {
+        "transition-key": { "roles": [{ "role": "string", "grant": "allow|deny" }] }
+      },
+      "states": {
+        "state-key": { "queryRoles": [{ "role": "string", "grant": "allow|deny" }] }
+      }
+    }
   }
 }
 ```

@@ -89,7 +89,11 @@ Init service downloads the package and deploys it to the platform using the `/ap
 
 ### Flow version on instance (v0.0.39+)
 
-As of v0.0.39, the **flow version** with which an instance was started is **stored on the instance** and used for transitions. This ensures the instance continues on the same flow version it was started with. 
+As of v0.0.39, the **flow version** with which an instance was started is **stored on the instance** and used for transitions. This ensures the instance continues on the same flow version it was started with.
+
+### Logging and ingress timeouts (v0.0.42+)
+
+Init service logs include **timestamps** on each line for easier operations. Long-running **package publish** or definition deploy calls may require higher **nginx** (or other ingress) **proxy read/send timeouts** in Helm charts so clients do not see timeouts before the server finishes.
 
 ---
 
@@ -425,7 +429,7 @@ Each template uses positional parameters that are replaced at runtime:
 |----------|---------|----------------------|
 | **Start** | Start new instance endpoint | `/api/ecommerce/workflows/payment-processing/instances/start` |
 | **Transition** | Trigger transition on instance | `/api/ecommerce/workflows/payment-processing/instances/abc-123/transitions/approve` |
-| **FunctionList** | List available functions | `/api/ecommerce/workflows/payment-processing/functions/view` |
+| **FunctionList** | HATEOAS link template for function discovery (v0.0.42+: arbitrary `GET .../workflows/{workflow}/functions/{function}` by name is **removed**—use **InstanceList** / instance-scoped **Data**, **View**, **State**) | `/api/ecommerce/workflows/payment-processing/functions/view` |
 | **InstanceList** | List workflow instances | `/api/ecommerce/workflows/payment-processing/instances` |
 | **Instance** | Get specific instance | `/api/ecommerce/workflows/payment-processing/instances/abc-123` |
 | **InstanceHistory** | Get instance transition history | `/api/ecommerce/workflows/payment-processing/instances/abc-123/transitions` |

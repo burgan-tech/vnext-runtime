@@ -91,6 +91,10 @@ Init service paketi indirir ve `/api/v1/definitions/publish` endpointini kullana
 
 v0.0.39 itibarıyla bir instance'ın **başlatıldığı flow versiyonu** **instance üzerinde saklanır** ve transition'lar için kullanılır. Böylece instance, başlatıldığı flow versiyonu ile devam eder.
 
+### Loglama ve ingress zaman aşımları (v0.0.42+)
+
+Init servis log satırlarında **zaman damgası** bulunur. Uzun süren **paket publish** veya tanım deploy çağrıları için Helm'teki **nginx** (veya diğer ingress) **proxy read/send timeout** değerlerini artırmanız gerekebilir; böylece sunucu işlemi bitirmeden istemci zaman aşımına düşmez.
+
 ---
 
 ## API Endpointleri
@@ -423,7 +427,7 @@ Her şablon, çalışma zamanında değiştirilen konumsal parametreler kullanı
 |--------|------|------------------------|
 | **Start** | Yeni instance başlatma endpoint'i | `/api/ecommerce/workflows/payment-processing/instances/start` |
 | **Transition** | Instance üzerinde transition tetikleme | `/api/ecommerce/workflows/payment-processing/instances/abc-123/transitions/approve` |
-| **FunctionList** | Kullanılabilir fonksiyonları listeleme | `/api/ecommerce/workflows/payment-processing/functions/view` |
+| **FunctionList** | HATEOAS fonksiyon keşfi şablonu (v0.0.42+: key ile `GET .../workflows/{workflow}/functions/{function}` **kaldırıldı**—**InstanceList** ve instance kapsamlı **Data** / **View** / **State** kullanın) | `/api/ecommerce/workflows/payment-processing/functions/view` |
 | **InstanceList** | Workflow instance'larını listeleme | `/api/ecommerce/workflows/payment-processing/instances` |
 | **Instance** | Belirli bir instance getirme | `/api/ecommerce/workflows/payment-processing/instances/abc-123` |
 | **InstanceHistory** | Instance transition geçmişi | `/api/ecommerce/workflows/payment-processing/instances/abc-123/transitions` |

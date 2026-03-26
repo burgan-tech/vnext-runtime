@@ -405,16 +405,21 @@ public abstract class ScriptBase
     protected async Task<string> GetSecretAsync(string storeName, string secretStore, string secretKey);
     protected Dictionary<string, string> GetSecrets(string storeName, string secretStore);
     
-    // Property check functions (newly added)
+    // Property check / read (ScriptBase)
     protected static bool HasProperty(object obj, string propertyName);
     protected static object? GetPropertyValue(object obj, string propertyName);
-    
-    // Typed property value retrieval (newly added)
     protected T? GetPropertyValue<T>(object obj, string propertyName);
+
+    // Dynamic object + list helpers (v0.0.42+; see Collection helpers below)
+    // CreateObject, CreateList, SetProperty, RemoveProperty, ToDictionary,
+    // GetList, AsList, ListAdd, ListRemove, ListFilter, ListCount, ListAny,
+    // ListFirst, ListLast, ListSelect<TResult> — see table for behavior
 }
 ```
 
-> **Newly Added Methods**: `HasProperty`, `GetPropertyValue`, and generic `GetPropertyValue<T>` methods have been added to ScriptBase. These methods provide safe property access and type conversion on dynamic objects.
+> **Property helpers**: `HasProperty`, `GetPropertyValue`, and `GetPropertyValue<T>` provide safe access and conversion on dynamic / JSON-shaped objects.
+>
+> **Collection helpers (v0.0.42+)**: `CreateObject`, `CreateList`, `SetProperty`, `GetList`, `AsList`, list query/mutate methods, `RemoveProperty`, and `ToDictionary` support in-script normalization of instance data without fragile casts. See [Collection and dynamic object helpers](#collection-and-dynamic-object-helpers) below and sample mappings under [`release/extra/script-base-usage/`](../../../release/extra/script-base-usage/).
 
 ### Usage Example
 
@@ -470,6 +475,36 @@ public class SafePropertyAccessMapping : ScriptBase, IMapping
         return Task.FromResult(new ScriptResponse());
     }
 }
+```
+
+### Collection and dynamic object helpers
+
+From **v0.0.42**, `ScriptBase` exposes helpers for **dynamic objects** and **lists** commonly stored under `Instance.Data`. They complement `HasProperty` / `GetPropertyValue` when you build or reshape collections inside **InputHandler** / **OutputHandler**.
+
+| Method | Purpose |
+|--------|---------|
+| `CreateObject()` | New dynamic object to attach properties with `SetProperty`. |
+| `CreateList()` | New empty list for dynamic items. |
+| `SetProperty(obj, name, value)` | Set a property on a dynamic object. |
+| `RemoveProperty(obj, name)` | Remove a property; returns `true` if it existed. |
+| `ToDictionary(obj)` | Copy properties to `Dictionary<string, object>`; `null` → empty dictionary. |
+| `GetList(instanceData, propertyName)` | Read a list property from instance (or nested) data. |
+| `AsList(value)` | Normalize to a list; `null` or non-list → empty list (safe for guards). |
+| `ListAdd(list, item)` | Append an item. |
+| `ListRemove(list, predicate)` | Remove all matches; returns **count** removed. |
+| `ListFilter(list, predicate)` | New list containing matches. |
+| `ListCount(list, predicate?)` | Count all items, or count matches when `predicate` is set. |
+| `ListAny(list, predicate?)` | `true` if any item exists (optionally matching `predicate`). |
+| `ListFirst(list, predicate?)` / `ListLast(list, predicate?)` | First or last element, optional filter; **null** if none. |
+| `ListSelect<TResult>(list, selector)` | Project each element (e.g. extract `name` as `string`). |
+
+**Runnable examples** (each file targets a subset of the API): [`release/extra/script-base-usage/`](../../../release/extra/script-base-usage/) — e.g. `CreateAndSetMapping.csx`, `GetListAndAsListMapping.csx`, `ListFilterCountAnyMapping.csx`, `ListAddRemoveMapping.csx`, `ListFirstLastMapping.csx`, `ListSelectMapping.csx`, `RemovePropertyToDictionaryMapping.csx`.
+
+```csharp
+// Typical pattern: read a list from Instance.Data, filter, project
+var items = GetList(context.Instance?.Data, "lineItems");
+var active = ListFilter(items, x => x.status == "active");
+var codes = ListSelect<string>(active, x => (string)x.productCode);
 ```
 
 ### Logging Functions

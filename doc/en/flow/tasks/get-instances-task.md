@@ -8,7 +8,7 @@ The GetInstances Task enables fetching instance data from other workflows with s
 |----------|-------|
 | **Task Type** | `15` |
 | **Purpose** | Fetch instances from another workflow |
-| **API Endpoint** | `GET /api/v1/{domain}/workflows/{workflow}/functions/data` |
+| **API Endpoint** | `GET /api/v1/{domain}/workflows/{workflow}/instances` (v0.0.42+; replaces `.../functions/data` for this task) |
 
 ## Configuration
 
@@ -30,7 +30,7 @@ The GetInstances Task enables fetching instance data from other workflows with s
       "page": 1,
       "pageSize": 10,
       "sort": "-CreatedAt",
-      "filter": ["status eq 'active'"]
+      "filter": "{\"status\":{\"eq\":\"active\"}}"
     }
   }
 }
@@ -45,7 +45,7 @@ The GetInstances Task enables fetching instance data from other workflows with s
 | `page` | int | No | `1` | Page number (1-based index) |
 | `pageSize` | int | No | `10` | Number of items per page |
 | `sort` | string | No | - | Sort field with optional direction prefix |
-| `filter` | string[] | No | - | Array of filter expressions |
+| `filter` | string | No | - | Single filter expression (JSON or legacy string; v0.0.37+ — not an array) |
 | `useDapr` | bool | No | `false` | Use Dapr service invocation instead of direct HTTP |
 
 ### Sort Parameter
@@ -64,14 +64,11 @@ The `sort` parameter specifies the field to sort by with an optional direction p
 
 ### Filter Parameter
 
-The `filter` parameter accepts an array of filter expressions that are applied to the query:
+The `filter` parameter must be a **single** expression (string), consistent with the [Instance Filtering Guide](../instance-filtering.md) (v0.0.37+).
 
 ```json
 {
-  "filter": [
-    "status eq 'active'",
-    "amount gt 1000"
-  ]
+  "filter": "{\"and\":[{\"status\":{\"eq\":\"Active\"}},{\"attributes.amount\":{\"gt\":\"1000\"}}]}"
 }
 ```
 
@@ -139,10 +136,7 @@ Fetch active instances with specific criteria:
     "config": {
       "domain": "core",
       "flow": "order-workflow",
-      "filter": [
-        "status eq 'active'",
-        "total gt 500"
-      ]
+      "filter": "{\"and\":[{\"status\":{\"eq\":\"active\"}},{\"attributes.total\":{\"gt\":\"500\"}}]}"
     }
   }
 }
@@ -168,10 +162,7 @@ Full configuration with all parameters:
       "page": 1,
       "pageSize": 50,
       "sort": "-CreatedAt",
-      "filter": [
-        "state eq 'pending'",
-        "priority eq 'high'"
-      ],
+      "filter": "{\"and\":[{\"state\":{\"eq\":\"pending\"}},{\"attributes.priority\":{\"eq\":\"high\"}}]}",
       "useDapr": false
     }
   }
@@ -187,9 +178,9 @@ The task returns a paginated response containing instance data. Use mapping to e
 ```json
 {
   "links": {
-    "self": "/api/v1/core/workflows/order-workflow/functions/data?page=1&pageSize=10",
-    "first": "/api/v1/core/workflows/order-workflow/functions/data?page=1&pageSize=10",
-    "next": "/api/v1/core/workflows/order-workflow/functions/data?page=2&pageSize=10",
+    "self": "/api/v1/core/workflows/order-workflow/instances?page=1&pageSize=10",
+    "first": "/api/v1/core/workflows/order-workflow/instances?page=1&pageSize=10",
+    "next": "/api/v1/core/workflows/order-workflow/instances?page=2&pageSize=10",
     "prev": ""
   },
   "items": [

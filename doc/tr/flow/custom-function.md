@@ -86,7 +86,9 @@ Her fonksiyon bir task çalıştırabilir ve task sonucundaki veri mapping ile i
 | Özellik | Tip | Açıklama |
 |---------|-----|----------|
 | `scope` | `string` | Fonksiyon kapsamı (`I` = Instance, `F` = Workflow, `D` = Domain) |
-| `task` | `object` | Çalıştırılacak task tanımı |
+| `task` | `object` | Tek task (eski şekil; tek görev için) |
+| `onExecutionTasks` | `array` | Sıralı çalıştırılacak task'lar (v0.0.42+); aşağıdaki **Çoklu task** bölümüne bakın |
+| `output` | `object` | İsteğe bağlı çıktı mapping betiği: `location` / `code` (v0.0.42+); **`IOutputHandler`** uygular |
 
 ### Scope Değerleri
 
@@ -122,6 +124,69 @@ Her fonksiyon bir task çalıştırabilir ve task sonucundaki veri mapping ile i
 | `task` | `object` | Task referansı |
 | `mapping` | `object` | Input/Output dönüşüm mapping'i |
 
+### Çoklu task çalıştırma ve output mapping (v0.0.42+)
+
+Tek bir **`task`** yerine **`attributes.onExecutionTasks`** ile **sırayla** birden fazla task çalıştırılabilir. Her öğede **`order`**, **`task`** referansı ve isteğe bağlı **`mapping`** bulunur. Sonraki task'lar, aynı fonksiyon yürütmesinde önceki task çıktılarını kullanabilir.
+
+İsteğe bağlı **`attributes.output`**, **`IOutputHandler`** uygulayan bir betiğe işaret eder. **`OutputHandler`** içinde sonuçlar **`context.OutputResponse`** üzerinden okunur (anahtarlar çalıştırılan task anahtarlarına göre, tipik olarak **camelCase**).
+
+```json
+"attributes": {
+  "scope": "I",
+  "onExecutionTasks": [
+    {
+      "order": 1,
+      "task": {
+        "key": "validate-account-policies",
+        "domain": "core",
+        "flow": "sys-tasks",
+        "version": "1.0.0"
+      },
+      "mapping": {
+        "location": "./src/FunctionValidatePoliciesMapping.csx",
+        "code": ""
+      }
+    },
+    {
+      "order": 2,
+      "task": {
+        "key": "get-data-from-workflow",
+        "domain": "core",
+        "flow": "sys-tasks",
+        "version": "1.0.0"
+      },
+      "mapping": {
+        "location": "./src/FunctionGetInstanceDataMapping.csx",
+        "code": ""
+      }
+    }
+  ],
+  "output": {
+    "location": "./src/FunctionOutputMapping.csx",
+    "code": ""
+  }
+}
+```
+
+```csharp
+using System.Threading.Tasks;
+using BBT.Workflow.Scripting;
+
+public class FunctionOutputMapping : IOutputHandler
+{
+    public Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        var policies = context.OutputResponse["validateAccountPolicies"].data;
+        var instanceData = context.OutputResponse?["getDataFromWorkflow"].data;
+        return Task.FromResult(new ScriptResponse
+        {
+            Key = "multi-task-function-output",
+            Data = new { policyValidation = policies, instanceSnapshot = instanceData }
+        });
+    }
+}
+```
+
 ---
 
 ## Tüketim Noktaları
@@ -140,13 +205,9 @@ GET /api/v1/{domain}/functions
 GET /api/v1/{domain}/functions/{function}
 ```
 
-### Workflow Seviyesi Fonksiyonlar
+### Workflow seviyesi özel fonksiyon URL'i (v0.0.42'de kaldırıldı)
 
-**Bir workflow içindeki fonksiyonu çalıştırır:**
-
-```http
-GET /api/v1/{domain}/workflows/{workflow}/functions/{function}
-```
+**`GET /api/v1/{domain}/workflows/{workflow}/functions/{function}`** kalıbı (instance id olmadan kayıtlı fonksiyon adıyla çağrı) **v0.0.42** itibarıyla **kaldırılmıştır**. Bunun yerine aşağıdaki **instance kapsamlı** fonksiyon uçları, **workflow instance listeleme** (`GET .../workflows/{workflow}/instances`) veya dokümante edilen diğer API'ler kullanılmalıdır.
 
 ### Instance Seviyesi Fonksiyonlar
 

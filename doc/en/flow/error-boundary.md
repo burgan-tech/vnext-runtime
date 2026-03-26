@@ -12,6 +12,8 @@ The vNext workflow system implements a hierarchical error handling mechanism tha
 
 > **Important:** ErrorBoundary definitions work at **task execution** level. Regardless of where the boundary is defined (global, state, or task), actions are taken based on task execution errors.
 
+> **Schema alignment (v0.0.42+):** Workflow JSON Schema for **errorBoundary** (including **abort** actions that reference a **transition**) matches backend validators when you use **vnext-schema** and **Ajv2019** validation as described in [Schema Management](./schema.md).
+
 ---
 
 ## Error Resolution Hierarchy

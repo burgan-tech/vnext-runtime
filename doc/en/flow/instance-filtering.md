@@ -6,19 +6,23 @@ The vNext workflow system provides powerful filtering capabilities for querying 
 
 ## Supported Routes
 
-### 1. Function/Data Route
+### 1. Workflow instances route (recommended, v0.0.42+)
 
-```http
-GET /{domain}/workflows/{workflow}/functions/data?filter={...}
-```
-
-### 2. Workflow Instances Route
+Use this route for **listing and filtering** workflow instances (including **GetInstancesTask** and integrations that replaced the old workflow-level patterns):
 
 ```http
 GET /{domain}/workflows/{workflow}/instances?filter={...}
 ```
 
-Both routes support the same filtering capabilities via the `filter` query parameter.
+### 2. Function/Data route (instance-scoped data)
+
+```http
+GET /{domain}/workflows/{workflow}/instances/{instance}/functions/data?filter={...}
+```
+
+> **Note:** For **bulk / workflow-level** queries, prefer **`.../instances?filter=...`**. The unscoped `GET .../workflows/{workflow}/functions/data` pattern is not the supported path for **GetInstancesTask** as of v0.0.42 (see [release notes](../../../release/RELEASE-NOTES-v0.0.42.md)).
+
+Both supported list/filter entry points use the same `filter` query parameter semantics where applicable.
 
 ---
 
@@ -50,7 +54,7 @@ Direct database columns:
 | `currentState` (or `state`) | string | Current state | eq, ne, like, startswith, endswith, in, nin |
 | `effectiveState` | string | Effective state name (v0.0.33+) | eq, ne, like, startswith, endswith, in, nin |
 | `effectiveStateType` | int | Effective state type code (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
-| `effectiveStateSubType` | int | Effective state subtype code (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
+| `effectiveStateSubType` | int | Effective state subtype code (v0.0.33+; v0.0.42+: **7** = Cancelled, **8** = Timeout) | eq, ne, gt, ge, lt, le, in, nin |
 | `createdAt` | DateTime | Creation time | eq, ne, gt, ge, lt, le, between |
 | `modifiedAt` | DateTime | Modification time | eq, ne, gt, ge, lt, le, between |
 | `completedAt` | DateTime | Completion time | eq, ne, gt, ge, lt, le, between |
@@ -138,7 +142,7 @@ Instance columns are applied in the database; ordering by `attributes.*` uses th
 ### 1. Simple Instance Column Filter
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"key":{"eq":"payment-12345"}}
+GET /banking/workflows/payment-workflow/instances?filter={"key":{"eq":"payment-12345"}}
 ```
 
 ### 2. Multiple Instance Column Filters (AND Logic)
@@ -146,7 +150,7 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"key":{"eq":"paym
 Multiple fields at the same level are combined with AND logic:
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"eq":"Active"},"createdAt":{"gt":"2024-01-01"}}
+GET /banking/workflows/payment-workflow/instances?filter={"status":{"eq":"Active"},"createdAt":{"gt":"2024-01-01"}}
 ```
 
 ### 3. JSON Data Field Filter (attributes)
@@ -154,47 +158,47 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"eq":"A
 Filter on JSON data fields using the `attributes` prefix:
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"attributes":{"customerId":{"eq":"CUST-123"}}}
+GET /banking/workflows/payment-workflow/instances?filter={"attributes":{"customerId":{"eq":"CUST-123"}}}
 ```
 
 ### 4. Mixed Filter (Instance + JSON Fields)
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"key":{"like":"payment"},"status":{"eq":"Active"},"attributes":{"amount":{"gt":"500"}}}
+GET /banking/workflows/payment-workflow/instances?filter={"key":{"like":"payment"},"status":{"eq":"Active"},"attributes":{"amount":{"gt":"500"}}}
 ```
 
 ### 5. Date Range Filter
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"createdAt":{"between":["2024-01-01","2024-01-31"]}}
+GET /banking/workflows/payment-workflow/instances?filter={"createdAt":{"between":["2024-01-01","2024-01-31"]}}
 ```
 
 ### 6. Status IN Filter
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"in":["Active","Busy"]}}
+GET /banking/workflows/payment-workflow/instances?filter={"status":{"in":["Active","Busy"]}}
 ```
 
 ### 7. EffectiveState Filters (v0.0.33+)
 
 **Filter by Effective State Name:**
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"effectiveState":{"eq":"awaiting-approval"}}
+GET /banking/workflows/payment-workflow/instances?filter={"effectiveState":{"eq":"awaiting-approval"}}
 ```
 
 **Filter by Effective State SubType (Human Tasks):**
 ```http
-GET /approvals/workflows/approval-flow/functions/data?filter={"effectiveStateSubType":{"eq":"6"}}
+GET /approvals/workflows/approval-flow/instances?filter={"effectiveStateSubType":{"eq":"6"}}
 ```
 
 **Filter by Effective State SubType (Busy Tasks):**
 ```http
-GET /processing/workflows/order-flow/functions/data?filter={"effectiveStateSubType":{"eq":"5"}}
+GET /processing/workflows/order-flow/instances?filter={"effectiveStateSubType":{"eq":"5"}}
 ```
 
 **Combined Status and EffectiveState Filter:**
 ```http
-GET /core/workflows/payment/functions/data?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
+GET /core/workflows/payment/instances?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
 ```
 
 **EffectiveState SubType Values:**
@@ -269,7 +273,7 @@ Negates a condition:
 ### Group By with Count
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"groupBy":{"field":"attributes.status","aggregations":{"count":true}}}
+GET /banking/workflows/payment-workflow/instances?filter={"groupBy":{"field":"attributes.status","aggregations":{"count":true}}}
 ```
 
 **Response:**
@@ -286,7 +290,7 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"groupBy":{"field
 ### Group By with Multiple Aggregations
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"groupBy":{"field":"attributes.currency","aggregations":{"count":true,"sum":"attributes.amount","avg":"attributes.amount","min":"attributes.amount","max":"attributes.amount"}}}
+GET /banking/workflows/payment-workflow/instances?filter={"groupBy":{"field":"attributes.currency","aggregations":{"count":true,"sum":"attributes.amount","avg":"attributes.amount","min":"attributes.amount","max":"attributes.amount"}}}
 ```
 
 **Response:**
@@ -369,7 +373,7 @@ When you need statistics, use group by instead of fetching all records.
 Always use `page` and `pageSize` parameters:
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={...}&page=1&pageSize=20
+GET /banking/workflows/payment-workflow/instances?filter={...}&page=1&pageSize=20
 ```
 
 ---

@@ -319,6 +319,8 @@ public class SecureMapping : ScriptBase, IMapping
 }
 ```
 
+**v0.0.42+:** `ScriptBase` also adds **collection and dynamic-object** helpers (`CreateObject`, `GetList`, `ListFilter`, `ListSelect`, and related APIs). See the [Mapping Guide — Collection helpers](flow/mapping.md#collection-and-dynamic-object-helpers) and runnable samples under [`release/extra/script-base-usage/`](../../release/extra/script-base-usage/).
+
 ---
 
 ## 📞 Support and Contribution

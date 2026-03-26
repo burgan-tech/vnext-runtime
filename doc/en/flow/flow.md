@@ -346,6 +346,11 @@ Represents different stages of the workflow. For detailed information: [📄 Sta
         "mapping": {
           "location": "string",
           "code": "string (BASE64)"
+        },
+        "overrides": {
+          "timeout": {},
+          "transitions": {},
+          "states": {}
         }
       }
     }

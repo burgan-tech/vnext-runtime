@@ -8,7 +8,7 @@ GetInstances Task, sayfalama, sıralama ve filtreleme desteğiyle diğer workflo
 |---------|-------|
 | **Task Tipi** | `15` |
 | **Amaç** | Başka bir workflow'dan instance'ları çek |
-| **API Endpoint** | `GET /api/v1/{domain}/workflows/{workflow}/functions/data` |
+| **API Endpoint** | `GET /api/v1/{domain}/workflows/{workflow}/instances` (v0.0.42+; bu görev için `.../functions/data` yerine) |
 
 ## Konfigürasyon
 
@@ -30,7 +30,7 @@ GetInstances Task, sayfalama, sıralama ve filtreleme desteğiyle diğer workflo
       "page": 1,
       "pageSize": 10,
       "sort": "-CreatedAt",
-      "filter": ["status eq 'active'"]
+      "filter": "{\"status\":{\"eq\":\"active\"}}"
     }
   }
 }
@@ -45,7 +45,7 @@ GetInstances Task, sayfalama, sıralama ve filtreleme desteğiyle diğer workflo
 | `page` | int | Hayır | `1` | Sayfa numarası (1 tabanlı indeks) |
 | `pageSize` | int | Hayır | `10` | Sayfa başına öğe sayısı |
 | `sort` | string | Hayır | - | İsteğe bağlı yön önekiyle sıralama alanı |
-| `filter` | string[] | Hayır | - | Filtre ifadeleri dizisi |
+| `filter` | string | Hayır | - | Tek filtre ifadesi (JSON veya legacy string; v0.0.37+ — dizi değil) |
 | `useDapr` | bool | Hayır | `false` | Doğrudan HTTP yerine Dapr servis çağrısı kullan |
 
 ### Sort Parametresi
@@ -64,14 +64,11 @@ GetInstances Task, sayfalama, sıralama ve filtreleme desteğiyle diğer workflo
 
 ### Filter Parametresi
 
-`filter` parametresi, sorguya uygulanan filtre ifadelerinden oluşan bir dizi kabul eder:
+`filter` parametresi **tek** bir ifade (string) olmalıdır; [Instance Filtreleme Kılavuzu](../instance-filtering.md) ile uyumludur (v0.0.37+).
 
 ```json
 {
-  "filter": [
-    "status eq 'active'",
-    "amount gt 1000"
-  ]
+  "filter": "{\"and\":[{\"status\":{\"eq\":\"Active\"}},{\"attributes.amount\":{\"gt\":\"1000\"}}]}"
 }
 ```
 
@@ -139,10 +136,7 @@ Belirli kriterlere sahip aktif instance'ları çek:
     "config": {
       "domain": "core",
       "flow": "order-workflow",
-      "filter": [
-        "status eq 'active'",
-        "total gt 500"
-      ]
+      "filter": "{\"and\":[{\"status\":{\"eq\":\"active\"}},{\"attributes.total\":{\"gt\":\"500\"}}]}"
     }
   }
 }
@@ -168,10 +162,7 @@ Tüm parametreleri içeren tam konfigürasyon:
       "page": 1,
       "pageSize": 50,
       "sort": "-CreatedAt",
-      "filter": [
-        "state eq 'pending'",
-        "priority eq 'high'"
-      ],
+      "filter": "{\"and\":[{\"state\":{\"eq\":\"pending\"}},{\"attributes.priority\":{\"eq\":\"high\"}}]}",
       "useDapr": false
     }
   }
@@ -187,9 +178,9 @@ Task, instance verilerini içeren sayfalanmış bir yanıt döndürür. Verileri
 ```json
 {
   "links": {
-    "self": "/api/v1/core/workflows/order-workflow/functions/data?page=1&pageSize=10",
-    "first": "/api/v1/core/workflows/order-workflow/functions/data?page=1&pageSize=10",
-    "next": "/api/v1/core/workflows/order-workflow/functions/data?page=2&pageSize=10",
+    "self": "/api/v1/core/workflows/order-workflow/instances?page=1&pageSize=10",
+    "first": "/api/v1/core/workflows/order-workflow/instances?page=1&pageSize=10",
+    "next": "/api/v1/core/workflows/order-workflow/instances?page=2&pageSize=10",
     "prev": ""
   },
   "items": [
