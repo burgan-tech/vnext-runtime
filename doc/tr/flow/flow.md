@@ -349,6 +349,11 @@ Tüm iş akışları `startTransition` bileşenine sahip olmalıdır. Bu, iş ak
         "mapping": {
           "location": "string",
           "code": "string (BASE64)"
+        },
+        "overrides": {
+          "timeout": {},
+          "transitions": {},
+          "states": {}
         }
       }
     }

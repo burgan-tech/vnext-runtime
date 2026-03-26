@@ -6,19 +6,23 @@ vNext workflow sistemi, instance'ları sorgulamak için güçlü filtreleme yete
 
 ## Desteklenen Route'lar
 
-### 1. Function/Data Route
+### 1. Workflow instances route (önerilen, v0.0.42+)
 
-```http
-GET /{domain}/workflows/{workflow}/functions/data?filter={...}
-```
-
-### 2. Workflow Instances Route
+**GetInstancesTask** ve workflow düzeyinde listeleme için bu route kullanılmalıdır:
 
 ```http
 GET /{domain}/workflows/{workflow}/instances?filter={...}
 ```
 
-Her iki route da `filter` query parametresi ile aynı filtreleme yeteneklerini destekler.
+### 2. Function/Data route (instance kapsamlı veri)
+
+```http
+GET /{domain}/workflows/{workflow}/instances/{instance}/functions/data?filter={...}
+```
+
+> **Not:** **Toplu / workflow düzeyi** sorgular için **`.../instances?filter=...`** tercih edin. **GetInstancesTask** için v0.0.42 itibarıyla kapsamsız `GET .../workflows/{workflow}/functions/data` yolu desteklenmez ([sürüm notları](../../../release/RELEASE-NOTES-v0.0.42.md)).
+
+Uygun olduğu yerlerde her iki giriş noktası da aynı `filter` sorgu parametresi semantiğini kullanır.
 
 ---
 
@@ -50,7 +54,7 @@ Doğrudan veritabanı kolonları:
 | `currentState` (veya `state`) | string | Mevcut state | eq, ne, like, startswith, endswith, in, nin |
 | `effectiveState` | string | Etkin state adı (v0.0.33+) | eq, ne, like, startswith, endswith, in, nin |
 | `effectiveStateType` | int | Etkin state tipi kodu (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
-| `effectiveStateSubType` | int | Etkin state alt tipi kodu (v0.0.33+) | eq, ne, gt, ge, lt, le, in, nin |
+| `effectiveStateSubType` | int | Etkin state alt tipi kodu (v0.0.33+; v0.0.42+: **7** = İptal, **8** = Zaman aşımı) | eq, ne, gt, ge, lt, le, in, nin |
 | `createdAt` | DateTime | Oluşturulma zamanı | eq, ne, gt, ge, lt, le, between |
 | `modifiedAt` | DateTime | Değiştirilme zamanı | eq, ne, gt, ge, lt, le, between |
 | `completedAt` | DateTime | Tamamlanma zamanı | eq, ne, gt, ge, lt, le, between |
@@ -138,7 +142,7 @@ Instance kolonları veritabanında uygulanır; `attributes.*` sıralaması en g�
 ### 1. Basit Instance Kolon Filtresi
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"key":{"eq":"payment-12345"}}
+GET /banking/workflows/payment-workflow/instances?filter={"key":{"eq":"payment-12345"}}
 ```
 
 ### 2. Çoklu Instance Kolon Filtreleri (AND Mantığı)
@@ -146,7 +150,7 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"key":{"eq":"paym
 Aynı seviyedeki birden fazla alan AND mantığı ile birleştirilir:
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"eq":"Active"},"createdAt":{"gt":"2024-01-01"}}
+GET /banking/workflows/payment-workflow/instances?filter={"status":{"eq":"Active"},"createdAt":{"gt":"2024-01-01"}}
 ```
 
 ### 3. JSON Veri Alanı Filtresi (attributes)
@@ -154,47 +158,47 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"eq":"A
 `attributes` prefix'i kullanarak JSON veri alanlarını filtreleyin:
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"attributes":{"customerId":{"eq":"CUST-123"}}}
+GET /banking/workflows/payment-workflow/instances?filter={"attributes":{"customerId":{"eq":"CUST-123"}}}
 ```
 
 ### 4. Karışık Filtre (Instance + JSON Alanları)
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"key":{"like":"payment"},"status":{"eq":"Active"},"attributes":{"amount":{"gt":"500"}}}
+GET /banking/workflows/payment-workflow/instances?filter={"key":{"like":"payment"},"status":{"eq":"Active"},"attributes":{"amount":{"gt":"500"}}}
 ```
 
 ### 5. Tarih Aralığı Filtresi
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"createdAt":{"between":["2024-01-01","2024-01-31"]}}
+GET /banking/workflows/payment-workflow/instances?filter={"createdAt":{"between":["2024-01-01","2024-01-31"]}}
 ```
 
 ### 6. Status IN Filtresi
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"status":{"in":["Active","Busy"]}}
+GET /banking/workflows/payment-workflow/instances?filter={"status":{"in":["Active","Busy"]}}
 ```
 
 ### 7. EffectiveState Filtreleri (v0.0.33+)
 
 **Etkin State Adına Göre Filtreleme:**
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"effectiveState":{"eq":"awaiting-approval"}}
+GET /banking/workflows/payment-workflow/instances?filter={"effectiveState":{"eq":"awaiting-approval"}}
 ```
 
 **Etkin State Alt Tipine Göre Filtreleme (İnsan Görevleri):**
 ```http
-GET /approvals/workflows/approval-flow/functions/data?filter={"effectiveStateSubType":{"eq":"6"}}
+GET /approvals/workflows/approval-flow/instances?filter={"effectiveStateSubType":{"eq":"6"}}
 ```
 
 **Etkin State Alt Tipine Göre Filtreleme (Meşgul Görevler):**
 ```http
-GET /processing/workflows/order-flow/functions/data?filter={"effectiveStateSubType":{"eq":"5"}}
+GET /processing/workflows/order-flow/instances?filter={"effectiveStateSubType":{"eq":"5"}}
 ```
 
 **Birleşik Status ve EffectiveState Filtresi:**
 ```http
-GET /core/workflows/payment/functions/data?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
+GET /core/workflows/payment/instances?filter={"status":{"eq":"Active"},"effectiveStateSubType":{"eq":"6"}}
 ```
 
 **EffectiveState Alt Tip Değerleri:**
@@ -269,7 +273,7 @@ Bir koşulu tersine çevirir:
 ### Group By ile Count
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"groupBy":{"field":"attributes.status","aggregations":{"count":true}}}
+GET /banking/workflows/payment-workflow/instances?filter={"groupBy":{"field":"attributes.status","aggregations":{"count":true}}}
 ```
 
 **Yanıt:**
@@ -286,7 +290,7 @@ GET /banking/workflows/payment-workflow/functions/data?filter={"groupBy":{"field
 ### Group By ile Çoklu Aggregation
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={"groupBy":{"field":"attributes.currency","aggregations":{"count":true,"sum":"attributes.amount","avg":"attributes.amount","min":"attributes.amount","max":"attributes.amount"}}}
+GET /banking/workflows/payment-workflow/instances?filter={"groupBy":{"field":"attributes.currency","aggregations":{"count":true,"sum":"attributes.amount","avg":"attributes.amount","min":"attributes.amount","max":"attributes.amount"}}}
 ```
 
 **Yanıt:**
@@ -369,7 +373,7 @@ Mümkün olduğunda indekslenmiş Instance kolonlarını filtreleyin.
 Her zaman `page` ve `pageSize` parametrelerini kullanın:
 
 ```http
-GET /banking/workflows/payment-workflow/functions/data?filter={...}&page=1&pageSize=20
+GET /banking/workflows/payment-workflow/instances?filter={...}&page=1&pageSize=20
 ```
 
 ---

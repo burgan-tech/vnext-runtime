@@ -92,59 +92,57 @@ sys_schemas
 
 ## Flow-Specific Schemas (Dynamic Schemas)
 
-When a flow is deployed to the system and **run for the first time**, a new schema is automatically created for that flow.
+Per-flow database schemas hold instance data and history. As of **v0.0.42**, schema **creation and migration** for a flow are driven by a **DB-Migrator job** at **deploy time**, not by running migration checks on every **start** or **transition** request.
 
-### Automatic Schema Creation
+### Deploy-time schema lifecycle (v0.0.42+)
 
 ```
-Flow Deploy → First Instance Start → Schema Creation
+Flow / runtime deploy → DB-Migrator job runs → Schemas created or migrated → Runtime serves traffic
 ```
 
 **Example:**
 ```
 Deployment: customer-onboarding flow (v1.0.0)
 ↓
-First execution is triggered
+DB-Migrator job runs in the deployment pipeline
 ↓
-System automatically creates schema: customer_onboarding
+Schema customer_onboarding is created or brought up to date
 ↓
-Migration scripts are automatically executed
+Migration scripts run as needed
 ↓
-Flow is ready and operational
+Flow is ready before first business start/transition
 ```
 
 ## Automatic Migration System
 
-vNext Runtime automatically manages schema changes.
+Schema changes are applied in a controlled way via the **migrator** and **`sys_schemas`** history—not by coupling migration to each API request.
 
-### First Deployment
+### First deployment
 
 ```
 Flow is deployed for the first time
 ↓
 Schema does not exist yet
 ↓
-First instance start command
+DB-Migrator job (or equivalent deploy step) creates the schema
 ↓
-System creates the schema
+Tables, indexes, and seeds are applied
 ↓
-All tables and indexes are created
-↓
-Initial data is loaded (seed)
+Instance start/transition no longer triggers migrate checks (v0.0.42+)
 ```
 
-### System Upgrade
+### System upgrade
 
 ```
 vNext Runtime new version
 ↓
-sys_schemas.migration_history is checked
+Deploy pipeline runs DB-Migrator (or platform checks sys_schemas.migration_history)
 ↓
 Missing migrations are detected
 ↓
-Migration scripts are automatically executed
+Migration scripts are executed
 ↓
-Migration history is updated for each schema
+Migration history is updated per schema
 ↓
 System is up to date
 ```

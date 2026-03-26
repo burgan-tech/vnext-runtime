@@ -12,6 +12,8 @@ vNext workflow sistemi, üç seviyede hata politikaları tanımlamanıza olanak 
 
 > **Önemli:** ErrorBoundary tanımları **task execution** seviyesinde çalışır. Boundary nerede tanımlanırsa tanımlansın (global, state veya task), aksiyonlar task yürütme hatalarına göre alınır.
 
+> **Şema hizalaması (v0.0.42+):** **errorBoundary** için workflow JSON Şeması (**transition** referanslı **abort** aksiyonları dahil), **vnext-schema** ve [Şema yönetimi](./schema.md) bölümündeki **Ajv2019** doğrulaması kullanıldığında backend doğrulayıcılarıyla uyumludur.
+
 ---
 
 ## Hata Çözümleme Hiyerarşisi

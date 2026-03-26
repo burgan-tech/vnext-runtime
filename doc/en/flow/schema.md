@@ -6,6 +6,10 @@ Schemas are JSON Schema-based definitions used for data validation and normaliza
 Schemas are defined in JSON format and automatically loaded by the system. Each schema is identified by a domain-specific key and supports version management.
 :::
 
+### Workflow package validation (v0.0.42+)
+
+If your domain package validates workflow JSON with **`validate.js`**, upgrade to **`Ajv2019`** so definitions validate against **JSON Schema 2019-09** (draft-2019), matching **vnext-schema** updates (including **`errorBoundary`** / abort **transition** alignment). Keep **`schemaVersion`** in package config aligned with the runtime (for example **0.0.39** with runtime **0.0.42**).
+
 ## Table of Contents
 
 1. [Schema Definition](#schema-definition)

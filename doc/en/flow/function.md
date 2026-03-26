@@ -157,6 +157,14 @@ When a workflow has active sub-flows or correlations, they are included in the r
 3. **Transition Discovery**: Dynamically discovering available user actions
 4. **Sub-Flow Tracking**: Monitoring progress of parallel sub-workflows
 
+### Subflow completion window (v0.0.42+)
+
+While a **subflow completion** is still propagating to the parent, the **State** response reflects the parent instance **status** correctly so it is not shown as **Completed** too early.
+
+### Telemetry (v0.0.42+)
+
+Structured logging is more uniform across the runtime, and **TaskCoordinator** execution is instrumented with **spans** so you can follow task work in your tracing backend alongside **ParentInstanceId**-style correlation.
+
 ### ParentInstanceId in trace and logs (v0.0.38+)
 
 Trace and logging include **ParentInstanceId** when applicable (e.g. subflow, cross-domain trigger). You can correlate logs and traces for child instances with their parent instance id.

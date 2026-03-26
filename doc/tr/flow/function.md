@@ -157,6 +157,14 @@ Bir workflow aktif sub-flow'lara veya correlation'lara sahip olduğunda, bunlar 
 3. **Transition Keşfi**: Kullanılabilir kullanıcı eylemlerini dinamik olarak keşfetme
 4. **Sub-Flow Takibi**: Paralel sub-workflow'ların ilerlemesini izleme
 
+### Subflow tamamlanma penceresi (v0.0.42+)
+
+**Subflow tamamlanması** üst instance'a henüz tam yansımamışken **State** yanıtı, üst instance **status** bilgisini doğru gösterir; böylece erken **Completed** gösterimi önlenir.
+
+### Telemetry (v0.0.42+)
+
+Runtime genelinde yapılandırılmış loglar daha tutarlıdır; **TaskCoordinator** yürütmesi **span** ile izlenir ve **ParentInstanceId** ile birlikte gözlem arka ucunda ilişkilendirilebilir.
+
 ### Trace ve logda ParentInstanceId (v0.0.38+)
 
 Trace ve loglarda **ParentInstanceId** alanı kullanılır; böylece parent instance ile başlatılan veya tetiklenen (subflow, cross-domain) child instance'ların log ve trace'leri parent instance id ile ilişkilendirilerek takip edilebilir.

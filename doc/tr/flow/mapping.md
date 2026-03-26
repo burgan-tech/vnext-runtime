@@ -405,16 +405,21 @@ public abstract class ScriptBase
     protected async Task<string> GetSecretAsync(string storeName, string secretStore, string secretKey);
     protected Dictionary<string, string> GetSecrets(string storeName, string secretStore);
     
-    // Property kontrol fonksiyonları (yeni eklenen)
+    // Property kontrolü / okuma (ScriptBase)
     protected static bool HasProperty(object obj, string propertyName);
     protected static object? GetPropertyValue(object obj, string propertyName);
-    
-    // Tipli property değeri alma (yeni eklenen)
     protected T? GetPropertyValue<T>(object obj, string propertyName);
+
+    // Dynamic nesne + liste yardımcıları (v0.0.42+; aşağıdaki Collection bölümüne bakın)
+    // CreateObject, CreateList, SetProperty, RemoveProperty, ToDictionary,
+    // GetList, AsList, ListAdd, ListRemove, ListFilter, ListCount, ListAny,
+    // ListFirst, ListLast, ListSelect<TResult> — davranış için tabloya bakın
 }
 ```
 
-> **Yeni Eklenen Metodlar**: `HasProperty`, `GetPropertyValue` ve generic `GetPropertyValue<T>` metodları ScriptBase'e eklenmiştir. Bu metodlar dynamic objeler üzerinde güvenli property erişimi ve tip dönüşümü sağlar.
+> **Property yardımcıları**: `HasProperty`, `GetPropertyValue` ve `GetPropertyValue<T>`, dynamic / JSON şekilli nesnelerde güvenli erişim ve dönüşüm sağlar.
+>
+> **Koleksiyon yardımcıları (v0.0.42+)**: `CreateObject`, `CreateList`, `SetProperty`, `GetList`, `AsList`, liste sorgu/değiştirme metodları, `RemoveProperty` ve `ToDictionary`, instance verisini kırılgan cast'ler olmadan normalize etmeye yardımcı olur. Aşağıdaki [Koleksiyon ve dynamic nesne yardımcıları](#koleksiyon-ve-dynamic-nesne-yardımcıları) bölümüne ve [`release/extra/script-base-usage/`](../../../release/extra/script-base-usage/) altındaki örnek mapping'lere bakın.
 
 ### Kullanım Örneği
 
@@ -470,6 +475,36 @@ public class SafePropertyAccessMapping : ScriptBase, IMapping
         return Task.FromResult(new ScriptResponse());
     }
 }
+```
+
+### Koleksiyon ve dynamic nesne yardımcıları
+
+**v0.0.42** itibarıyla `ScriptBase`, `Instance.Data` altında sık görülen **dynamic nesne** ve **liste** yapıları için yardımcılar sunar. **InputHandler** / **OutputHandler** içinde koleksiyon oluşturma veya şekillendirme için `HasProperty` / `GetPropertyValue` ile birlikte kullanılır.
+
+| Metod | Amaç |
+|--------|------|
+| `CreateObject()` | `SetProperty` ile doldurulacak yeni dynamic nesne. |
+| `CreateList()` | Dynamic öğeler için yeni boş liste. |
+| `SetProperty(obj, name, value)` | Dynamic nesnede özellik atama. |
+| `RemoveProperty(obj, name)` | Özelliği kaldırır; vardıysa `true` döner. |
+| `ToDictionary(obj)` | Özellikleri `Dictionary<string, object>` olarak kopyalar; `null` → boş sözlük. |
+| `GetList(instanceData, propertyName)` | Instance (veya iç içe) veriden liste özelliğini okur. |
+| `AsList(value)` | Listeye normalize eder; `null` veya liste değilse → boş liste (güvenli kontrol). |
+| `ListAdd(list, item)` | Öğe ekler. |
+| `ListRemove(list, predicate)` | Eşleşen tüm öğeleri kaldırır; **kaldırılan adet** döner. |
+| `ListFilter(list, predicate)` | Eşleşenlerden oluşan yeni liste. |
+| `ListCount(list, predicate?)` | Tüm öğe sayısı veya `predicate` verilmişse eşleşen sayısı. |
+| `ListAny(list, predicate?)` | Öğe var mı (isteğe bağlı `predicate` ile filtreli). |
+| `ListFirst(list, predicate?)` / `ListLast(list, predicate?)` | İlk veya son öğe, isteğe bağlı filtre; yoksa **null**. |
+| `ListSelect<TResult>(list, selector)` | Her öğeyi projeler (örn. `name` alanını `string` olarak). |
+
+**Çalıştırılabilir örnekler** (her dosya API'nin bir kısmını gösterir): [`release/extra/script-base-usage/`](../../../release/extra/script-base-usage/) — örn. `CreateAndSetMapping.csx`, `GetListAndAsListMapping.csx`, `ListFilterCountAnyMapping.csx`, `ListAddRemoveMapping.csx`, `ListFirstLastMapping.csx`, `ListSelectMapping.csx`, `RemovePropertyToDictionaryMapping.csx`.
+
+```csharp
+// Tipik kullanım: Instance.Data'dan liste oku, filtrele, projeksiyon
+var items = GetList(context.Instance?.Data, "lineItems");
+var active = ListFilter(items, x => x.status == "active");
+var codes = ListSelect<string>(active, x => (string)x.productCode);
 ```
 
 ### Loglama Fonksiyonları

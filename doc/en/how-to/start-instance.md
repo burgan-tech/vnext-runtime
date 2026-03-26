@@ -83,13 +83,36 @@ Content-Type: application/json
 }
 ```
 
-**Example Response:**
+**Example Response (`sync=true`, v0.0.42+):**
+
+When **`sync=true`**, start and transition responses include the **mapped instance envelope** (not only `id` and `status`). Typical fields:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Instance UUID |
+| `key` | Business key (if set) |
+| `status` | Instance status code (e.g. `A` = Active) |
+| `attributes` | Instance data after mapping |
+| `eTag` | Response / caching ETag (authorization-aware; see [Function APIs](../flow/function.md)) |
+| `entityEtag` | Entity-data ETag |
+| `extensions` | Extension payload |
+
 ```json
 {
-  "id": "18075ad5-e5b2-4437-b884-21d733339113",
-  "status": "A"
+  "id": "3e4370e3-5d4b-4f18-82b4-15fb6f4f71b2",
+  "key": "50044086169",
+  "status": "A",
+  "attributes": {
+    "initial": { "session": "16" },
+    "userSession": {}
+  },
+  "eTag": "\"GOmdlhxtqlu6RVofS716c4dTam5cj-_Gm6W-Uegx7nw\"",
+  "entityEtag": "\"01KKMR4P14QWNWB8JS1AEZSJX2\"",
+  "extensions": {}
 }
 ```
+
+> **Note:** With **`sync=false`**, responses may still return only **`id`** and **`status`** without the full envelope.
 
 **Example Response (Idempotent - When Key Already Exists):**
 
@@ -107,11 +130,16 @@ Content-Type: application/json
 ```json
 {
   "id": "18075ad5-e5b2-4437-b884-21d733339113",
-  "status": "A"
+  "key": "99999999999",
+  "status": "A",
+  "attributes": {},
+  "eTag": "\"...\"",
+  "entityEtag": "\"...\"",
+  "extensions": {}
 }
 ```
 
-> **Note:** The response returns the existing instance's ID and current status. No new instance is created, and no error is returned.
+> **Note:** The response returns the existing instance's data (v0.0.42+ includes the mapped envelope when `sync=true`). No new instance is created, and no error is returned.
 
 ### 2. Instance Transition
 
@@ -188,6 +216,8 @@ Content-Type: application/json
 > - Easier integration with external systems that use business keys
 > - No need to store and manage UUIDs separately
 
+**Example transition response (`sync=true`, v0.0.42+):** Same shape as start—`id`, `key`, `status`, `attributes`, `eTag`, `entityEtag`, `extensions`, and other mapped fields as applicable.
+
 ### 3. Retrying Faulted Instances (v0.0.36+)
 
 The retry endpoint allows you to resume workflow instances that have entered a "Faulted" state. This endpoint enables recovery from failed tasks by retrying from the point of failure.
@@ -246,11 +276,15 @@ Content-Type: application/json
 }
 ```
 
-**Example Response (Success):**
+**Example Response (Success, `sync=true`, v0.0.42+):**
 ```json
 {
   "id": "18075ad5-e5b2-4437-b884-21d733339113",
-  "status": "A"
+  "status": "A",
+  "attributes": {},
+  "eTag": "\"...\"",
+  "entityEtag": "\"...\"",
+  "extensions": {}
 }
 ```
 
@@ -387,24 +421,24 @@ If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 
 Use the filtering capability to query instances based on various criteria.
 
-**Endpoint:**
+**Endpoint (v0.0.42+ recommended):**
 ```http
-GET /{domain}/workflows/{workflow}/functions/data?filter={...}
+GET /{domain}/workflows/{workflow}/instances?filter={...}
 ```
 
 **Example - Filter by Status:**
 ```http
-GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"status":{"eq":"Active"}}
+GET /ecommerce/workflows/scheduled-payments/instances?filter={"status":{"eq":"Active"}}
 ```
 
 **Example - Filter by JSON Data Field:**
 ```http
-GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"attributes":{"amount":{"gt":"1000"}}}
+GET /ecommerce/workflows/scheduled-payments/instances?filter={"attributes":{"amount":{"gt":"1000"}}}
 ```
 
 **Example - Combined Filter with Logical OR:**
 ```http
-GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
+GET /ecommerce/workflows/scheduled-payments/instances?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
 ```
 
 > **Detailed Documentation:** For complete filtering syntax, operators, and aggregations, see [Instance Filtering Guide](../flow/instance-filtering.md).

@@ -86,7 +86,9 @@ Each function can execute a task and the task result data can be returned in the
 | Property | Type | Description |
 |----------|------|-------------|
 | `scope` | `string` | Function scope (`I` = Instance, `F` = Workflow, `D` = Domain) |
-| `task` | `object` | Task definition to execute |
+| `task` | `object` | Single task to execute (legacy shape; use with one task) |
+| `onExecutionTasks` | `array` | Ordered tasks to execute (v0.0.42+); see **Multi-task execution** below |
+| `output` | `object` | Optional output mapping script: `location` / `code` (v0.0.42+); implements **`IOutputHandler`** |
 
 ### Scope Values
 
@@ -122,6 +124,69 @@ Each function can execute a task and the task result data can be returned in the
 | `task` | `object` | Task reference |
 | `mapping` | `object` | Input/Output transformation mapping |
 
+### Multi-task execution and output mapping (v0.0.42+)
+
+A function may run **multiple tasks in order** using **`attributes.onExecutionTasks`** instead of a single **`task`**. Each entry has **`order`**, a **`task`** reference, and optional **`mapping`**. Later tasks can consume outputs from earlier ones in the same function execution.
+
+Optional **`attributes.output`** references a script that implements **`IOutputHandler`**. In **`OutputHandler`**, read per-task results from **`context.OutputResponse`** (keys follow the executed task keys, typically **camelCase**).
+
+```json
+"attributes": {
+  "scope": "I",
+  "onExecutionTasks": [
+    {
+      "order": 1,
+      "task": {
+        "key": "validate-account-policies",
+        "domain": "core",
+        "flow": "sys-tasks",
+        "version": "1.0.0"
+      },
+      "mapping": {
+        "location": "./src/FunctionValidatePoliciesMapping.csx",
+        "code": ""
+      }
+    },
+    {
+      "order": 2,
+      "task": {
+        "key": "get-data-from-workflow",
+        "domain": "core",
+        "flow": "sys-tasks",
+        "version": "1.0.0"
+      },
+      "mapping": {
+        "location": "./src/FunctionGetInstanceDataMapping.csx",
+        "code": ""
+      }
+    }
+  ],
+  "output": {
+    "location": "./src/FunctionOutputMapping.csx",
+    "code": ""
+  }
+}
+```
+
+```csharp
+using System.Threading.Tasks;
+using BBT.Workflow.Scripting;
+
+public class FunctionOutputMapping : IOutputHandler
+{
+    public Task<ScriptResponse> OutputHandler(ScriptContext context)
+    {
+        var policies = context.OutputResponse["validateAccountPolicies"].data;
+        var instanceData = context.OutputResponse?["getDataFromWorkflow"].data;
+        return Task.FromResult(new ScriptResponse
+        {
+            Key = "multi-task-function-output",
+            Data = new { policyValidation = policies, instanceSnapshot = instanceData }
+        });
+    }
+}
+```
+
 ---
 
 ## Consumption Endpoints
@@ -140,13 +205,9 @@ GET /api/v1/{domain}/functions
 GET /api/v1/{domain}/functions/{function}
 ```
 
-### Workflow Level Functions
+### Workflow level custom function URL (removed in v0.0.42)
 
-**Executes a function within a workflow:**
-
-```http
-GET /api/v1/{domain}/workflows/{workflow}/functions/{function}
-```
+The pattern **`GET /api/v1/{domain}/workflows/{workflow}/functions/{function}`** (calling a registered function by name without an instance id) **is removed** as of **v0.0.42**. Use **instance-scoped** function endpoints below, **workflow instance listing** (`GET .../workflows/{workflow}/instances`), or other documented APIs instead.
 
 ### Instance Level Functions
 

@@ -201,7 +201,17 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
 
 ### SubFlow
 - SubFlow türündeki state'ler için alt workflow referansı
-- Type, reference ve mapping bilgilerini içerir
+- Type, process (veya reference), mapping ve isteğe bağlı **overrides** (v0.0.42+) bilgilerini içerir
+
+### SubFlow overrides (v0.0.42+)
+
+Eski **view** düzeyindeki override'lar geriye dönük uyumluluk için desteklenmeye devam eder. **`subFlow.overrides`** nesnesi, üst instance için **authorize** ve **geçiş listesi** çıktıları üretilirken **replace-mode** ayarlamaları uygular:
+
+- **`transitions`**: geçiş anahtarı başına, geçişi kimin çalıştırabileceğine dair **roles** (grant listesi)
+- **`states`**: state anahtarı başına, veri/sorgu yetkisi için **queryRoles**
+- **`timeout`**: alt akış segmenti için zaman aşımı / timer yapılandırması
+
+Alt workflow tanımı değişmez; override'lar üst bağlamda değerlendirilir.
 
 ## State Şeması
 
@@ -224,8 +234,17 @@ State machine aşağıdaki yaşam döngüsünü takip eder:
   "onExits": [...],
   "subFlow": {
     "type": "string",
-    "reference": {...},
-    "mapping": {...}
+    "process": { "key": "string", "domain": "string", "flow": "string", "version": "string" },
+    "mapping": { "location": "string", "code": "string" },
+    "overrides": {
+      "timeout": {},
+      "transitions": {
+        "transition-key": { "roles": [{ "role": "string", "grant": "allow|deny" }] }
+      },
+      "states": {
+        "state-key": { "queryRoles": [{ "role": "string", "grant": "allow|deny" }] }
+      }
+    }
   }
 }
 ```

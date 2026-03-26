@@ -83,13 +83,36 @@ Content-Type: application/json
 }
 ```
 
-**Örnek Response:**
+**Örnek Response (`sync=true`, v0.0.42+):**
+
+**`sync=true`** iken start ve transition yanıtları, yalnızca `id` ve `status` değil **haritalanmış instance zarfını** da içerebilir. Tipik alanlar:
+
+| Alan | Açıklama |
+|------|----------|
+| `id` | Instance UUID |
+| `key` | İş anahtarı (atanmışsa) |
+| `status` | Instance durum kodu (örn. `A` = Aktif) |
+| `attributes` | Haritalama sonrası instance verisi |
+| `eTag` | Yanıt / önbellek ETag (yetkilendirme farkındalıklı; bkz. [Fonksiyon API'leri](../flow/function.md)) |
+| `entityEtag` | Varlık verisi ETag |
+| `extensions` | Uzantı verisi |
+
 ```json
 {
-  "id": "18075ad5-e5b2-4437-b884-21d733339113",
-  "status": "A"
+  "id": "3e4370e3-5d4b-4f18-82b4-15fb6f4f71b2",
+  "key": "50044086169",
+  "status": "A",
+  "attributes": {
+    "initial": { "session": "16" },
+    "userSession": {}
+  },
+  "eTag": "\"GOmdlhxtqlu6RVofS716c4dTam5cj-_Gm6W-Uegx7nw\"",
+  "entityEtag": "\"01KKMR4P14QWNWB8JS1AEZSJX2\"",
+  "extensions": {}
 }
 ```
+
+> **Not:** **`sync=false`** kullanıldığında yanıt yalnızca **`id`** ve **`status`** ile sınırlı kalabilir.
 
 **Örnek Response (Idempotent - Key Zaten Varsa):**
 
@@ -107,11 +130,16 @@ Content-Type: application/json
 ```json
 {
   "id": "18075ad5-e5b2-4437-b884-21d733339113",
-  "status": "A"
+  "key": "99999999999",
+  "status": "A",
+  "attributes": {},
+  "eTag": "\"...\"",
+  "entityEtag": "\"...\"",
+  "extensions": {}
 }
 ```
 
-> **Not:** Yanıt, mevcut instance'ın ID ve güncel durumunu döner. Yeni instance oluşturulmaz ve hata döndürülmez.
+> **Not:** Yanıt, mevcut instance bilgisini döner (`sync=true` ve v0.0.42+ ile haritalanmış zarf dahil). Yeni instance oluşturulmaz ve hata döndürülmez.
 
 ### 2. Instance Transition
 
@@ -188,6 +216,8 @@ Content-Type: application/json
 > - İş anahtarları kullanan harici sistemlerle daha kolay entegrasyon
 > - UUID'leri ayrıca saklamaya ve yönetmeye gerek yok
 
+**Transition örnek yanıtı (`sync=true`, v0.0.42+):** Start ile aynı yapı—`id`, `key`, `status`, `attributes`, `eTag`, `entityEtag`, `extensions` ve uygun olduğunda diğer haritalanmış alanlar.
+
 ### 3. Instance Durumunu Sorgulama
 
 Instance'ın mevcut durumunu ve verisini sorgulamak için GET endpoint'i kullanılır. Bu endpoint ETag pattern'i ile çalışır. Instance ID veya instance Key kullanabilirsiniz.
@@ -229,24 +259,24 @@ If-None-Match: "18075ad5-e5b2-4437-b884-21d733339113"
 
 Çeşitli kriterlere göre instance'ları sorgulamak için filtreleme özelliğini kullanın.
 
-**Endpoint:**
+**Endpoint (v0.0.42+ önerilen):**
 ```http
-GET /{domain}/workflows/{workflow}/functions/data?filter={...}
+GET /{domain}/workflows/{workflow}/instances?filter={...}
 ```
 
 **Örnek - Status'e Göre Filtrele:**
 ```http
-GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"status":{"eq":"Active"}}
+GET /ecommerce/workflows/scheduled-payments/instances?filter={"status":{"eq":"Active"}}
 ```
 
-**Örnek - JSON Veri Alanına Göre Filtrele:**
+**Örnek - JSON Veri Alanına Göre Filtre:**
 ```http
-GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"attributes":{"amount":{"gt":"1000"}}}
+GET /ecommerce/workflows/scheduled-payments/instances?filter={"attributes":{"amount":{"gt":"1000"}}}
 ```
 
 **Örnek - Mantıksal OR ile Kombine Filtre:**
 ```http
-GET /ecommerce/workflows/scheduled-payments/functions/data?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
+GET /ecommerce/workflows/scheduled-payments/instances?filter={"or":[{"status":{"eq":"Active"}},{"status":{"eq":"Busy"}}]}
 ```
 
 > **Detaylı Dokümantasyon:** Tüm filtreleme sözdizimi, operatörler ve aggregation'lar için bkz. [Instance Filtreleme Kılavuzu](../flow/instance-filtering.md).

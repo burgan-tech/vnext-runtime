@@ -92,59 +92,57 @@ sys_schemas
 
 ## Flow-Specific Şemalar (Dinamik Şemalar)
 
-Bir flow sisteme deploy edildiğinde ve **ilk kez çalıştırıldığında**, o flow için otomatik olarak yeni bir şema oluşturulur.
+Flow başına veritabanı şemaları instance verisi ve geçmişi tutar. **v0.0.42** itibarıyla şema **oluşturma ve migration**, her **start** veya **transition** isteğinde kontrol çalıştırmak yerine **deploy** sırasında çalışan **DB-Migrator job** ile yönetilir.
 
-### Otomatik Şema Oluşturma
+### Deploy zamanı şema yaşam döngüsü (v0.0.42+)
 
 ```
-Flow Deploy → İlk Instance Start → Şema Oluşturma
+Flow / runtime deploy → DB-Migrator job çalışır → Şemalar oluşturulur veya migrate edilir → Runtime trafiği karşılar
 ```
 
 **Örnek:**
 ```
 Deployment: customer-onboarding flow (v1.0.0)
 ↓
-İlk çalıştırma tetiklenir
+Deployment pipeline'da DB-Migrator job çalışır
 ↓
-Sistem otomatik olarak şema oluşturur: customer_onboarding
+customer_onboarding şeması oluşturulur veya güncellenir
 ↓
-Migration scriptleri otomatik çalıştırılır
+Gerekli migration scriptleri çalıştırılır
 ↓
-Flow hazır ve çalışır durumda
+İlk iş start/transition'ından önce flow hazırdır
 ```
 
 ## Otomatik Migration Sistemi
 
-vNext Runtime, şema değişikliklerini otomatik olarak yönetir.
+Şema değişiklikleri **migrator** ve **`sys_schemas`** geçmişi üzerinden kontrollü uygulanır; her API isteğine migration bağlanmaz.
 
-### İlk Deploy (First Deployment)
+### İlk deploy
 
 ```
 Flow ilk kez deploy edilir
 ↓
 Şema henüz yok
 ↓
-İlk instance start komutu
+DB-Migrator job (veya eşdeğer deploy adımı) şemayı oluşturur
 ↓
-Sistem şemayı oluşturur
+Tablolar, index'ler ve seed uygulanır
 ↓
-Tüm tablolar ve index'ler oluşturulur
-↓
-Başlangıç data'sı yüklenir (seed)
+Instance start/transition artık migrate kontrolü tetiklemez (v0.0.42+)
 ```
 
-### Sistem Upgrade (System Upgrade)
+### Sistem yükseltmesi
 
 ```
 vNext Runtime yeni versiyon
 ↓
-sys_schemas.migration_history kontrol edilir
+Deploy pipeline DB-Migrator çalıştırır (veya platform sys_schemas.migration_history kontrol eder)
 ↓
 Eksik migration'lar tespit edilir
 ↓
-Migration scriptleri otomatik çalıştırılır
+Migration scriptleri çalıştırılır
 ↓
-Her şema için migration history güncellenir
+Şema başına migration history güncellenir
 ↓
 Sistem güncel hale gelir
 ```

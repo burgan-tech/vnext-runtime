@@ -319,6 +319,8 @@ public class SecureMapping : ScriptBase, IMapping
 }
 ```
 
+**v0.0.42+:** `ScriptBase` ayrıca **koleksiyon ve dynamic nesne** yardımcıları ekler (`CreateObject`, `GetList`, `ListFilter`, `ListSelect` ve ilgili API'ler). Bkz. [Mapping Kılavuzu — Koleksiyon yardımcıları](flow/mapping.md#koleksiyon-ve-dynamic-nesne-yardımcıları) ve [`release/extra/script-base-usage/`](../../release/extra/script-base-usage/) altındaki örnekler.
+
 ---
 
 ## 📞 Destek ve Katkı
