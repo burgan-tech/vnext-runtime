@@ -11,7 +11,7 @@ Bir akış tanımında, state'ler arasındaki geçişleri yöneten bileşenlere 
 
 ### İsteğe Bağlı Özellikler
 - **Timer**: Zamanlanmış transition'lar için kullanılan mapping kodu
-- **Rule**: Otomatik transition'lar için kullanılan koşul mapping kodu
+- **Rule**: Otomatik transition'lar için koşul mapping kodu (veya **`location`** = **`dynamicExpresso`** iken **Dynamic Expresso** — v0.0.43+)
 - **Schema**: Transition'da iletilen payload'ı validate etmek için kullanılan şema referansı
 - **AvailableIn**: Shared transition'lar için hangi state'lerde çalıştırılabilir olduğunu belirtir
 - **Labels**: Çoklu dil desteği için etiketler
@@ -40,6 +40,71 @@ Sistem tarafından otomatik olarak çalıştırılan koşullu transition'dır.
 - İş kurallarına dayalı otomatik geçişler
 - Durum kontrolü sonrası otomatik ilerlemeler
 - Veri validasyonu sonrası geçişler
+
+#### Kural ifadeleri ve Dynamic Expresso (v0.0.43+)
+
+**Dynamic Expresso ifade kuralları (isteğe bağlı).** **Roslyn** ile derlenen **`IConditionMapping`** betiklerine ek olarak, otomatik transition **Rule** tanımı, **Dynamic Expresso** ile değerlendirilen düz metin **boolean** ifadeleri kullanabilir; bu mod uygun olduğunda ayrı bir derlenmiş koşul betiği gerekmez.
+
+**Seçim**
+
+- **`rule.location`** değerini **`dynamicExpresso`** yapın ve ifadeyi **`rule.code`** içine **native** kodlama ile koyun: JSON’da **`"encoding": "NAT"`**, kod tarafında **`ScriptCode.FromNative`**.
+- Başka bir **`location`** değeri, Roslyn koşul betiği yolunu kullanmaya devam eder (**RoutingConditionEvaluator** → **ScriptConditionEvaluator**).
+
+**Kök bağlama**
+
+İfadeler, **`ScriptContext`** üzerinden yalnızca izin verilen üyelerle oluşturulan **`ExpressoRuleContext`** tipinde tek parametre **`context`** alır:
+
+| `context` üyesi | Kullanılabilir yüzey |
+|-----------------|----------------------|
+| **`Body`** | İstek gövdesi |
+| **`CurrentTransition`** | **`Data`**, **`Header`**; kalıcı transition isteği dışında **null** olabilir |
+| **`MetaData`** | Meta veri |
+| **`Workflow`** | **`key`**, **`domain`**, **`flow`**, **`version`**, **`StateKeys`** |
+| **`Instance`** | **`Id`**, **`Key`**, **`Flow`**, state alanları, JSON olarak **`Data`** |
+| **`Headers`** | HTTP başlıkları |
+| **`QueryParameters`** | Sorgu parametreleri |
+| **`RouteValues`** | Route verisinden JSON nesne |
+| **`Transition`** | **`Key`**, **`From`**, **`Target`**, **`TriggerType`**, **`TriggerKind`**; betik bağlamında yoksa **null**; gömülü rule/timer/task payload’ları **yok** |
+| **`Runtime`** | **`Domain`**, **`Version`**; set edilmemişse **null** olabilir |
+
+**`Instance.Data` / `Body` vb. altındaki JSON**
+
+JSON, **`RuleJsonDynamic`** olarak sunulur: dynamic üye erişimi, string indeksleyiciler, dizi **`Count`**, dizi **`Contains`**. Eksik nesne anahtarları veya eksik nokta-üzerinden özellikler **null** çözümlenir (çalışma zamanı binder hatası yok); Dynamic Expresso’nun desteklediği yerlerde **`?.`** ve **`??`** kullanılabilir.
+
+Sayısal JSON için **`AsDouble()`** / **`AsInt32()`**, boolean için **`AsBoolean()`**, dizi uzunluğu için **`AsArrayLength()`** kullanın; JSON dizilerinde **`Contains`** desteklenir.
+
+**İfade örnekleri**
+
+```text
+context.Instance.Data["amount"].AsDouble() > 100000
+context.Instance.Data["documents"].AsArrayLength() == 0
+context.Instance.Data["flags"]["manualReviewRequired"].AsBoolean() == false
+context.Instance.Data["approvers"].Contains("u1")
+context.Body["score"].AsDouble() >= 80
+context.RouteValues["entityId"].ToString() == context.Instance.Data["externalId"].ToString()
+context.Transition != null && context.Transition.Key == "approve-auto"
+context.Runtime != null && context.Runtime.Domain.ToString() == "my-domain"
+```
+
+**JSON kural örnekleri** (otomatik transition tanımı parçası; **`encoding: NAT`** = native / düz ifade)
+
+```json
+"rule": {
+  "location": "dynamicExpresso",
+  "encoding": "NAT",
+  "code": "context.Instance.Data.absenceType.ToString() == \"personal-leave\""
+}
+```
+
+```json
+"rule": {
+  "location": "dynamicExpresso",
+  "encoding": "NAT",
+  "code": "context.Headers.sub.ToString() == context.Instance.Data.customerId.ToString()"
+}
+```
+
+> **Referans:** [#470](https://github.com/burgan-tech/vnext/issues/470)
 
 #### Varsayılan Otomatik Geçiş (Default Auto Transition) (v0.0.29+)
 

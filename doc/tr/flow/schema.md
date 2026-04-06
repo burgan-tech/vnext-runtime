@@ -8,7 +8,7 @@ Schema'lar JSON formatında tanımlanır ve sistem tarafından otomatik olarak y
 
 ### Workflow paket doğrulaması (v0.0.42+)
 
-Domain paketiniz workflow JSON'unu **`validate.js`** ile doğruluyorsa, **vnext-schema** güncellemeleriyle uyum için **`Ajv2019`** kullanın (**JSON Schema 2019-09** / draft-2019). Bu, **`errorBoundary`** ve abort sırasında **transition** ile ilgili şema hizalamasını da kapsar. Paket yapılandırmasındaki **`schemaVersion`** değerini runtime ile eşleştirin (örnek: runtime **0.0.42** ile **0.0.39**).
+Domain paketiniz workflow JSON'unu **`validate.js`** ile doğruluyorsa, **vnext-schema** güncellemeleriyle uyum için **`Ajv2019`** kullanın (**JSON Schema 2019-09** / draft-2019). Bu, **`errorBoundary`** ve abort sırasında **transition** ile ilgili şema hizalamasını da kapsar. Paket yapılandırmasındaki **`schemaVersion`** değerini runtime ile eşleştirin (örnek: runtime **0.0.42** veya **0.0.43** ile **0.0.39**).
 
 ## İçindekiler
 

@@ -18,6 +18,38 @@ services:
   # VNEXT APPLICATIONS - Profile: vnext
   # Note: Infrastructure must be running before starting vnext services
   # ============================================================================
+  vnext-db-migrator:
+    container_name: vnext-db-migrator-${DOMAIN_NAME:-core}
+    image: "ghcr.io/burgan-tech/vnext/db-migrator:${VNEXT_VERSION:-latest}"
+    profiles:
+      - vnext
+    environment:
+      - APP_DOMAIN=${DOMAIN_NAME:-core}
+    env_file:
+      - ./domains/${DOMAIN_NAME:-core}/.env.db-migrator
+    volumes:
+      - ./domains/${DOMAIN_NAME:-core}/appsettings.DbMigrator.Development.json:/app/appsettings.Development.json:ro
+    <<: *vnext-common
+    restart: "no"
+  vnext-db-migrator-dapr:
+    image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
+    container_name: vnext-db-migrator-dapr-${DOMAIN_NAME:-core}
+    profiles:
+      - vnext
+    command: [
+      "./daprd",
+      "--app-id", "vnext-db-migrator-${DOMAIN_NAME:-core}",
+      "--resources-path", "./components",
+      "--dapr-grpc-port", "${DAPR_DBMIGRATOR_GRPC_PORT:-46111}",
+      "--dapr-http-port", "${DAPR_DBMIGRATOR_HTTP_PORT:-46110}",
+      "--scheduler-host-address", "dapr-scheduler:50007",
+      "--placement-host-address", "dapr-placement:50005"
+    ]
+    volumes:
+      - "../db-migrator/dapr/components:/components"
+    network_mode: "service:vnext-db-migrator"
+    depends_on:
+      - vnext-db-migrator
   vnext-app:
     container_name: vnext-app-${DOMAIN_NAME:-core}
     image: "ghcr.io/burgan-tech/vnext/orchestrator:${VNEXT_VERSION:-latest}"
@@ -38,6 +70,9 @@ services:
     ports:
       - "${VNEXT_APP_PORT:-4201}:5000"
     <<: *vnext-common
+    depends_on:
+      vnext-db-migrator:
+        condition: service_completed_successfully
   vnext-init:
     container_name: vnext-init-${DOMAIN_NAME:-core}
     image: "ghcr.io/burgan-tech/vnext/init:${VNEXT_VERSION:-latest}"
@@ -103,6 +138,9 @@ services:
     ports:
       - "${VNEXT_EXECUTION_PORT:-4202}:5000"
     <<: *vnext-common
+    depends_on:
+      vnext-db-migrator:
+        condition: service_completed_successfully
   vnext-orchestration-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-orchestration-dapr-${DOMAIN_NAME:-core}
@@ -163,6 +201,9 @@ services:
     ports:
       - "${VNEXT_INBOX_PORT:-4203}:5000"
     <<: *vnext-common
+    depends_on:
+      vnext-db-migrator:
+        condition: service_completed_successfully
   vnext-worker-inbox-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-worker-inbox-dapr-${DOMAIN_NAME:-core}
@@ -203,6 +244,9 @@ services:
     ports:
       - "${VNEXT_OUTBOX_PORT:-4204}:5000"
     <<: *vnext-common
+    depends_on:
+      vnext-db-migrator:
+        condition: service_completed_successfully
   vnext-worker-outbox-dapr:
     image: "daprio/daprd:${DAPR_RUNTIME_VERSION:-latest}"
     container_name: vnext-worker-outbox-dapr-${DOMAIN_NAME:-core}
