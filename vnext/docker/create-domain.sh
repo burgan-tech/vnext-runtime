@@ -37,6 +37,8 @@ DAPR_INBOX_HTTP_PORT=$((44110 + DAPR_OFFSET))
 DAPR_INBOX_GRPC_PORT=$((44111 + DAPR_OFFSET))
 DAPR_OUTBOX_HTTP_PORT=$((45110 + DAPR_OFFSET))
 DAPR_OUTBOX_GRPC_PORT=$((45111 + DAPR_OFFSET))
+DAPR_DBMIGRATOR_HTTP_PORT=$((46110 + DAPR_OFFSET))
+DAPR_DBMIGRATOR_GRPC_PORT=$((46111 + DAPR_OFFSET))
 
 # Normalize domain name for database (capitalize first letter, replace non-alphanumeric)
 NORMALIZED_DOMAIN=$(echo "${DOMAIN_NAME}" | sed 's/[^a-zA-Z0-9]/_/g' | awk '{for(i=1;i<=length;i++){if(i==1){printf toupper(substr($0,i,1))}else{printf substr($0,i,1)}}}')
@@ -62,6 +64,7 @@ echo -e "  • VNext Execution: ${VNEXT_EXECUTION_PORT}"
 echo -e "  • VNext Inbox:     ${VNEXT_INBOX_PORT}"
 echo -e "  • VNext Outbox:    ${VNEXT_OUTBOX_PORT}"
 echo -e "  • VNext Init:      ${VNEXT_INIT_PORT}"
+echo -e "  • Db-Migrator Dapr: ${DAPR_DBMIGRATOR_HTTP_PORT}/${DAPR_DBMIGRATOR_GRPC_PORT}"
 echo ""
 
 # Check if templates directory exists
@@ -97,6 +100,8 @@ process_template() {
             -e "s|{{DAPR_INBOX_GRPC_PORT}}|${DAPR_INBOX_GRPC_PORT}|g" \
             -e "s|{{DAPR_OUTBOX_HTTP_PORT}}|${DAPR_OUTBOX_HTTP_PORT}|g" \
             -e "s|{{DAPR_OUTBOX_GRPC_PORT}}|${DAPR_OUTBOX_GRPC_PORT}|g" \
+            -e "s|{{DAPR_DBMIGRATOR_HTTP_PORT}}|${DAPR_DBMIGRATOR_HTTP_PORT}|g" \
+            -e "s|{{DAPR_DBMIGRATOR_GRPC_PORT}}|${DAPR_DBMIGRATOR_GRPC_PORT}|g" \
             -e "s|vNext_[a-zA-Z0-9_]*|${DB_NAME}|g" \
             "${template_file}" > "${output_file}"
     else
@@ -110,12 +115,14 @@ process_template "${TEMPLATES_DIR}/.env.orchestration" "${DOMAIN_DIR}/.env.orche
 process_template "${TEMPLATES_DIR}/.env.execution" "${DOMAIN_DIR}/.env.execution"
 process_template "${TEMPLATES_DIR}/.env.worker-inbox" "${DOMAIN_DIR}/.env.worker-inbox"
 process_template "${TEMPLATES_DIR}/.env.worker-outbox" "${DOMAIN_DIR}/.env.worker-outbox"
+process_template "${TEMPLATES_DIR}/.env.db-migrator" "${DOMAIN_DIR}/.env.db-migrator"
 
 # Process appsettings templates
 process_template "${TEMPLATES_DIR}/appsettings.Development.json" "${DOMAIN_DIR}/appsettings.Development.json"
 process_template "${TEMPLATES_DIR}/appsettings.Execution.Development.json" "${DOMAIN_DIR}/appsettings.Execution.Development.json"
 process_template "${TEMPLATES_DIR}/appsettings.WorkerInbox.Development.json" "${DOMAIN_DIR}/appsettings.WorkerInbox.Development.json"
 process_template "${TEMPLATES_DIR}/appsettings.WorkerOutbox.Development.json" "${DOMAIN_DIR}/appsettings.WorkerOutbox.Development.json"
+process_template "${TEMPLATES_DIR}/appsettings.DbMigrator.Development.json" "${DOMAIN_DIR}/appsettings.DbMigrator.Development.json"
 
 echo ""
 echo -e "${BLUE}════════════════════════════════════════════════════════════${NC}"

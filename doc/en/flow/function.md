@@ -602,6 +602,37 @@ Example in a transition or roleGrant:
 }
 ```
 
+### Instance-data JSONPath authorization (v0.0.43+)
+
+**Role** strings in **roleGrant** entries can use **JSONPath-style** expressions so the runtime compares **token** values to values read from **ScriptContext** (including **`Instance.Data`**):
+
+| Prefix | Token compared | Compared to |
+|--------|----------------|-------------|
+| `$user.<jsonpath>` | **Actor** | Value at `<jsonpath>` in context |
+| `$role.<jsonpath>` | **Role** | Value at `<jsonpath>` in context |
+| `$userBehalfOf.<jsonpath>` | **Subject** (behalf-of) | Value at `<jsonpath>` in context |
+
+**Additional system roles** for behalf-of semantics:
+
+| Role | Description |
+|------|-------------|
+| `$InstanceBehalfOfStarter` | Subject (behalf-of) for whoever **started** the instance |
+| `$PreviousBehalfOfUser` | Subject (behalf-of) for whoever triggered the **previous** transition |
+
+**Examples** (paths must match your workflow data shape):
+
+```text
+$user.$.context.Instance.Data.customer.ownerUserId
+$user.$.context.Instance.Data.assignedUsers[*].userId
+$userBehalfOf.$.context.Instance.Data.customer.behalfOfUserId
+$role.$.context.Instance.Data.permissions.requiredRole
+$role.$.context.Transition.Key
+```
+
+These patterns are evaluated wherever **available transition** and **data** authorization apply (including **Master** schema field visibility when roles are present).
+
+> **Reference:** [#469](https://github.com/burgan-tech/vnext/issues/469)
+
 ### Master schema field-level visibility (v0.0.39+)
 
 The Flow **Master schema** can define **field-level visibility** using a **roleGrant** (`roles`) property on schema properties. Data function and data-returning endpoints (Get Instance, GetInstances, etc.) run the authorize layer and return only fields the caller is allowed to see. Properties without `roles` are visible to all authorized callers. For vocabulary and tooling, see [roles-vocab.json](https://unpkg.com/@burgan-tech/vnext-schema@0.0.37/vocabularies/roles-vocab.json).

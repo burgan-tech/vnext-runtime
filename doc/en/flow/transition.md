@@ -11,7 +11,7 @@ Components that manage transitions between states in a workflow definition are c
 
 ### Optional Properties
 - **Timer**: Mapping code used for scheduled transitions
-- **Rule**: Condition mapping code used for automatic transitions
+- **Rule**: Condition mapping code used for automatic transitions (or **Dynamic Expresso** when **`location`** is **`dynamicExpresso`** — v0.0.43+)
 - **Schema**: Schema reference used to validate the payload transmitted in the transition
 - **AvailableIn**: Specifies in which states shared transitions can be executed
 - **Labels**: Labels for multi-language support
@@ -40,6 +40,71 @@ Conditional transition automatically executed by the system.
 - Automatic transitions based on business rules
 - Automatic progressions after status checks
 - Transitions after data validation
+
+#### Rule expressions with Dynamic Expresso (v0.0.43+)
+
+**Dynamic Expresso expression rules (optional).** Besides **Roslyn** **`IConditionMapping`** scripts, an automatic transition **Rule** may use plain-text **boolean** expressions evaluated with **Dynamic Expresso**, so you can avoid a separate compiled condition script when this mode fits.
+
+**Selection**
+
+- Set **`rule.location`** to **`dynamicExpresso`** and put the expression in **`rule.code`** using **native** encoding: **`"encoding": "NAT"`** in JSON, or **`ScriptCode.FromNative`** in code.
+- Any other **`location`** continues to use the Roslyn condition script path (**RoutingConditionEvaluator** → **ScriptConditionEvaluator**).
+
+**Root binding**
+
+Expressions receive a single parameter **`context`** of type **`ExpressoRuleContext`**, built from **`ScriptContext`** with an allowlist only:
+
+| `context` member | Available surface |
+|------------------|-------------------|
+| **`Body`** | Request body payload |
+| **`CurrentTransition`** | **`Data`**, **`Header`**; may be **null** outside persisted transition requests |
+| **`MetaData`** | Metadata bag |
+| **`Workflow`** | **`key`**, **`domain`**, **`flow`**, **`version`**, **`StateKeys`** |
+| **`Instance`** | **`Id`**, **`Key`**, **`Flow`**, state fields, **`Data`** as JSON |
+| **`Headers`** | HTTP headers |
+| **`QueryParameters`** | Query string parameters |
+| **`RouteValues`** | JSON object from route data |
+| **`Transition`** | **`Key`**, **`From`**, **`Target`**, **`TriggerType`**, **`TriggerKind`**; may be **null** if not set on script context; **no** embedded rule/timer/task payloads |
+| **`Runtime`** | **`Domain`**, **`Version`**; may be **null** if not set |
+
+**JSON under `Instance.Data` / `Body` / etc.**
+
+JSON is exposed as **`RuleJsonDynamic`**: dynamic member access, string indexers, array **`Count`**, array **`Contains`**. Missing object keys or missing dot-properties resolve to **null** (no runtime binder failure), so you can use **`?.`** and **`??`** in expressions where Dynamic Expresso supports them.
+
+Use **`AsDouble()`** / **`AsInt32()`** for numeric JSON values, **`AsBoolean()`** for booleans, and **`AsArrayLength()`** for array lengths; **`Contains`** is supported on JSON arrays.
+
+**Expression examples**
+
+```text
+context.Instance.Data["amount"].AsDouble() > 100000
+context.Instance.Data["documents"].AsArrayLength() == 0
+context.Instance.Data["flags"]["manualReviewRequired"].AsBoolean() == false
+context.Instance.Data["approvers"].Contains("u1")
+context.Body["score"].AsDouble() >= 80
+context.RouteValues["entityId"].ToString() == context.Instance.Data["externalId"].ToString()
+context.Transition != null && context.Transition.Key == "approve-auto"
+context.Runtime != null && context.Runtime.Domain.ToString() == "my-domain"
+```
+
+**JSON rule examples** (automatic transition definition fragment; **`encoding: NAT`** = native / plain expression)
+
+```json
+"rule": {
+  "location": "dynamicExpresso",
+  "encoding": "NAT",
+  "code": "context.Instance.Data.absenceType.ToString() == \"personal-leave\""
+}
+```
+
+```json
+"rule": {
+  "location": "dynamicExpresso",
+  "encoding": "NAT",
+  "code": "context.Headers.sub.ToString() == context.Instance.Data.customerId.ToString()"
+}
+```
+
+> **Reference:** [#470](https://github.com/burgan-tech/vnext/issues/470)
 
 #### Default Auto Transition (v0.0.29+)
 

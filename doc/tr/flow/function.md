@@ -600,6 +600,37 @@ Transition veya roleGrant örneği:
 }
 ```
 
+### Instance verisi JSONPath yetkilendirmesi (v0.0.43+)
+
+**roleGrant** içindeki **role** değerleri **JSONPath tarzı** ifadeler kullanabilir; runtime **token** değerlerini **ScriptContext**'ten ( **`Instance.Data`** dahil) okunan değerlerle karşılaştırır:
+
+| Prefix | Karşılaştırılan token | Karşılaştırılan bağlam değeri |
+|------|------------------------|---------------|
+| `$user.<jsonpath>` | **Actor** | Bağlamdaki `<jsonpath>` değeri |
+| `$role.<jsonpath>` | **Rol** | Bağlamdaki `<jsonpath>` değeri |
+| `$userBehalfOf.<jsonpath>` | **Subject** (adına işlem) | Bağlamdaki `<jsonpath>` değeri |
+
+**Adına işlem** anlamları için ek **sistem rolleri**:
+
+| Rol | Açıklama |
+|-----|----------|
+| `$InstanceBehalfOfStarter` | Instance'ı **başlatan** subject (adına işlem yapılan token) |
+| `$PreviousBehalfOfUser` | **Bir önceki** transition'ı tetikleyen subject (adına işlem yapılan token) |
+
+**Örnek yollar** (workflow veri şemanıza uymalıdır):
+
+```text
+$user.$.context.Instance.Data.customer.ownerUserId
+$user.$.context.Instance.Data.assignedUsers[*].userId
+$userBehalfOf.$.context.Instance.Data.customer.behalfOfUserId
+$role.$.context.Instance.Data.permissions.requiredRole
+$role.$.context.Transition.Key
+```
+
+Bu kalıplar **available transition** ve **data** yetkilendirmesinin geçerli olduğu her yerde değerlendirilir (**Master** şema alan görünürlüğü dahil).
+
+> **Referans:** [#469](https://github.com/burgan-tech/vnext/issues/469)
+
 ### Master şema alan bazlı görünürlük (v0.0.39+)
 
 Flow **Master şeması**, şema property'lerinde **roleGrant** (`roles`) özelliği ile **alan bazlı görünürlük** tanımlayabilir. Data fonksiyonu ve veri dönen endpoint'ler (Get Instance, GetInstances vb.) authorize katmanını çalıştırır ve yalnızca çağıranın görmesine izinli olduğu alanları döndürür. `roles` tanımı olmayan property'ler tüm yetkili çağıranlara görünür. Vocabulary ve araç uyumluluğu için [roles-vocab.json](https://unpkg.com/@burgan-tech/vnext-schema@0.0.37/vocabularies/roles-vocab.json) kullanılabilir.
