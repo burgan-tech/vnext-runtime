@@ -8,7 +8,13 @@ Schemas are defined in JSON format and automatically loaded by the system. Each 
 
 ### Workflow package validation (v0.0.42+)
 
-If your domain package validates workflow JSON with **`validate.js`**, upgrade to **`Ajv2019`** so definitions validate against **JSON Schema 2019-09** (draft-2019), matching **vnext-schema** updates (including **`errorBoundary`** / abort **transition** alignment). Keep **`schemaVersion`** in package config aligned with the runtime (for example **0.0.39** with runtime **0.0.42** or **0.0.43**).
+If your domain package validates workflow JSON with **`validate.js`**, upgrade to **`Ajv2019`** so definitions validate against **JSON Schema 2019-09** (draft-2019), matching **vnext-schema** updates (including **`errorBoundary`** / abort **transition** alignment). Keep **`schemaVersion`** in package config aligned with the runtime (for example **0.0.50** with runtime **0.0.50**).
+
+### Async path schema validation (v0.0.50+)
+
+Transition schema validation is now enforced on **`sync=false`** requests. Previously, the async path accepted any payload without validating against the transition's JSON schema, allowing invalid data into the system. Starting with v0.0.50, schema validation runs **before** the request is accepted and the background job is enqueued. Invalid payloads return `400 Bad Request` with field-level validation errors, identical to the sync path.
+
+> **Reference:** [#556](https://github.com/burgan-tech/vnext/issues/556)
 
 ## Table of Contents
 

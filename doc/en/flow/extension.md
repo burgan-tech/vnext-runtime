@@ -393,12 +393,28 @@ GET /api/v1/{domain}/workflows/{workflow}/instances/{instance}/functions/data?ex
 
 ### 4. Error Handling
 
+#### Error classification (v0.0.50+)
+
+Extension errors are now classified into two categories with different handling behavior:
+
+| Error Type | Behavior | Example |
+|------------|----------|---------|
+| **Infrastructure errors** | Fail-fast — abort the entire request | Network timeout, DNS failure, connection refused, cancellation |
+| **Application-level errors** | Graceful degradation — continue with remaining extensions | HTTP 404/500 from downstream service when `outputMapping` handles the error |
+
+When an extension task returns a non-success result but its `outputMapping` has already handled the error (e.g., mapping a 404 to a default/null value), the extension is considered application-level and does **not** abort the request. Only unrecoverable infrastructure failures cause the full request to fail.
+
+This applies across all InstanceData read endpoints: `GET /instances`, `GET /instances/{id}`, `GET /instances/{id}/functions/data`, `GET /instances/{id}/functions/state`, and `GET /instances/{id}/functions/extensions`.
+
+> **Reference:** [#515](https://github.com/burgan-tech/vnext/issues/515)
+
 | Practice | Description |
 |----------|-------------|
-| Graceful degradation | Extension error should not block main response |
+| Graceful degradation | Application-level extension errors do not block the main response (v0.0.50+) |
 | Timeout handling | Timeout for long-running extensions |
 | Error logging | Proper logging of errors |
 | Fallback values | Default values in case of error |
+| `acceptedStatusCodes` | Use task-level `acceptedStatusCodes` to treat expected non-2xx responses as successful, preventing ErrorBoundary from triggering (v0.0.50+) |
 
 ### 5. Security
 

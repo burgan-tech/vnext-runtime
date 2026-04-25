@@ -56,6 +56,7 @@ Yeni bir iş akışı instance'ı oluşturur. İş akışı yürütmesi sırası
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 | `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
 | `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | Hayır | null | Hata kodu olsalar bile başarılı kabul edilen HTTP status kodları. Tam kodlar (`"404"`), wildcard pattern'ler (`"4xx"`) ve kısmi wildcard'lar (`"40x"`) desteklenir. (v0.0.50+) |
 
 ### SSL Yapılandırması
 
@@ -277,6 +278,7 @@ Mevcut bir iş akışı instance'ında belirli bir transition'ı yürütür. Di�
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 | `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
 | `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | Hayır | null | Hata kodu olsalar bile başarılı kabul edilen HTTP status kodları. Tam kodlar (`"404"`), wildcard pattern'ler (`"4xx"`) ve kısmi wildcard'lar (`"40x"`) desteklenir. (v0.0.50+) |
 
 **Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
 
@@ -461,6 +463,7 @@ Başka bir iş akışı instance'ından instance verilerini alır. Ek ilgili ver
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 | `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
 | `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | Hayır | null | Hata kodu olsalar bile başarılı kabul edilen HTTP status kodları. Tam kodlar (`"404"`), wildcard pattern'ler (`"4xx"`) ve kısmi wildcard'lar (`"40x"`) desteklenir. (v0.0.50+) |
 
 **Not:** `instanceId` veya `key` alanlarından biri sağlanmalıdır. `instanceId` önceliklidir. İkisi de yoksa mevcut instance ID kullanılır.
 
@@ -663,6 +666,7 @@ Ana iş akışı ile paralel çalışan bağımsız bir subprocess instance'ı b
 | `validateSsl` | boolean | Hayır | true | SSL sertifika doğrulaması (v0.0.33+) |
 | `headers` | object | Hayır | - | İstekle gönderilecek özel HTTP header'ları (v0.0.36+) |
 | `timeoutSeconds` | number | Hayır | 30 | İstek timeout süresi (saniye) (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | Hayır | null | Hata kodu olsalar bile başarılı kabul edilen HTTP status kodları. Tam kodlar (`"404"`), wildcard pattern'ler (`"4xx"`) ve kısmi wildcard'lar (`"40x"`) desteklenir. (v0.0.50+) |
 
 ### SSL Yapılandırması
 
@@ -905,6 +909,19 @@ public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext contex
     return Task.FromResult(new ScriptResponse());
 }
 ```
+
+## Yerel vs Uzak Çalıştırma Metadata Paritesi (v0.0.50+)
+
+Trigger task executor'ları (`GetInstancesTaskExecutor`, `GetInstanceDataTaskExecutor`) **yerel** path üzerinden çalıştığında (aynı domain, doğrudan `IInstanceQueryGateway` kullanarak), artık **uzak** path ile aynı `metadata` sözlüğünü döndürür. Daha önce `GetInstanceDataTaskExecutor.ExecuteLocalAsync` başarılı durumda metadata döndürmüyordu ve `GetInstancesTaskExecutor` çalıştırma modları arasında tutarsız metadata üretiyordu. Downstream tüketiciler (scripting, mapping, loglama) artık task'ın yerel mi yoksa uzak mı yönlendirildiğinden bağımsız olarak sabit bir metadata yapısına güvenebilir.
+
+**Yerel çalıştırmada garanti edilen metadata anahtarları (v0.0.50+):**
+
+| Task | Metadata Anahtarları |
+|------|----------------------|
+| `GetInstanceDataTask` | `Domain`, `Workflow`, `Instance`, `ETag` (varsa) |
+| `GetInstancesTask` | Uzak path ile aynı kontrat (sayfalama bilgisi, öğe sayıları) |
+
+> **Referans:** [#563](https://github.com/burgan-tech/vnext/issues/563)
 
 ## Standart Yanıt
 

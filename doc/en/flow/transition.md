@@ -256,3 +256,57 @@ With the `VersionStrategy` property, the data version of transitions can be chan
 
 ## Payload Validation
 Data transmitted in the transition can be validated using the `Schema` reference. This way, data integrity is maintained and erroneous data entries are prevented.
+
+**Async path validation (v0.0.50+):** When `sync=false`, schema validation is now performed **before** accepting the request and enqueueing the background job. Previously, validation was skipped in the async path, causing invalid payloads to be accepted and later faulted during execution. Invalid payloads now return `400 Bad Request` with field-level validation errors, identical to the sync path behavior.
+
+> **Reference:** [#556](https://github.com/burgan-tech/vnext/issues/556)
+
+## Workflow Timeout (v0.0.50+)
+
+When a workflow has a `timeout` configuration and the instance times out, the system now executes the **full TransitionPipeline** for the timeout target state. Previously, the `FlowTimeoutJobHandler` directly mutated the instance state and marked it complete, bypassing all pipeline steps.
+
+**Pipeline steps now executed on timeout:**
+
+| Step | Description |
+|------|-------------|
+| `RunOnExitTasksStep` | Executes `onExit` tasks for the current state |
+| `ChangeStateStep` | Transitions the instance to the target state |
+| `RunOnEntryTasksStep` | Executes `onEntry` tasks for the target state |
+| `HandleFinishStep` | Handles completion if the target is a `Finish` state |
+| `ScheduleTransitionsStep` | Registers any scheduled transitions |
+| `RunAutomaticTransitionsStep` | Chains automatic transitions |
+
+> **Reference:** [#514](https://github.com/burgan-tech/vnext/issues/514)
+
+### Dynamic Timeout Mapping (v0.0.50+)
+
+Workflow-level timeout supports an optional `mapping` field for dynamic timeout duration calculation via `ITimerMapping` scripts. When mapping is defined, a static `timer` configuration is also **required** as fallback.
+
+**Resolution order:**
+1. Mapping script is evaluated at runtime using `ScriptContext` (with access to instance data, workflow, headers, etc.)
+2. If mapping succeeds, the returned `TimerSchedule` (DateTime or Duration) is used
+3. If mapping fails (compile or runtime error), the static `timer.duration` is used as fallback
+
+**Definition example:**
+
+```json
+"timeout": {
+  "key": "$timeout",
+  "target": "timed-out",
+  "versionStrategy": "None",
+  "timer": { "reset": "false", "duration": "PT1H" },
+  "mapping": {
+    "location": "./src/TimeoutMapping.csx",
+    "code": "<BASE64>"
+  }
+}
+```
+
+**Validation rules:**
+- When `mapping` is defined, `timer` is required. Defining `mapping` without `timer` produces a validation error: `"When timeout mapping is defined, static timer configuration is also required as fallback."`
+- `mapping` without `timer` is rejected at publish time
+- `timer` without `mapping` continues to work as before (static duration only)
+
+**Use case:** A parent workflow starts a subprocess with `timeoutMinutes: 30` in the body. The subprocess timeout mapping reads this value from `context.Instance.Data` and schedules a 30-minute timeout. If the mapping fails, the static 1-hour fallback (`PT1H`) applies.
+
+> **Reference:** [#524](https://github.com/burgan-tech/vnext/issues/524)

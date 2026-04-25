@@ -198,6 +198,34 @@ graph TB
     style services fill:#e8f5e9
 ```
 
+## UTC DateTime Normalization (v0.0.50+)
+
+All `DateTime` values stored in the database are normalized to UTC through a two-layer defense-in-depth approach, ensuring correctness regardless of the PostgreSQL server's `TimeZone` configuration.
+
+### Write path — `UtcDateTimeInterceptor`
+
+A `SaveChangesInterceptor` inspects all tracked entities before `SaveChanges` and normalizes every `DateTime` property to `DateTimeKind.Utc`. This prevents timezone-dependent offsets from being persisted.
+
+### Read path — Global `UtcDateTimeConverter`
+
+A global `ValueConverter<DateTime, DateTime>` registered via `ConfigureConventions` tags every `DateTime` value read from the database as `DateTimeKind.Utc`, ensuring consistent `DateTime.Kind` across the application regardless of how the value was stored.
+
+> **Reference:** [#520](https://github.com/burgan-tech/vnext/issues/520)
+
+### `SubFlowStateChangedAt` timestamp migration
+
+The `SubFlowStateChangedAt` column in `InstancesCorrelations` has been migrated from `timestamp without time zone` to `timestamp with time zone` using `AT TIME ZONE 'UTC'`, aligning it with the rest of the schema.
+
+> **Reference:** [#525](https://github.com/burgan-tech/vnext/issues/525)
+
+## PgBouncer-Safe Schema Interceptor (v0.0.50+)
+
+The previous `NpgsqlSchemaConnectionInterceptor` set `search_path` at connection open time. This approach is incompatible with PgBouncer's transaction-mode pooling, where a connection may be reassigned to a different session after the `SET` command.
+
+The replacement `PgBouncerSafeSchemaCommandInterceptor` prepends `SET search_path` inline to every SQL command text. This eliminates the extra round-trip and ensures schema consistency under pooled connections.
+
+> **Reference:** [#534](https://github.com/burgan-tech/vnext/issues/534)
+
 ## Conclusion
 
 vNext Runtime's multi-schema database architecture enables independent data management for each domain and each flow. The automatic schema creation and migration system allows developers to focus on workflows without dealing with database management.

@@ -58,6 +58,7 @@ The following fields are defined in the config section of DAPR Service Task. The
 | `data` | object | null | Request data |
 | `queryString` | string | null | Query string parameters |
 | `timeoutSeconds` | number | 30 | Request timeout duration |
+| `acceptedStatusCodes` | string[] | null | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). When a response matches any entry, the task is considered successful and the ErrorBoundary is not triggered. (v0.0.50+) |
 
 ## Property Access
 

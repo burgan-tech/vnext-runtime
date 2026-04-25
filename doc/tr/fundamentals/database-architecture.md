@@ -213,6 +213,34 @@ graph TB
 ```
 
 
+## UTC DateTime Normalizasyonu (v0.0.50+)
+
+Veritabanında saklanan tüm `DateTime` değerleri, PostgreSQL sunucusunun `TimeZone` yapılandırmasından bağımsız olarak doğruluğu garanti eden iki katmanlı bir savunma yaklaşımıyla UTC'ye normalize edilir.
+
+### Yazma yolu — `UtcDateTimeInterceptor`
+
+Bir `SaveChangesInterceptor`, `SaveChanges` öncesinde tüm izlenen entity'leri inceler ve her `DateTime` property'sini `DateTimeKind.Utc`'ye normalize eder. Bu, timezone'a bağlı ofsetlerin kalıcı hale gelmesini önler.
+
+### Okuma yolu — Global `UtcDateTimeConverter`
+
+`ConfigureConventions` ile kaydedilen global `ValueConverter<DateTime, DateTime>`, veritabanından okunan her `DateTime` değerini `DateTimeKind.Utc` olarak etiketler ve değerin nasıl saklandığından bağımsız olarak uygulama genelinde tutarlı `DateTime.Kind` sağlar.
+
+> **Referans:** [#520](https://github.com/burgan-tech/vnext/issues/520)
+
+### `SubFlowStateChangedAt` timestamp migrasyonu
+
+`InstancesCorrelations` tablosundaki `SubFlowStateChangedAt` kolonu `timestamp without time zone`'dan `timestamp with time zone`'a `AT TIME ZONE 'UTC'` kullanılarak migrate edildi ve şemanın geri kalanıyla uyumlu hale getirildi.
+
+> **Referans:** [#525](https://github.com/burgan-tech/vnext/issues/525)
+
+## PgBouncer Uyumlu Şema Interceptor'ı (v0.0.50+)
+
+Önceki `NpgsqlSchemaConnectionInterceptor`, `search_path`'i bağlantı açılış zamanında ayarlıyordu. Bu yaklaşım, PgBouncer'ın transaction-mode pooling'iyle uyumsuzdur; çünkü `SET` komutundan sonra bağlantı farklı bir oturuma yeniden atanabilir.
+
+Yerine geçen `PgBouncerSafeSchemaCommandInterceptor`, `SET search_path`'i her SQL komut metnine inline olarak ekler. Bu, ekstra round-trip'i ortadan kaldırır ve havuzlanmış bağlantılarda şema tutarlılığını sağlar.
+
+> **Referans:** [#534](https://github.com/burgan-tech/vnext/issues/534)
+
 ## Sonuç
 
 vNext Runtime'ın multi-schema veritabanı mimarisi, her domain'in ve her flow'un bağımsız veri yönetimine olanak tanır. Otomatik şema oluşturma ve migration sistemi, geliştiricilerin veritabanı yönetimiyle uğraşmadan iş akışlarına odaklanmasını sağlar.

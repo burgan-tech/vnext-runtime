@@ -56,6 +56,7 @@ Creates a new workflow instance. Use this to programmatically start new workflow
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 | `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
 | `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | No | null | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). (v0.0.50+) |
 
 ### SSL Configuration
 
@@ -281,6 +282,7 @@ Executes a specific transition on an existing workflow instance. Use this to tri
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 | `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
 | `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | No | null | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). (v0.0.50+) |
 
 **Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
 
@@ -470,6 +472,7 @@ Retrieves instance data from another workflow instance. Supports optional extens
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 | `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
 | `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | No | null | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). (v0.0.50+) |
 
 **Note:** Either `instanceId` or `key` must be provided. `instanceId` takes priority. If neither is provided, the current instance ID is used.
 
@@ -672,6 +675,7 @@ Starts an independent subprocess instance that runs in parallel with the main wo
 | `validateSsl` | boolean | No | true | SSL certificate validation (v0.0.33+) |
 | `headers` | object | No | - | Custom HTTP headers to send with the request (v0.0.36+) |
 | `timeoutSeconds` | number | No | 30 | Request timeout in seconds (v0.0.36+) |
+| `acceptedStatusCodes` | string[] | No | null | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). (v0.0.50+) |
 
 ### SSL Configuration
 
@@ -925,6 +929,19 @@ public Task<ScriptResponse> InputHandler(WorkflowTask task, ScriptContext contex
     return Task.FromResult(new ScriptResponse());
 }
 ```
+
+## Local vs Remote Execution Metadata Parity (v0.0.50+)
+
+When trigger task executors (`GetInstancesTaskExecutor`, `GetInstanceDataTaskExecutor`) run via the **local** path (same domain, using `IInstanceQueryGateway` directly), they now return the same `metadata` dictionary as the **remote** path. Previously, `GetInstanceDataTaskExecutor.ExecuteLocalAsync` returned no metadata on the happy path, and `GetInstancesTaskExecutor` had inconsistent metadata between execution modes. Downstream consumers (scripting, mapping, logging) can now rely on a stable metadata shape regardless of whether the task was routed locally or remotely.
+
+**Metadata keys guaranteed on local execution (v0.0.50+):**
+
+| Task | Metadata Keys |
+|------|---------------|
+| `GetInstanceDataTask` | `Domain`, `Workflow`, `Instance`, `ETag` (when available) |
+| `GetInstancesTask` | Same contract as remote path (paging info, item counts) |
+
+> **Reference:** [#563](https://github.com/burgan-tech/vnext/issues/563)
 
 ## Standard Response
 
