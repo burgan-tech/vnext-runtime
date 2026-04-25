@@ -248,3 +248,17 @@ Child workflow definitions are unchanged; overrides are evaluated in the parent 
   }
 }
 ```
+
+## Instance Status Behavior (v0.0.50+)
+
+### Async mode Active status deferral
+
+When a transition is triggered with `sync=false`, the instance status remains **Busy** for the entire duration of pipeline execution, including all post-commit jobs (SubFlow start, remote task invocations). The `Active` status is only set after all post-commit jobs complete successfully. Previously, `Active` was written mid-pipeline, causing clients polling during execution to see a premature `Active` state.
+
+> **Reference:** [#535](https://github.com/burgan-tech/vnext/issues/535)
+
+### Timer transition and instance status
+
+When a state has a scheduled (timer) transition (`triggerType: 2`), the instance status behavior is now configurable. The instance can remain in `Active` (A) status while waiting for the timer to fire, instead of being set to `Busy` (B). This preserves existing status-based filters and integrations that depend on `Active` status.
+
+> **Reference:** [#524](https://github.com/burgan-tech/vnext/issues/524)

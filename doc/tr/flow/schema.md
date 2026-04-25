@@ -8,7 +8,13 @@ Schema'lar JSON formatında tanımlanır ve sistem tarafından otomatik olarak y
 
 ### Workflow paket doğrulaması (v0.0.42+)
 
-Domain paketiniz workflow JSON'unu **`validate.js`** ile doğruluyorsa, **vnext-schema** güncellemeleriyle uyum için **`Ajv2019`** kullanın (**JSON Schema 2019-09** / draft-2019). Bu, **`errorBoundary`** ve abort sırasında **transition** ile ilgili şema hizalamasını da kapsar. Paket yapılandırmasındaki **`schemaVersion`** değerini runtime ile eşleştirin (örnek: runtime **0.0.42** veya **0.0.43** ile **0.0.39**).
+Domain paketiniz workflow JSON'unu **`validate.js`** ile doğruluyorsa, **vnext-schema** güncellemeleriyle uyum için **`Ajv2019`** kullanın (**JSON Schema 2019-09** / draft-2019). Bu, **`errorBoundary`** ve abort sırasında **transition** ile ilgili şema hizalamasını da kapsar. Paket yapılandırmasındaki **`schemaVersion`** değerini runtime ile eşleştirin (örnek: runtime **0.0.50** ile **0.0.50**).
+
+### Asenkron path şema validasyonu (v0.0.50+)
+
+Transition şema validasyonu artık **`sync=false`** isteklerinde de uygulanır. Daha önce asenkron path herhangi bir payload'ı, transition'ın JSON şemasına karşı doğrulamadan kabul ediyordu ve geçersiz verinin sisteme girmesine izin veriyordu. v0.0.50'den itibaren şema validasyonu, istek kabul edilmeden ve arka plan job'u kuyruğa alınmadan **önce** çalışır. Geçersiz payload'lar, senkron path ile aynı şekilde `400 Bad Request` ve alan bazlı validasyon hataları döndürür.
+
+> **Referans:** [#556](https://github.com/burgan-tech/vnext/issues/556)
 
 ## İçindekiler
 

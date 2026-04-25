@@ -47,6 +47,7 @@ The GetInstances Task enables fetching instance data from other workflows with s
 | `sort` | string | No | - | Sort field with optional direction prefix |
 | `filter` | string | No | - | Single filter expression (JSON or legacy string; v0.0.37+ — not an array) |
 | `useDapr` | bool | No | `false` | Use Dapr service invocation instead of direct HTTP |
+| `acceptedStatusCodes` | string[] | No | `null` | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). When a response matches any entry, the task is considered successful and the ErrorBoundary is not triggered. (v0.0.50+) |
 
 ### Sort Parameter
 

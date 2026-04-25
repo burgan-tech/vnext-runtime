@@ -72,6 +72,23 @@ For automatic workflow termination:
 }
 ```
 
+**Dynamic timeout mapping (v0.0.50+):** An optional `mapping` field (a `ScriptCode` implementing `ITimerMapping`) can compute the timeout duration at runtime. The static `timer` configuration is required as fallback when `mapping` is defined. When the timeout fires, the full **TransitionPipeline** is now executed (onExit, onEntry, automatic transitions, finish handling). See [Transition — Workflow Timeout](./transition.md#workflow-timeout-v0050) for details.
+
+```json
+"timeout": {
+  "key": "$timeout",
+  "target": "timed-out",
+  "versionStrategy": "None",
+  "timer": { "reset": "false", "duration": "PT1H" },
+  "mapping": {
+    "location": "./src/TimeoutMapping.csx",
+    "code": "<BASE64>"
+  }
+}
+```
+
+> **Reference:** [#514](https://github.com/burgan-tech/vnext/issues/514), [#524](https://github.com/burgan-tech/vnext/issues/524)
+
 #### Functions
 Function references for platform services:
 ```json
@@ -272,6 +289,10 @@ Represents different stages of the workflow. For detailed information: [📄 Sta
     "timer": {
       "reset": "string",
       "duration": "string (ISO 8601)"
+    },
+    "mapping": {
+      "location": "string",
+      "code": "string (BASE64)"
     }
   },
   "cancel": {

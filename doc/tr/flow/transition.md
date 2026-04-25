@@ -257,3 +257,57 @@ Workflow tanımında `updateData` konfigürasyonu olarak tanımlanır:
 
 ## Payload Validasyonu
 `Schema` referansı kullanılarak transition'da iletilen veriler validate edilebilir. Bu sayede veri bütünlüğü korunur ve hatalı veri girişleri önlenir.
+
+**Asenkron path validasyonu (v0.0.50+):** `sync=false` modunda artık şema validasyonu, istek kabul edilmeden ve arka plan job'u kuyruğa alınmadan **önce** yapılır. Daha önce asenkron path'te validasyon atlanıyordu ve geçersiz payload'lar kabul edilip çalıştırma sırasında hata veriyordu. Geçersiz payload'lar artık senkron path ile aynı şekilde `400 Bad Request` ve alan düzeyinde validasyon hataları döndürür.
+
+> **Referans:** [#556](https://github.com/burgan-tech/vnext/issues/556)
+
+## Workflow Timeout (v0.0.50+)
+
+Bir workflow'da `timeout` yapılandırması varsa ve instance zaman aşımına uğrarsa, sistem artık timeout hedef state'i için **tam TransitionPipeline**'ı çalıştırır. Daha önce `FlowTimeoutJobHandler`, instance state'ini doğrudan değiştirip tamamlanmış olarak işaretliyor ve tüm pipeline adımlarını atlıyordu.
+
+**Timeout'ta artık çalıştırılan pipeline adımları:**
+
+| Adım | Açıklama |
+|------|----------|
+| `RunOnExitTasksStep` | Mevcut state'in `onExit` task'larını çalıştırır |
+| `ChangeStateStep` | Instance'ı hedef state'e geçirir |
+| `RunOnEntryTasksStep` | Hedef state'in `onEntry` task'larını çalıştırır |
+| `HandleFinishStep` | Hedef `Finish` state ise tamamlama işlemlerini yapar |
+| `ScheduleTransitionsStep` | Zamanlanmış transition'ları kaydeder |
+| `RunAutomaticTransitionsStep` | Otomatik transition'ları zincirler |
+
+> **Referans:** [#514](https://github.com/burgan-tech/vnext/issues/514)
+
+### Dinamik Timeout Mapping (v0.0.50+)
+
+Workflow seviyesinde timeout, `ITimerMapping` scriptleri ile dinamik timeout süresi hesaplama için isteğe bağlı bir `mapping` alanını destekler. Mapping tanımlandığında, yedek (fallback) olarak statik `timer` yapılandırması da **zorunludur**.
+
+**Çözümleme sırası:**
+1. Mapping script'i runtime'da `ScriptContext` kullanılarak değerlendirilir (instance data, workflow, headers vb. erişilebilir)
+2. Mapping başarılı olursa, döndürülen `TimerSchedule` (DateTime veya Duration) kullanılır
+3. Mapping başarısız olursa (derleme veya çalışma zamanı hatası), statik `timer.duration` yedek olarak kullanılır
+
+**Tanım örneği:**
+
+```json
+"timeout": {
+  "key": "$timeout",
+  "target": "timed-out",
+  "versionStrategy": "None",
+  "timer": { "reset": "false", "duration": "PT1H" },
+  "mapping": {
+    "location": "./src/TimeoutMapping.csx",
+    "code": "<BASE64>"
+  }
+}
+```
+
+**Validasyon kuralları:**
+- `mapping` tanımlandığında `timer` zorunludur. `timer` olmadan `mapping` tanımlamak şu validasyon hatasını üretir: `"When timeout mapping is defined, static timer configuration is also required as fallback."`
+- `timer` olmadan `mapping` yayınlama zamanında reddedilir
+- `mapping` olmadan `timer` daha önce olduğu gibi çalışmaya devam eder (sadece statik süre)
+
+**Kullanım senaryosu:** Bir parent workflow, subprocess'i body'de `timeoutMinutes: 30` göndererek başlatır. Subprocess'in timeout mapping'i bu değeri `context.Instance.Data` üzerinden okur ve 30 dakikalık timeout zamanlar. Mapping başarısız olursa, statik 1 saatlik yedek (`PT1H`) uygulanır.
+
+> **Referans:** [#524](https://github.com/burgan-tech/vnext/issues/524)

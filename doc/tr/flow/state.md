@@ -249,4 +249,16 @@ Alt workflow tanımı değişmez; override'lar üst bağlamda değerlendirilir.
 }
 ```
 
+## Instance Status Davranışı (v0.0.50+)
 
+### Asenkron modda Active status ertelenmesi
+
+Bir transition `sync=false` ile tetiklendiğinde, instance status'u tüm pipeline çalışması boyunca (post-commit job'lar dahil: SubFlow başlatma, uzak task çağrıları) **Busy** kalır. `Active` status'u yalnızca tüm post-commit job'lar başarıyla tamamlandıktan sonra set edilir. Daha önce `Active`, pipeline ortasında yazılıyordu ve çalışma sırasında sorgulayan istemciler erken `Active` durumu görüyordu.
+
+> **Referans:** [#535](https://github.com/burgan-tech/vnext/issues/535)
+
+### Timer transition ve instance status
+
+Bir state'te zamanlanmış (timer) transition (`triggerType: 2`) olduğunda, instance status davranışı artık yapılandırılabilir. Instance, timer'ın tetiklenmesini beklerken `Busy` (B) yerine `Active` (A) durumunda kalabilir. Bu, `Active` status'a bağlı mevcut filtreler ve entegrasyonları korur.
+
+> **Referans:** [#524](https://github.com/burgan-tech/vnext/issues/524)

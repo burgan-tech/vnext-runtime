@@ -62,6 +62,7 @@ DAPR Service Task'ın config bölümünde aşağıdaki alanlar tanımlanır. Tas
 | `headers` | object | null | HTTP header'ları |
 | `queryString` | string | null | Query string parametreleri |
 | `timeoutSeconds` | number | 30 | İstek timeout süresi |
+| `acceptedStatusCodes` | string[] | null | Hata kodu olsalar bile başarılı kabul edilen HTTP status kodları. Tam kodlar (`"404"`), wildcard pattern'ler (`"4xx"`) ve kısmi wildcard'lar (`"40x"`) desteklenir. Yanıt herhangi bir girişle eşleşirse task başarılı sayılır ve ErrorBoundary tetiklenmez. (v0.0.50+) |
 
 ## Property Erişimi
 

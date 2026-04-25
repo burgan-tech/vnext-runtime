@@ -47,6 +47,7 @@ GetInstances Task, sayfalama, sıralama ve filtreleme desteğiyle diğer workflo
 | `sort` | string | Hayır | - | İsteğe bağlı yön önekiyle sıralama alanı |
 | `filter` | string | Hayır | - | Tek filtre ifadesi (JSON veya legacy string; v0.0.37+ — dizi değil) |
 | `useDapr` | bool | Hayır | `false` | Doğrudan HTTP yerine Dapr servis çağrısı kullan |
+| `acceptedStatusCodes` | string[] | Hayır | `null` | Hata kodu olsalar bile başarılı kabul edilen HTTP status kodları. Tam kodlar (`"404"`), wildcard pattern'ler (`"4xx"`) ve kısmi wildcard'lar (`"40x"`) desteklenir. Yanıt herhangi bir girişle eşleşirse task başarılı sayılır ve ErrorBoundary tetiklenmez. (v0.0.50+) |
 
 ### Sort Parametresi
 

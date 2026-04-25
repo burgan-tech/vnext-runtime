@@ -393,12 +393,28 @@ GET /api/v1/{domain}/workflows/{workflow}/instances/{instance}/functions/data?ex
 
 ### 4. Hata Yönetimi
 
+#### Hata sınıflandırması (v0.0.50+)
+
+Extension hataları artık iki kategoride sınıflandırılır ve farklı şekilde ele alınır:
+
+| Hata Türü | Davranış | Örnek |
+|-----------|----------|-------|
+| **Altyapı hataları** | Fail-fast — tüm istek iptal edilir | Ağ zaman aşımı, DNS hatası, bağlantı reddedildi, iptal |
+| **Uygulama seviyesi hatalar** | Graceful degradation — kalan extension'larla devam edilir | Downstream servisin HTTP 404/500 döndürmesi ancak `outputMapping`'in hatayı ele alması |
+
+Bir extension task'ı başarısız sonuç döndürse bile `outputMapping` hatayı zaten ele almışsa (örn. 404'ü varsayılan/null değere eşleme), extension uygulama seviyesinde kabul edilir ve istek **iptal edilmez**. Yalnızca kurtarılamaz altyapı hataları tüm isteğin başarısız olmasına neden olur.
+
+Bu davranış tüm InstanceData okuma endpoint'lerinde geçerlidir: `GET /instances`, `GET /instances/{id}`, `GET /instances/{id}/functions/data`, `GET /instances/{id}/functions/state` ve `GET /instances/{id}/functions/extensions`.
+
+> **Referans:** [#515](https://github.com/burgan-tech/vnext/issues/515)
+
 | Uygulama | Açıklama |
 |----------|----------|
-| Graceful degradation | Extension hatası ana response'u engellemeli |
+| Graceful degradation | Uygulama seviyesindeki extension hataları ana response'u engellemez (v0.0.50+) |
 | Timeout handling | Uzun süren extension'lar için timeout |
 | Error logging | Hataların uygun şekilde loglanması |
 | Fallback değerler | Hata durumunda varsayılan değerler |
+| `acceptedStatusCodes` | Task seviyesinde `acceptedStatusCodes` kullanarak beklenen non-2xx yanıtları başarılı olarak kabul edin, ErrorBoundary'nin tetiklenmesini engelleyin (v0.0.50+) |
 
 ### 5. Güvenlik
 

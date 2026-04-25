@@ -72,6 +72,23 @@ Sistem şu anda 4 farklı iş akışı türünü desteklemektedir:
 }
 ```
 
+**Dinamik timeout mapping (v0.0.50+):** İsteğe bağlı bir `mapping` alanı (`ITimerMapping` implement eden `ScriptCode`) ile timeout süresi çalışma zamanında hesaplanabilir. `mapping` tanımlandığında yedek (fallback) olarak statik `timer` yapılandırması zorunludur. Timeout tetiklendiğinde artık tam **TransitionPipeline** çalıştırılır (onExit, onEntry, otomatik transition'lar, finish işleme). Detaylar için [Transition — Workflow Timeout](./transition.md#workflow-timeout-v0050) bölümüne bakın.
+
+```json
+"timeout": {
+  "key": "$timeout",
+  "target": "timed-out",
+  "versionStrategy": "None",
+  "timer": { "reset": "false", "duration": "PT1H" },
+  "mapping": {
+    "location": "./src/TimeoutMapping.csx",
+    "code": "<BASE64>"
+  }
+}
+```
+
+> **Referans:** [#514](https://github.com/burgan-tech/vnext/issues/514), [#524](https://github.com/burgan-tech/vnext/issues/524)
+
 #### Functions (Fonksiyonlar)
 Platform servisleri için fonksiyon referansları:
 ```json
@@ -275,6 +292,10 @@ Tüm iş akışları `startTransition` bileşenine sahip olmalıdır. Bu, iş ak
     "timer": {
       "reset": "string",
       "duration": "string (ISO 8601)"
+    },
+    "mapping": {
+      "location": "string",
+      "code": "string (BASE64)"
     }
   },
   "cancel": {

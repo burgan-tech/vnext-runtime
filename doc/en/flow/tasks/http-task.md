@@ -57,6 +57,7 @@ The following fields are defined in the config section of HTTP Task. The task de
 | `body` | object | null | Request body (except GET) |
 | `timeoutSeconds` | number | 30 | Request timeout duration |
 | `validateSsl` | boolean | true | SSL certificate validation |
+| `acceptedStatusCodes` | string[] | null | HTTP status codes treated as successful even when they are error codes. Supports exact codes (`"404"`), wildcard patterns (`"4xx"`), and partial wildcards (`"40x"`). When a response matches any entry, the task is considered successful and the ErrorBoundary is not triggered. (v0.0.50+) |
 
 ## SSL Configuration
 
