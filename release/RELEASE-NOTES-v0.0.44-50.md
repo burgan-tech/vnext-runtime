@@ -183,7 +183,7 @@ Configuration for v0.0.50:
 ```json
 {
   "runtimeVersion": "0.0.50",
-  "schemaVersion": "0.0.50"
+  "schemaVersion": "0.0.41"
 }
 ```
 
