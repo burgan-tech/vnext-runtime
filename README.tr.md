@@ -8,6 +8,11 @@ Bu proje, geliştiricilerin lokal ortamlarında VNext Runtime sistemini ayağa k
 
 > **Languages:** This README is available in [English](README.en.md) | [Türkçe](README.md)
 
+> **📚 vNext Platform Dokümantasyonu:** Kapsamlı teknik dokümantasyon, mimari rehberler, API referansları ve kullanım kılavuzları için yeni dokümantasyon portalımızı ziyaret edin:
+> **[vNext Docs Portal](https://burgan-tech.github.io/vnext-docs/)**
+>
+> Portal içerisinde Technical, Architecture, Business ve Product dokümantasyon alanlarına ulaşabilirsiniz.
+
 ## Environment Konfigürasyonu
 
 Repo, domain'e özgü konfigürasyonlar oluşturmak için kullanılan şablon dosyalarını `vnext/docker/templates/` dizininde içerir. `make create-domain` komutu ile bir domain oluşturduğunuzda, bu şablonlar işlenir ve sonuçta oluşan konfigürasyon dosyaları `vnext/docker/domains/<domain_adi>/` dizinine yerleştirilir.
@@ -242,6 +247,8 @@ curl http://localhost:4201/health
 
 vNext Runtime için workflow ve bileşenler geliştirmek amacıyla aşağıdaki araçlara ihtiyacınız olacak:
 
+> Detaylı başlangıç rehberi ve platform dokümantasyonu için [vNext Docs Portal](https://burgan-tech.github.io/vnext-docs/) adresini ziyaret edin.
+
 ### 1. vNext Template
 
 **Repository:** https://github.com/burgan-tech/vnext-template
@@ -318,6 +325,30 @@ Tüm desteklenen vNext bileşenleri (workflow'lar, görevler, fonksiyonlar, vb.)
 - ✅ Workflow'larınızın platform standartlarına uygun olduğundan emin olun
 
 Bileşen yapılarını ve doğrulama kurallarını anlamak için [vnext-schema repository'sine](https://github.com/burgan-tech/vnext-schema) başvurun.
+
+### 4. vNext Example
+
+**Repository:** https://github.com/burgan-tech/vnext-example
+
+vNext Platformu için referans workflow'lar ve bileşenler içeren örnek proje. Önerilen pattern'ları, bileşen kompozisyon tekniklerini ve uçtan uca akışları göstererek geliştiricilere gerçek dünya implementasyonları için rehberlik eder.
+
+**İçerik:**
+- Örnek workflow tanımları ve iş akışları
+- Schema, Task, View, Function ve Extension bileşen örnekleri
+- API test koleksiyonları (Postman)
+- JMeter ile yük testleri
+- Domain yapılandırma örnekleri (`vnext.config.json`)
+
+**Hızlı Başlangıç:**
+
+```bash
+git clone https://github.com/burgan-tech/vnext-example.git
+cd vnext-example
+npm install
+npm run validate
+```
+
+Detaylı bilgi için [vnext-example repository'sini](https://github.com/burgan-tech/vnext-example) ziyaret edin.
 
 ---
 
@@ -876,17 +907,13 @@ make reset           # Derin reset (gerekirse)
 
 ## 📚 Dokümantasyon
 
-VNext Runtime platformu, iş akışları ve geliştirme rehberleri hakkında kapsamlı dokümantasyon için lütfen şu kaynaklara başvurun:
+vNext platformu için kapsamlı dokümantasyon artık **vNext Docs Portal** üzerinden sunulmaktadır:
 
-- **📖 [Kapsamlı Dokümantasyon (Türkçe)](doc/tr/README.md)** - Platform mimarisi, iş akışı bileşenleri ve detaylı API referansları içeren kapsamlı geliştirici rehberi
-- **🇺🇸 [English Documentation](doc/en/README.md)** - Comprehensive developer guide covering platform architecture, workflow components, and detailed API references
+**🌐 [vNext Docs Portal](https://burgan-tech.github.io/vnext-docs/)**
 
-### Hızlı Dokümantasyon Linkleri
+Portal üzerinde aşağıdaki dokümantasyon alanlarına ulaşabilirsiniz:
 
-| Konu | Türkçe | İngilizce |
-|------|--------|-----------|
-| **Platform Temelleri** | [fundamentals/readme.md](doc/tr/fundamentals/readme.md) | [fundamentals/readme.md](doc/en/fundamentals/readme.md) |
-| **İş Akışı Durumları** | [flow/state.md](doc/tr/flow/state.md) | [flow/state.md](doc/en/flow/state.md) |
-| **Görev Türleri** | [flow/task.md](doc/tr/flow/task.md) | [flow/task.md](doc/en/flow/task.md) |
-| **Haritalama Rehberi** | [flow/mapping.md](doc/tr/flow/mapping.md) | [flow/mapping.md](doc/en/flow/mapping.md) |
-| **Instance Nasıl Başlatılır** | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) | [how-to/start-instance.md](doc/en/how-to/start-instance.md) |
+- **Technical** -- Lokal geliştirme ortamı kurulumu, çekirdek kavramlar, bileşenler, servisler ve API referansı
+- **Architecture** -- Domain modeli, runtime mimarisi, veri katmanı, altyapı ve mimari karar kayıtları (ADR)
+- **Business** -- Manifesto, yetenekler, kullanım senaryoları ve değer önerisi
+- **Product** -- Ürün vizyonu, özellik kataloğu, yol haritası, persona ve sürüm stratejisi

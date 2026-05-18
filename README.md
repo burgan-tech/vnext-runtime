@@ -8,6 +8,11 @@ This project is designed to enable developers to set up and run the VNext Runtim
 
 > **Languages:** This README is available in [English](README.en.md) | [Türkçe](README.md)
 
+> **📚 vNext Platform Documentation:** For comprehensive technical documentation, architecture guides, API references, and usage guides, visit our new documentation portal:
+> **[vNext Docs Portal](https://burgan-tech.github.io/vnext-docs/)**
+>
+> The portal covers Technical, Architecture, Business, and Product documentation areas.
+
 ## Environment Configuration
 
 The repository includes template files in the `vnext/docker/templates/` directory that are used to generate domain-specific configurations. When you create a domain using `make create-domain`, these templates are processed and the resulting configuration files are placed in `vnext/docker/domains/<domain_name>/`.
@@ -242,6 +247,8 @@ curl http://localhost:4201/health
 
 To develop workflows and components for vNext Runtime, you'll need the following tools:
 
+> For a detailed getting started guide and platform documentation, visit the [vNext Docs Portal](https://burgan-tech.github.io/vnext-docs/).
+
 ### 1. vNext Template
 
 **Repository:** https://github.com/burgan-tech/vnext-template
@@ -318,6 +325,30 @@ Contains JSON schemas for all supported vNext components (workflows, tasks, func
 - ✅ Ensure your workflows conform to platform standards
 
 Reference the [vnext-schema repository](https://github.com/burgan-tech/vnext-schema) to understand component structures and validation rules.
+
+### 4. vNext Example
+
+**Repository:** https://github.com/burgan-tech/vnext-example
+
+A reference project containing example workflows and components for the vNext Platform. Demonstrates recommended patterns, component composition techniques, and end-to-end flows to guide developers in building real-world implementations.
+
+**Contents:**
+- Example workflow definitions and business flows
+- Schema, Task, View, Function, and Extension component samples
+- API test collections (Postman)
+- JMeter load tests
+- Domain configuration examples (`vnext.config.json`)
+
+**Quick Start:**
+
+```bash
+git clone https://github.com/burgan-tech/vnext-example.git
+cd vnext-example
+npm install
+npm run validate
+```
+
+For detailed information, visit the [vnext-example repository](https://github.com/burgan-tech/vnext-example).
 
 ---
 
@@ -877,17 +908,13 @@ make reset           # Deep reset (if needed)
 
 ## 📚 Documentation
 
-For comprehensive documentation about the VNext Runtime platform, workflows, and development guides, please refer to:
+Comprehensive documentation for the vNext platform is now available on the **vNext Docs Portal**:
 
-- **📖 [Complete Documentation (English)](doc/en/README.md)** - Comprehensive developer guide covering platform architecture, workflow components, and detailed API references
-- **🇹🇷 [Türkçe Dokümantasyon](doc/tr/README.md)** - Platform mimarisi, iş akışı bileşenleri ve detaylı API referansları içeren kapsamlı geliştirici rehberi
+**🌐 [vNext Docs Portal](https://burgan-tech.github.io/vnext-docs/)**
 
-### Quick Documentation Links
+The portal covers the following documentation areas:
 
-| Topic | English | Turkish |
-|-------|---------|---------|
-| **Platform Fundamentals** | [fundamentals/readme.md](doc/en/fundamentals/readme.md) | [fundamentals/readme.md](doc/tr/fundamentals/readme.md) |
-| **Workflow States** | [flow/state.md](doc/en/flow/state.md) | [flow/state.md](doc/tr/flow/state.md) |
-| **Task Types** | [flow/task.md](doc/en/flow/task.md) | [flow/task.md](doc/tr/flow/task.md) |
-| **Mapping Guide** | [flow/mapping.md](doc/en/flow/mapping.md) | [flow/mapping.md](doc/tr/flow/mapping.md) |
-| **How to Start Instance** | [how-to/start-instance.md](doc/en/how-to/start-instance.md) | [how-to/start-instance.md](doc/tr/how-to/start-instance.md) |
+- **Technical** -- Local development setup, core concepts, components, services, and API reference
+- **Architecture** -- Domain model, runtime architecture, data layer, infrastructure, and architecture decision records (ADR)
+- **Business** -- Manifesto, capabilities, use cases, and value proposition
+- **Product** -- Product vision, feature catalog, roadmap, personas, and release strategy
