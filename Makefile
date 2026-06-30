@@ -122,6 +122,7 @@ create-env-files: ## Create infrastructure environment file and ensure templates
 		echo "OPENOBSERVE_VERSION=latest" >> $(ENV_FILE); \
 		echo "OTEL_COLLECTOR_VERSION=latest" >> $(ENV_FILE); \
 		echo "MOCKOON_VERSION=latest" >> $(ENV_FILE); \
+		echo "METABASE_VERSION=latest" >> $(ENV_FILE); \
 		echo "$(GREEN)Created $(ENV_FILE)$(NC)"; \
 	else \
 		echo "$(YELLOW)$(ENV_FILE) already exists$(NC)"; \
@@ -192,6 +193,22 @@ up-infra: check-env-infra check-runtime ## Start only infrastructure services
 	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile infra up -d
 	@echo "$(GREEN)Infrastructure services started!$(NC)"
 	@$(MAKE) status-infra
+
+up-metabase: check-env-infra check-runtime ## Start the shared (opt-in) Metabase analytics engine
+	@echo "$(YELLOW)Starting Metabase (opt-in analytics engine)...$(NC)"
+	@$(MAKE) create-network
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile metabase up -d metabase
+	@echo "$(GREEN)Metabase started at http://localhost:3030 (first boot ~2 min).$(NC)"
+	@echo "$(YELLOW)Dashboards are provisioned per-domain from each domain repo, e.g.:$(NC)"
+	@echo "  POSTGRES_DB=vNext_<Domain> PG_SCHEMA=<flow> CONN_NAME=<domain> ./etc/docker/config/metabase/provision.sh"
+
+down-metabase: check-runtime ## Stop the shared Metabase analytics engine
+	@echo "$(YELLOW)Stopping Metabase...$(NC)"
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile metabase down
+	@echo "$(GREEN)Metabase stopped!$(NC)"
+
+logs-metabase: check-runtime ## Show logs for Metabase
+	cd $(DOCKER_DIR) && $(COMPOSE_CMD) --profile metabase logs -f metabase
 
 up-vnext: check-env-infra check-runtime ## Start vnext services for a domain (usage: make up-vnext DOMAIN=mydom)
 	@if [ ! -d "$(DOMAIN_DIR)" ]; then \
@@ -681,4 +698,4 @@ version: ## Show version information
 	fi
 
 # Prevent make from interpreting file names as targets
-.PHONY: help check-runtime setup create-env-files create-network check-env check-env-infra build up up-infra up-vnext start up-build up-infra-build up-vnext-build down down-infra down-vnext stop restart restart-infra restart-vnext status status-infra status-vnext logs logs-infra logs-vnext logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect db-list change-domain create-domain list-domains status-all-domains down-all-vnext
+.PHONY: help check-runtime setup create-env-files create-network check-env check-env-infra build up up-infra up-metabase down-metabase logs-metabase up-vnext start up-build up-infra-build up-vnext-build down down-infra down-vnext stop restart restart-infra restart-vnext status status-infra status-vnext logs logs-infra logs-vnext logs-orchestration logs-execution logs-init logs-dapr logs-db health dev shell-orchestration shell-execution shell-postgres shell-redis clean clean-all reset update ps top stats publish-component publish-component-skip-health republish-component git-init info version db-create db-drop db-reset db-status db-connect db-list change-domain create-domain list-domains status-all-domains down-all-vnext

@@ -412,9 +412,46 @@ services:
       - openobserve
     <<: *vnext-common
 
+  # ============================================================================
+  # METABASE - Profile: metabase (OPT-IN, shared by all local domains)
+  # ----------------------------------------------------------------------------
+  # The runtime PROVIDES the analytics engine; it is not part of `infra` and does
+  # NOT start with `make up-infra`. A developer who wants dashboards runs:
+  #     make up-metabase
+  # One shared instance serves every domain DB in the local Postgres (each domain
+  # has its own vNext_<Domain> database). Dashboards/cards are NOT defined here —
+  # each domain provisions its own against this engine from its own repo, e.g.:
+  #     POSTGRES_DB=vNext_Morph_touch PG_SCHEMA=<flow> CONN_NAME=morph-touch \
+  #       ./etc/docker/config/metabase/provision.sh
+  # In production each domain runs its OWN Metabase on its own cluster; this shared
+  # instance is a local-dev convenience only. Default H2 store is dev-only.
+  # ============================================================================
+  metabase:
+    container_name: vnext-metabase
+    image: "metabase/metabase:${METABASE_VERSION:-latest}"
+    profiles:
+      - metabase
+    environment:
+      MB_DB_TYPE: h2
+      JAVA_TIMEZONE: UTC
+      MB_SITE_NAME: "vNext Analytics"
+    ports:
+      - "3030:3000"
+    volumes:
+      - metabase:/metabase-data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:3000/api/health | grep -q '\"status\":\"ok\"' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    restart: unless-stopped
+    <<: *vnext-common
+
 networks:
   vnext-development:
     external: true
 volumes:
   postgres:
   openobserve:
+  metabase:
