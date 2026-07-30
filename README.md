@@ -760,7 +760,7 @@ make shell-postgres
 | **vnext-vault** | HashiCorp Vault | 8200 | http://localhost:8200 |
 | **openobserve** | Observability dashboard | 5080 | http://localhost:5080 |
 | **otel-collector** | OpenTelemetry Collector | 4317, 4318, 8888 | - |
-| **mockoon** | API Mock Server | 3001 | http://localhost:3001 |
+| **mocklab** | API Mock Server | 3001 | http://localhost:3001 |
 
 ### VNext Domain Services (Per Domain)
 

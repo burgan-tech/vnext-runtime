@@ -121,7 +121,7 @@ create-env-files: ## Create infrastructure environment file and ensure templates
 		echo "ALPINE_CURL_VERSION=latest" >> $(ENV_FILE); \
 		echo "OPENOBSERVE_VERSION=latest" >> $(ENV_FILE); \
 		echo "OTEL_COLLECTOR_VERSION=latest" >> $(ENV_FILE); \
-		echo "MOCKOON_VERSION=latest" >> $(ENV_FILE); \
+		echo "MOCKLAB_VERSION=latest" >> $(ENV_FILE); \
 		echo "$(GREEN)Created $(ENV_FILE)$(NC)"; \
 	else \
 		echo "$(YELLOW)$(ENV_FILE) already exists$(NC)"; \
@@ -432,7 +432,7 @@ clean-all: check-runtime ## Remove all containers, images, and volumes (WARNING:
 	@echo "$(YELLOW)Removing all vnext containers...$(NC)"
 	@$(CONTAINER_RUNTIME) ps -aq --filter "name=vnext-" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
 	@$(CONTAINER_RUNTIME) ps -aq --filter "name=dapr-" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
-	@$(CONTAINER_RUNTIME) ps -aq --filter "name=mockoon" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
+	@$(CONTAINER_RUNTIME) ps -aq --filter "name=mocklab" | xargs -r $(CONTAINER_RUNTIME) rm -f 2>/dev/null || true
 	@echo "$(YELLOW)Pruning system...$(NC)"
 	$(CONTAINER_RUNTIME) system prune -a -f
 	@echo "$(GREEN)Complete cleanup finished!$(NC)"
