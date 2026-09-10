@@ -1,0 +1,685 @@
+{
+  "uuid": "deblock-sim-card-mocks",
+  "lastMigration": 32,
+  "name": "Deblock SIM Card Mocks",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3001,
+  "hostname": "",
+  "folders": [
+    {
+      "uuid": "folder-deblock-sim-card",
+      "name": "deblock-sim-card",
+      "children": [
+        { "type": "route", "uuid": "route-app-version-check" },
+        { "type": "route", "uuid": "route-ip-address-info" },
+        { "type": "route", "uuid": "route-check-identity-card" },
+        { "type": "route", "uuid": "route-valid-device-version" },
+        { "type": "route", "uuid": "route-ekyc-configuration" },
+        { "type": "route", "uuid": "route-check-otp-blacklist" },
+        { "type": "route", "uuid": "route-send-message-template" },
+        { "type": "route", "uuid": "route-validate-username-phone" },
+        { "type": "route", "uuid": "route-get-simple-profile" },
+        { "type": "route", "uuid": "route-check-sim-blockage" },
+        { "type": "route", "uuid": "route-fraud-push-login" },
+        { "type": "route", "uuid": "route-resolve-sim-blockage" }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "uuid": "route-app-version-check",
+      "type": "http",
+      "documentation": "BFF App Version Check - Checks if current app version meets minimum requirement",
+      "method": "post",
+      "endpoint": "bff-app-version-check",
+      "responses": [
+        {
+          "uuid": "resp-app-version-ok",
+          "body": "{\n  \"CheckResult\": true\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Version OK",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "MinVersion",
+              "value": "",
+              "invert": false,
+              "operator": "null"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-app-version-fail",
+          "body": "{\n  \"CheckResult\": false\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Version Too Old",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "CurrentVersion",
+              "value": "1.0.0",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-ip-address-info",
+      "type": "http",
+      "documentation": "BFF IP Address Info - Resolves geolocation from IP",
+      "method": "post",
+      "endpoint": "bff-ip-address-info",
+      "responses": [
+        {
+          "uuid": "resp-ip-info-ok",
+          "body": "{\n  \"IpInfo\": \"TR;Turkey;Istanbul;Istanbul;41.0082;28.9784\",\n  \"ClientIpAddress\": \"185.12.34.56\"\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Success",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-check-identity-card",
+      "type": "http",
+      "documentation": "BFF Check Identity Card - Checks if customer has new type chip ID card",
+      "method": "post",
+      "endpoint": "bff-check-identity-card",
+      "responses": [
+        {
+          "uuid": "resp-identity-new-cert",
+          "body": "{\n  \"IsSuccess\": true,\n  \"IsNewCertificate\": true\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "New Certificate",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-identity-old-cert",
+          "body": "{\n  \"IsSuccess\": true,\n  \"IsNewCertificate\": false\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Old Certificate",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "CustomerId",
+              "value": "old-cert-user",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-identity-failure",
+          "body": "{\n  \"IsSuccess\": false,\n  \"IsNewCertificate\": false\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Identity Check Failed",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "CustomerId",
+              "value": "fail-identity-user",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-valid-device-version",
+      "type": "http",
+      "documentation": "BFF Valid Device Version - Checks if device OS meets minimum (iOS>=12, Android>=7)",
+      "method": "post",
+      "endpoint": "bff-is-valid-device-version",
+      "responses": [
+        {
+          "uuid": "resp-device-valid",
+          "body": "{\n  \"IsValidDeviceVersion\": \"true\"\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Device Valid",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-device-invalid",
+          "body": "{\n  \"IsValidDeviceVersion\": \"false\"\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Device Too Old",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "xdeviceversion",
+              "value": "6",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-ekyc-configuration",
+      "type": "http",
+      "documentation": "BFF EKYC Configuration - Returns EKYC service hours and active status",
+      "method": "post",
+      "endpoint": "bff-ekyc-configuration",
+      "responses": [
+        {
+          "uuid": "resp-ekyc-active",
+          "body": "{\n  \"activeStartHour\": \"08:00\",\n  \"activeDueHour\": \"22:00\",\n  \"isActive\": true,\n  \"isBetweenHours\": true,\n  \"outOfActiveHoursMessage\": \"\"\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "EKYC Active",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-ekyc-inactive",
+          "body": "{\n  \"activeStartHour\": \"08:00\",\n  \"activeDueHour\": \"22:00\",\n  \"isActive\": false,\n  \"isBetweenHours\": false,\n  \"outOfActiveHoursMessage\": \"Service is not available at this time\"\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "EKYC Out of Hours",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "Authorization",
+              "value": "out-of-hours",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-check-otp-blacklist",
+      "type": "http",
+      "documentation": "BFF Check OTP Blacklist - Checks OTP blacklist status and sends SMS if not blacklisted",
+      "method": "post",
+      "endpoint": "bff-check-otp-blacklist",
+      "responses": [
+        {
+          "uuid": "resp-no-blacklist",
+          "body": "{\n  \"HasOtpBlacklist\": false\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Not Blacklisted (SMS Sent)",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-blacklisted",
+          "body": "{\n  \"HasOtpBlacklist\": true\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Blacklisted",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "CustomerId",
+              "value": "blacklisted-user",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-send-message-template",
+      "type": "http",
+      "documentation": "BFF Send Message Template - Sends templated SMS/Push notification",
+      "method": "post",
+      "endpoint": "bff-send-message-template",
+      "responses": [
+        {
+          "uuid": "resp-message-sent",
+          "body": "{\n  \"MessageTemplateStatus\": \"Success\"\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Message Sent",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-validate-username-phone",
+      "type": "http",
+      "documentation": "Token Service - Validate username and phone combination",
+      "method": "post",
+      "endpoint": "remember-password/validate-user-and-phone",
+      "responses": [
+        {
+          "uuid": "resp-creds-ok",
+          "body": "{\n  \"isSuccess\": true,\n  \"Data\": {\n    \"WrongCredentials\": false,\n    \"hasSuccessLogin\": true\n  }\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Credentials Valid",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-creds-wrong",
+          "body": "{\n  \"isSuccess\": true,\n  \"Data\": {\n    \"WrongCredentials\": true,\n    \"hasSuccessLogin\": false\n  }\n}",
+          "latency": 500,
+          "statusCode": 200,
+          "label": "Wrong Credentials",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "username",
+              "value": "wrong-user",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-get-simple-profile",
+      "type": "http",
+      "documentation": "Asgard - Get simple user profile with businessLine info",
+      "method": "get",
+      "endpoint": "ebanking/bffapi/asgard/get-simple-profile/:customerId",
+      "responses": [
+        {
+          "uuid": "resp-profile-burgan",
+          "body": "{\n  \"statusCode\": 200,\n  \"data\": {\n    \"profile\": {\n      \"businessLine\": \"Burgan\",\n      \"isBankPersonel\": false,\n      \"firstName\": \"Ahmet\",\n      \"lastName\": \"Yilmaz\",\n      \"externalClientNo\": 98765\n    }\n  }\n}",
+          "latency": 600,
+          "statusCode": 200,
+          "label": "Burgan Customer",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-profile-on",
+          "body": "{\n  \"statusCode\": 200,\n  \"data\": {\n    \"profile\": {\n      \"businessLine\": \"X\",\n      \"isBankPersonel\": false,\n      \"firstName\": \"Mehmet\",\n      \"lastName\": \"Kaya\",\n      \"externalClientNo\": 12345\n    }\n  }\n}",
+          "latency": 600,
+          "statusCode": 200,
+          "label": "ON Customer",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "customerId",
+              "value": "on-user",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-profile-not-found",
+          "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Customer not found\"\n}",
+          "latency": 600,
+          "statusCode": 404,
+          "label": "Not Found",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "customerId",
+              "value": "not-found-user",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-check-sim-blockage",
+      "type": "http",
+      "documentation": "Notification - Check SIM blockage status. 200=blocked, 404=not blocked",
+      "method": "get",
+      "endpoint": "ebanking/notification/checksimblockage/:countryCode/:prefix/:number",
+      "responses": [
+        {
+          "uuid": "resp-sim-blocked",
+          "body": "{\n  \"statusCode\": 200,\n  \"data\": {\n    \"isBlocked\": true,\n    \"blockReason\": \"SIM_STOLEN\"\n  }\n}",
+          "latency": 600,
+          "statusCode": 200,
+          "label": "SIM Blocked",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-sim-not-blocked",
+          "body": "{\n  \"statusCode\": 404,\n  \"message\": \"No blockage found for this SIM\"\n}",
+          "latency": 600,
+          "statusCode": 404,
+          "label": "SIM Not Blocked",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "params",
+              "modifier": "number",
+              "value": "0000000",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-fraud-push-login",
+      "type": "http",
+      "documentation": "Fraud Service - Push login event for fraud tracking (BLKE/Update/SimBloke)",
+      "method": "post",
+      "endpoint": "ebanking/fraud/api/v1/fraud/push/login",
+      "responses": [
+        {
+          "uuid": "resp-fraud-ok",
+          "body": "{\n  \"statusCode\": 200,\n  \"data\": {\n    \"fraudId\": \"{{faker 'string.uuid'}}\"\n  }\n}",
+          "latency": 800,
+          "statusCode": 200,
+          "label": "Fraud Logged",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    },
+    {
+      "uuid": "route-resolve-sim-blockage",
+      "type": "http",
+      "documentation": "Notification - Resolve SIM blockage (deblock)",
+      "method": "post",
+      "endpoint": "ebanking/notification/resolvesimblockage",
+      "responses": [
+        {
+          "uuid": "resp-resolve-ok",
+          "body": "{\n  \"statusCode\": 200,\n  \"data\": {\n    \"transactionId\": \"{{faker 'string.uuid'}}\",\n    \"resolvedAt\": \"{{now 'YYYY-MM-DDTHH:mm:ssZ'}}\"\n  }\n}",
+          "latency": 800,
+          "statusCode": 200,
+          "label": "SIM Deblocked",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true,
+          "crudKey": ""
+        },
+        {
+          "uuid": "resp-resolve-error",
+          "body": "{\n  \"statusCode\": 500,\n  \"message\": \"Internal server error while resolving SIM blockage\"\n}",
+          "latency": 800,
+          "statusCode": 500,
+          "label": "Resolve Failed",
+          "headers": [{ "key": "Content-Type", "value": "application/json" }],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [
+            {
+              "target": "body",
+              "modifier": "phone.number",
+              "value": "9999999",
+              "invert": false,
+              "operator": "equals"
+            }
+          ],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": ""
+        }
+      ],
+      "responseMode": null
+    }
+  ],
+  "rootChildren": [
+    { "type": "folder", "uuid": "folder-deblock-sim-card" }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    { "key": "Content-Type", "value": "application/json" },
+    { "key": "Access-Control-Allow-Origin", "value": "*" }
+  ],
+  "proxyReqHeaders": [],
+  "proxyResHeaders": [],
+  "data": [],
+  "callbacks": []
+}
